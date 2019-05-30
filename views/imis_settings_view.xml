@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+
+    <record id="imis_settings_map_form_view" model="ir.ui.view">
+        <field name="name">Imis-Odoo Product Mapper</field>
+        <field name="type">form</field>
+        <field name="model">imis.odoo.product.map</field>
+        <field name="arch" type="xml">
+            <form string="Imis-Odoo Product Map">
+		 <sheet>
+			<group>
+				<field name="item_code"/>
+				<field name="imis_product"/>
+				<field name="imis_price"/>
+				<field name="odoo_product_id"/>
+				<field name="valid_from"/>
+				<field name="valid_till"/>
+                <field name="is_active"/>
+            </group>
+		 </sheet>
+            </form>
+        </field>
+    </record>
+
+
+
+    <menuitem action="action_imis_odoo_product_mapping" id="menu_action_imis_odoo_product_mapping" parent="sales_team.menu_sale_config" sequence="34"/>
+
+</odoo>

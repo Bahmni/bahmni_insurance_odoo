@@ -21,6 +21,7 @@
         <field name="arch" type="xml">
             <field name="amount_total" position="after">
                 <field name="payment_type"/>
+                <field name="claimable_amount" sum="Total Claimable amount"/>
             </field>
         </field>
 	</record>
@@ -36,5 +37,24 @@
             </xpath>
         </field>
 	</record>
+	
+	<!-- <act_window
+        context="{'nhis_number': 1233456}"
+        id="action_validate_nhis_number"
+        name="Check Eligibility"
+        res_model="res.partner"
+        src_model="sale.order"
+        groups="base.group_sale_salesman"/>
+    
+    <record id="check_nhis_number_validity_button" model="ir.ui.view">
+        <field name="name">sale.order.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+
+        <header>
+            <button name="action_check_eligibility" string="Check Eligibility" type="action" class="btn-primary"
+              attrs="{'invisible': [('payment_type', '!=', 'cash')]}" />
+        </header>
+    </record> -->
 
 </odoo>

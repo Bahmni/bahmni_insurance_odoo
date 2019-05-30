@@ -1,3 +1,4 @@
-import SaleOrder
-import ImisOdooProductMap
-import SaleOrderLine
+import sale_order
+import sale_order_line
+import imis_odoo_product_map
+import imis_connect

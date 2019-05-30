@@ -26,12 +26,14 @@
         <field name="name">imis.odoo.product.map.tree</field>
         <field name="model">imis.odoo.product.map</field>
         <field name="type">tree</field>
+        <field name="domain">[('is_active','=', 'true')]</field>
         <field name="arch" type="xml">
             <tree string="Imis Product Mapper">
                 <field name="item_code"/>
 				<field name="imis_product"/>
 				<field name="imis_price"/>
 				<field name="odoo_product_id"/>
+                <field name="is_active"/>
             </tree>
         </field>
     </record>
@@ -45,6 +47,7 @@
 				<field name="imis_product"/>
 				<field name="imis_price"/>
 				<field name="odoo_product_id"/>
+                <field name="is_active"/>
             </search>
         </field>
     </record>

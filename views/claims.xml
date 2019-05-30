@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="imis_claims_tree_view" model="ir.ui.view">
+        <field name="name">imis_claims_view.tree</field>
+        <field name="model">sale.order</field>
+        <field name="type">tree</field>
+        <field name="domain">[('payment_type', '!=', 'CASH')]</field>
+        <field name="arch" type="xml">
+            <tree string="Imis Claims">
+                <field name="name" string="Quotation Number"/>
+                <field name="date_order"/>
+                <field name="partner_id"/>
+                <field name="user_id"/>
+                <field name="claimable_amount" sum="Total Claimable Amount" widget="monetary"/>
+                <field name="payment_type"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+    <record id="action_imis_claims_view" model="ir.actions.act_window">
+        <field name="name">Claims</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+    </record>
+    <menuitem action="action_imis_claims_view" id="sale.menu_action_imis_claim"
+        name="Claims" parent="sales_team.menu_sales" sequence="14"/>
+        
+</odoo>
