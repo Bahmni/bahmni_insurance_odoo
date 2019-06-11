@@ -11,7 +11,8 @@
                 <field name="date_order"/>
                 <field name="partner_id"/>
                 <field name="user_id"/>
-                <field name="claimable_amount" sum="Total Claimable Amount" widget="monetary"/>
+                <field name="claimable_amount"
+                    sum="Total Claimable Amount" widget="monetary"/>
                 <field name="payment_type"/>
                 <field name="state"/>
             </tree>
@@ -25,7 +26,7 @@
         <field name="view_mode">tree,form</field>
         <field name="context">{}</field>
     </record>
-    <menuitem action="action_imis_claims_view" id="sale.menu_action_imis_claim"
-        name="Claims" parent="sales_team.menu_sales" sequence="14"/>
-        
+    <menuitem action="action_imis_claims_view"
+        id="sale.menu_action_imis_claim" name="Claims"
+        parent="sales_team.menu_sales" sequence="14"/>
 </odoo>

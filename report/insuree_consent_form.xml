@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <report 
+            id="insuree_consent_form"
+            model="insuree.consent" 
+            name="bahmni-imis.insurance_consent_form_template"
+            file="bahmni-imis.insurance_consent_form_template" 
+            report_type="qweb-pdf" 
+            string="CONSENT FOR AUTHORIZATION TO BILL INSURANCE"
+        />
+    </data>
+</odoo>
+ 
+ 

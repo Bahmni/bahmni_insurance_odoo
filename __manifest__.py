@@ -27,7 +27,11 @@
     # always loaded
     'data': [
         'views/quotation_view.xml',
-        'views/imis_odoo_product_map_view.xml'
+        'views/imis_odoo_product_map_view.xml',
+        'views/claims.xml',
+        'views/customer_view.xml',
+        'report/insuree_consent_form.xml',
+        'report/consent_form_template.xml'
     ],
     # only loaded in demonstration mode
     #'demo': [
