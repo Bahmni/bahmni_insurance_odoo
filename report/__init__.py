@@ -1,1 +1,0 @@
-import insuree_consent

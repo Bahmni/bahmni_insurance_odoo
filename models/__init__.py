@@ -1,5 +1,6 @@
 import res_partner
 import sale_order
 import sale_order_line
-import imis_odoo_product_map
-import imis_connect
+import insurance_odoo_product_map
+import insurance_connect
+import insurance_config_settings

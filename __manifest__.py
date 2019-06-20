@@ -2,13 +2,13 @@
 {
     'name': "Bahmni OpenIMIS",
 
-    'summary': """Prepare, manage, send claims to imis gateway""",
+    'summary': """Prepare, manage, send claims to insurance gateway""",
 
     'description': """
-        Bahmni Openimis moduel does:
+        Bahmni Openimis module does:
             - Separate quotations based on payment type
             - Prepare claims
-            - Send claims to imis gateway
+            - Send claims to insurance gateway
             - Check status of the claims
     """,
 
@@ -27,17 +27,19 @@
     # always loaded
     'data': [
         'views/quotation_view.xml',
-        'views/imis_odoo_product_map_view.xml',
+        'views/insurance_odoo_product_map_view.xml',
         'views/claims.xml',
         'views/customer_view.xml',
         'report/insuree_consent_form.xml',
-        'report/consent_form_template.xml'
+        'report/consent_form_template.xml',
+        'wizard/eligibility_check_response.xml',
+        'views/insurance_settings_view.xml'
     ],
     # only loaded in demonstration mode
     #'demo': [
     #    'demo.xml',
     #],
-    'Installable': True,
+    'installable': True,
     'auto_install': False,
     'application': True
 }

@@ -2,12 +2,12 @@
 <odoo>
     <data>
         <report 
-            id="insuree_consent_form"
-            model="insuree.consent" 
-            name="bahmni-imis.insurance_consent_form_template"
-            file="bahmni-imis.insurance_consent_form_template" 
+            id="insuree_consent"
+            model="sale.order" 
+            name="bahmni-insurance-odoo.insurance_consent_form"
+            file="bahmni-insurance-odoo.insurance_consent_form" 
             report_type="qweb-pdf" 
-            string="CONSENT FOR AUTHORIZATION TO BILL INSURANCE"
+            string="Consent Form"
         />
     </data>
 </odoo>

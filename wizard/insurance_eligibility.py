@@ -1,39 +1,32 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api
+from datetime import datetime
 import logging
 import json
 _logger = logging.getLogger(__name__)
 
 
-class InsurnceEligibility(models.TransientModel):
+class insurance_eligibility (models.TransientModel):
     _name = 'insurance.eligibility'
     _description = "Insurance Eligibility"
     
+    insuree_name = fields.Char(string="Insuree Name",readonly=1)
+    valid_from = fields.Datetime(string="Valid From", readonly=1)
+    valid_till = fields.Datetime(string="Valid Till", readonly=1)
+    balance = fields.Float(string="Available Balance", readonly=1)
+    nhis_number = fields.Char(string="NHIS Number", readonly=1)
     
-    
-    
-    @api.onchange('partner_id')
-    def _get_insurance_details(self):
+    @api.multi
+    def _get_insurance_details(self, partner_id):
         _logger.info("Inside _get_insurance_details")
-        nhis_number = self.env['res.partner']._get_nhis_number(self.partner_id.id)
+        nhis_number = self.env['res.partner']._get_nhis_number(partner_id.id)
         if nhis_number:
-            response = self.env['imis.connect']._check_eligibility(res_partner)
-            _logger.info("========================")
-            _logger.info(response)
-            self.insuree_name = 'Dipak thapa'
-            self.nhis_number = '12321323'
-            self.balance = 12334
-            
-            
-    
-    
-    
-    
-    
-    
-    
-    insuree_name = fields.String(string="From Date")
-    valid_from = fields.Date(string="Valid From")
-    valid_till = fields.Date(MONTHS, string="Valid Till")
-    balance = fields.Monetary(string='Available Balance')
-    nhis_number = fields.Char(string="NHIS Number")
+            response = self.env['insurance.connect']._check_eligibility(nhis_number)
+            params = {
+                  'insuree_name':partner_id.name,
+                  'nhis_number': nhis_number,
+                  'balance': 12344,
+                  'valid_from': datetime.now(),
+                  'valid_till': datetime.now()
+                }
+            return params
