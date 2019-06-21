@@ -1,3 +1,6 @@
-import SaleOrder
-import ImisOdooProductMap
-import SaleOrderLine
+import res_partner
+import sale_order
+import sale_order_line
+import insurance_odoo_product_map
+import insurance_connect
+import insurance_config_settings

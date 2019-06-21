@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    
+    <record id="insurance_eligibility_check_result_view" model="ir.ui.view">
+        <field name="name">view.insurance.eligibility.result</field>
+        <field name="type">form</field>
+        <field name="model">insurance.eligibility</field>
+        <field name="arch" type="xml">
+            <form string="View Insurance details">
+            
+                <group>
+                    <group>
+                        <field name="insuree_name"/>
+                    </group>
+                    <group>
+                        <field name="nhis_number"/>
+                    </group>
+                    <group>
+                        <field name="valid_from"/>
+                    </group>
+                    <group>
+                        <field name="valid_till"/>
+                    </group>
+                    <group>
+                        <field name="balance"/>
+                    </group>
+                </group>
+                <footer>
+                    <button string="Close" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+</odoo>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="insurance_claims_tree_view" model="ir.ui.view">
+        <field name="name">insurance_claims_view.tree</field>
+        <field name="model">sale.order</field>
+        <field name="type">tree</field>
+        <field name="domain">[('state', 'in', ('sale')), 
+        ('payment_type', 'in', ('insurance', 'partial'))]</field>
+        <field name="arch" type="xml">
+            <tree string="Insurance Claims">
+                <field name="name" string="Quotation Number"/>
+                <field name="date_order"/>
+                <field name="partner_id"/>
+                <field name="user_id"/>
+                <field name="claimable_amount"
+                    sum="Total Claimable Amount" widget="monetary"/>
+                <field name="payment_type"/>
+            </tree>
+        </field>
+    </record>
+    <record id="action_insurance_claims_view" model="ir.actions.act_window">
+        <field name="name">Insurance Claims</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">sale.order</field>
+        <!-- <field name="view_id" ref="insurance_claims_tree_view"/> -->
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+    </record>
+    <menuitem action="action_insurance_claims_view"
+        id="sale.menu_action_insurance_claim" name="Claims"
+        parent="sales_team.menu_sales" sequence="14"/>
+</odoo>

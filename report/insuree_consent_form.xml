@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <report 
+            id="insuree_consent"
+            model="sale.order" 
+            name="bahmni-insurance-odoo.insurance_consent_form"
+            file="bahmni-insurance-odoo.insurance_consent_form" 
+            report_type="qweb-pdf" 
+            string="Consent Form"
+        />
+    </data>
+</odoo>
+ 
+ 

@@ -1,40 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <odoo>
     <record id="payment_type_form_sale_quotation" model="ir.ui.view">
-		<field name="name">sale.order.form</field>
+        <field name="name">sale.order.form</field>
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
-
         <field name="arch" type="xml">
             <field name="partner_id" position="after">
                 <field name="payment_type" required="1"/>
             </field>
         </field>
-	</record>
-
+    </record>
     <record id="payment_type_tree_sale_quotation" model="ir.ui.view">
-		<field name="name">sale.order.tree</field>
+        <field name="name">sale.order.tree</field>
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_quotation_tree"/>
-
         <field name="arch" type="xml">
             <field name="amount_total" position="after">
                 <field name="payment_type"/>
+                <field name="claimable_amount" sum="Total Claimable amount"/>
             </field>
         </field>
-	</record>
-
+    </record>
     <record id="payment_type_sale_order_line_form_sale_quotation" model="ir.ui.view">
-		<field name="name">sale.order.tree</field>
+        <field name="name">sale.order.tree</field>
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
-
         <field name="arch" type="xml">
-            <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='name']"  position="after">
+            <xpath
+                expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='name']" position="after">
                 <field name="payment_type"/>
             </xpath>
         </field>
-	</record>
-
+    </record>
+    <record id="nhis_number_field_sale_quotation" model="ir.ui.view">
+        <field name="name">sale.order.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="after">
+                <field String="NHIS Number" name="nhis_number"/>
+            </field>
+        </field>
+    </record>
+    <record id="check_nhis_number_validity_button" model="ir.ui.view">
+        <field name="name">sale.order.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_cancel']" position="after">
+                <button name="check_eligibility" type="object" string="Check Eligibility"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="print_insurance_process_consent_form_button" model="ir.ui.view">
+        <field name="name">sale.order.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='check_eligibility']" position="after">
+                <button name="print_consent" type="object" string="Print Consent Form"/>
+            </xpath>
+        </field>
+    </record>
 </odoo>
