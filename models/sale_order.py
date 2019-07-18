@@ -7,16 +7,6 @@ class sale_order(models.Model):
     _name = 'sale.order'
     _inherit = 'sale.order'
     
-    @api.one
-    def _compute_amount(self):
-        claimable_amount = 0
-        for sale_order in self:
-            if sale_order.payment_type != 'cash':
-                insurance_sale_order_lines = self.env['sale.order.line'].search([('order_id' , '=', sale_order.id),('payment_type', '!=', 'cash')])
-                for sale_order_line in insurance_sale_order_lines:
-                    claimable_amount += sale_order_line.price_subtotal
-        self.claimable_amount = claimable_amount
-        
     @api.onchange('partner_id')
     def _get_nhis_number(self):
         _logger.info("Inside _get_nhis_number")
@@ -53,9 +43,16 @@ class sale_order(models.Model):
                 'context': context,
             }
 
-    claimable_amount = fields.Monetary(string="Claimable Amount", compute=_compute_amount)
     payment_type = fields.Selection([('insurance', 'INSURANCE'), ('cash', 'CASH'), ('partial', 'PARTIAL')], default='cash', string="Payment Type", required="True")
     nhis_number = fields.Char(string='NHIS Number', compute=_get_nhis_number)
+    
+
+class sale_order_line(models.Model):
+    _name = 'sale.order.line'
+    _inherit = 'sale.order.line'
+
+    payment_type = fields.Selection([('insurance', 'INSURANCE'), ('cash', 'CASH')], default='cash', string="Payment Type", required=True)
+
     
     
     

@@ -54,12 +54,13 @@
     
      <record id="insurance_connect_config_action" model="ir.actions.act_window">
         <field name="name">Insurance Connect Configuration</field>
+        <field name="type">ir.actions.act_window</field>
         <field name="res_model">insurance.config.settings</field>
         <field name="view_mode">form</field>
         <field name="target">inline</field>
     </record>
     
     <menuitem id="insurance_connect_config_menu" name="Insurance Settings" 
-        parent="sales_team.menu_sale_config" sequence="10" 
+        parent="bahmni-insurance-odoo.menu_insurance_config" sequence="10" 
         action="insurance_connect_config_action" groups="base.group_system"/>
 </odoo>

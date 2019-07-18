@@ -32,12 +32,6 @@ class insurance_connect(models.TransientModel):
         if req.status == 200:
             response = json.loads(req.data.decode('utf-8'))
             _logger.info(response)
-       
+            
         
-    @api.model_cr
-    def init(self):
-        self.authenticate("admin", "haha", "https://192.168.33.20/insurance-integration/auth")
-
-
-
 insurance_connect()

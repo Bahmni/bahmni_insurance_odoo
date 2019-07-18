@@ -58,5 +58,5 @@
     </record>
     <menuitem action="action_insurance_odoo_product_mapping"
         id="menu_action_insurance_odoo_product_mapping"
-        parent="sales_team.menu_sale_config" sequence="34"/>
+        parent="bahmni-insurance-odoo.menu_insurance_config" sequence="11"/>
 </odoo>

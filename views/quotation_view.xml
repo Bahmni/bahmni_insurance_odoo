@@ -10,17 +10,6 @@
             </field>
         </field>
     </record>
-    <record id="payment_type_tree_sale_quotation" model="ir.ui.view">
-        <field name="name">sale.order.tree</field>
-        <field name="model">sale.order</field>
-        <field name="inherit_id" ref="sale.view_quotation_tree"/>
-        <field name="arch" type="xml">
-            <field name="amount_total" position="after">
-                <field name="payment_type"/>
-                <field name="claimable_amount" sum="Total Claimable amount"/>
-            </field>
-        </field>
-    </record>
     <record id="payment_type_sale_order_line_form_sale_quotation" model="ir.ui.view">
         <field name="name">sale.order.tree</field>
         <field name="model">sale.order</field>
