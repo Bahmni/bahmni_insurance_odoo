@@ -1,4 +1,5 @@
 from odoo import models, fields, api
+from odoo.exceptions import UserError
 
 import urllib3
 import logging
@@ -23,15 +24,26 @@ class insurance_connect(models.TransientModel):
     @api.multi
     def _check_eligibility(self, nhis_number):
         _logger.info("Inside check_eligibility")
-        http = urllib3.PoolManager()
-        data = {}
-        url = "https://192.168.33.20/insurance-integration/request/eligibility/%s"%(nhis_number)
-        headers = urllib3.util.make_headers(basic_auth="%s:%s"%('admin', 'haha'))
-        req = http.request('GET', url, headers=headers)
-        _logger.info("========= Response===============")
-        if req.status == 200:
-            response = json.loads(req.data.decode('utf-8'))
-            _logger.info(response)
+        try:
+            insurance_connect_configurations = self.env['insurance.config.settings'].get_insurance_connect_configurations()
+            _logger.info(insurance_connect_configurations)
+            if insurance_connect_configurations is None:
+                raise UserError("Insurance configurations not set")
+            
+            http = urllib3.PoolManager()
+            data = {}
+            url = insurance_connect_configurations['base_url'] + "/request/eligibility/%s"
+            url = url%(nhis_number)
+            headers = urllib3.util.make_headers(basic_auth="%s:%s"%(insurance_connect_configurations['username'], insurance_connect_configurations['password']))
+            req = http.request('GET', url, headers=headers)
+            _logger.info("========= Response===============")
+            if req.status == 200:
+                response = json.loads(req.data.decode('utf-8'))
+                _logger.info(response)
+        except Exception as err:
+            _logger.info("\n Processing event threw error: %s", err)
+            raise
+        
             
         
 insurance_connect()

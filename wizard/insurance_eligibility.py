@@ -17,6 +17,19 @@ class insurance_eligibility (models.TransientModel):
     nhis_number = fields.Char(string="NHIS Number", readonly=1)
     
     @api.multi
+    def get_insurance_eligibility(self, partner_id):
+        _logger.info("Inside map response")
+        nhis_number = self.env['res.partner']._get_nhis_number(partner_id.id)
+        if nhis_number:
+            response = self.env['insurance.connect']._check_eligibility(nhis_number)
+            self.insuree_name = partner_id.name
+            self.valid_from = datetime.now()
+            self.valid_till = datetime.now()
+            self.balance = 12344
+            self.nhis_number = nhis_number
+        return self
+    
+    @api.multi
     def _get_insurance_details(self, partner_id):
         _logger.info("Inside _get_insurance_details")
         nhis_number = self.env['res.partner']._get_nhis_number(partner_id.id)

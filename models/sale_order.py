@@ -14,6 +14,25 @@ class sale_order(models.Model):
         self.nhis_number = self.env['res.partner']._get_nhis_number(partner_id)
     
     @api.multi
+    def action_invoice_create(self, grouped=False, final=False):
+        _logger.info("Inside action_invoice_create overwritten")
+        record = super(sale_order, self).action_invoice_create(grouped, final)
+        for order in self:
+            _logger.info("sale_order")
+            _logger.info(order)
+            self.env['insurance.claim']._create_claim(order)
+        
+    @api.multi
+    def action_confirm(self):
+        _logger.info("Inside action_invoice_create overwritten")
+        sale = super(sale_order, self).action_confirm()
+        for order in self:
+            _logger.info("sale_order")
+            _logger.info(order)
+            self.env['insurance.claim']._create_claim(order)
+        
+    
+    @api.multi
     def check_eligibility(self):
         _logger.info("Inside check_eligibility")
         if self.nhis_number:
@@ -45,6 +64,8 @@ class sale_order(models.Model):
 
     payment_type = fields.Selection([('insurance', 'INSURANCE'), ('cash', 'CASH'), ('partial', 'PARTIAL')], default='cash', string="Payment Type", required="True")
     nhis_number = fields.Char(string='NHIS Number', compute=_get_nhis_number)
+    external_id = fields.Char(string="External Id", help="This field is used to store encounter ID of bahmni api call")
+    partner_uuid = fields.Char(string='Customer UUID', store=True, readonly=True)
     
 
 class sale_order_line(models.Model):

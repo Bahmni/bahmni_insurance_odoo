@@ -6,7 +6,7 @@
         <field name="model">insurance.claim</field>
         <field name="priority">1</field>
         <field name="arch" type="xml">
-            <tree string="Claims" decoration-bf="message_needaction==True">
+            <tree string="Claims">
                 <field name="claim_code" string="Claim Number"/>
                 <field name="claimed_date"/>
                 <field name="partner_id"/>
@@ -35,38 +35,52 @@
         
     <!--Claims Form View -->
     <record id="view_claims_form" model="ir.ui.view">
-            <field name="name">insurance.claim.form</field>
-            <field name="model">insurance.claim</field>
-            <field name="arch" type="xml">
-                <form string="Claims" class="o_sale_order">
+        <field name="name">insurance.claim.form</field>
+        <field name="model">insurance.claim</field>
+        <field name="arch" type="xml">
+            <form class="o_sale_order" string="Claims">
                 <header>
-                    <button name="action_claim_submit" string="Submit Claim" type="object" states="draft" class="btn-primary"/>
-                    <button name="print_claim" string="Print" type="object" class="btn-primary"/>
-                    <button name="action_confirm" states="draft" string="Confirm Claim" class="btn-primary o_sale_confirm" type="object" />
-                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,submitted"/>
+                    <button class="btn-primary"
+                        attrs="{'invisible': [('state', 'in', ['draft', 'submitted', 'rejected'])]}"
+                        name="action_claim_submit" states="confirmed"
+                        string="Submit Claim" type="object"/>
+                    <button class="btn-primary o_sale_confirm"
+                        attrs="{'invisible': [('state', 'in', ['draft', 'submitted', 'rejected'])]}"
+                        name="action_confirm" states="draft"
+                        string="Confirm Claim" type="object"/>
+                    <button class="btn-primary o_sale_confirm"
+                        attrs="{'invisible': [('state', 'in', ['draft', 'confirmed', 'rejected'])]}"
+                        name="action_track_status" states="submitted"
+                        string="Track Claim" type="object"/>
+                    <button class="btn-primary" name="print_claim"
+                        string="Print" type="object"/>   
+                    <field name="state" statusbar_visible="draft,confirmed,submitted" widget="statusbar"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
                         <h1>
-                            <field name="claim_code" String="NHIS Number" attrs="{'invisible': [('state', 'in', ['draft'])]}" readonly="1"/>
+                            <field String="Claim Code"
+                                attrs="{'invisible': [('state', 'in', ['draft', 'confirmed'])]}"
+                                name="claim_code" readonly="1"/>
                         </h1>
                     </div>
                     <group>
                         <group>
-                            <field name="partner_id" domain="[('customer','=',True)]" context="{'search_default_customer':1, 'show_address': 1}" options='{"always_reload": True}' required="1"/>
-                            <field name="nhis_number" String="NHIS Number" required="1"/>
+                            <field context="{'search_default_customer':1, 'show_address': 1}"
+                                domain="[('customer','=',True)]"
+                                name="partner_id" options="{&quot;always_reload&quot;: True}" readonly='1' required="1"/>
+                            <field String="NHIS Number" name="nhis_number" required="1"/>
                         </group>
                         <group>
-                            <field name="claimed_date" attrs="{'invisible': [('state', 'in', ['draft'])]}" required="1"/>
+                            <field name="claimed_date" attrs="{'readonly': [('state', 'in', ('draft','confirmed'))]}" required="1"/>
                             <field name="claim_manager_id" required="1"/>
-                            <field name="claimed_received_date" attrs="{'invisible': [('state', 'in', ['draft'])]}"/>
-                            <field name="pricelist_id" groups="product.group_sale_pricelist"/>
+                            <field attrs="{'invisible': [('state', 'in', ['submitted'])]}" name="claimed_received_date"/>
                         </group>
                     </group>
                     <notebook>
                         <page string="Claim Items">
-                            <field name="insurance_claim_line" mode="tree,kanban"
-                                attrs="{'readonly': [('state', 'in', ('confirmed','submitted'))]}">
+                            <field attrs="{'readonly': [('state', 'in', ('confirmed','submitted'))]}"
+                                mode="tree,kanban" name="insurance_claim_line">
                                 <form string="Claim Items">
                                     <group>
                                         <group>
@@ -76,40 +90,47 @@
                                             <field name="product_qty" required="1"/>
                                             <field name="price_unit" required="1"/>
                                             <field name="price_total" required="1"/>
-                                            <field name="amount_approved" />
-                                            <field name="rejection_reason" />
                                         </group>
                                     </group>
                                 </form>
-                                <tree string="Claim Item" editable="bottom">
+                                <tree editable="bottom" string="Claim Item">
                                     <field name="product_id"/>
-                                    <field name="product_qty" />
-                                    <field name="price_unit" />
-                                    <field name="price_total" />
-                                    <field name="amount_approved" />
-                                    <field name="rejection_reason" />
-                                    <field name="currency_id" invisible="1"/>
+                                    <field name="product_qty"/>
+                                    <field name="price_unit"/>
+                                    <field name="price_total"/>
+                                    <field name="amount_approved"/>
+                                    <field name="rejection_reason"/>
+                                    <field invisible="1" name="currency_id"/>
                                 </tree>
                                 <kanban class="o_kanban_mobile">
                                     <field name="product_id"/>
                                     <field name="product_qty"/>
-                                    <field name="product_uom" groups="product.group_uom"/>
+                                    <field groups="product.group_uom" name="product_uom"/>
                                     <field name="price_total"/>
-                                    <field name="currency_id" invisible="1"/>
+                                    <field invisible="1" name="currency_id"/>
                                     <templates>
                                         <t t-name="kanban-box">
                                             <div t-attf-class="oe_kanban_card oe_kanban_global_click">
                                                 <div class="row">
                                                     <div class="col-xs-12">
-                                                        <strong><span><t t-esc="record.product_id.value"/></span></strong>
+                                                        <strong>
+                                                            <span>
+                                                                <t t-esc="record.product_id.value"/>
+                                                            </span>
+                                                        </strong>
                                                     </div>
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-xs-8 text-muted">
-                                                        <span><t t-esc="record.product_qty.value"/> <t t-esc="record.product_uom.value"/></span>
+                                                        <span>
+                                                            <t t-esc="record.product_qty.value"/>
+                                                            <t t-esc="record.product_uom.value"/>
+                                                        </span>
                                                     </div>
                                                     <div class="col-xs-4 text-muted">
-                                                        <span class="pull-right text-right"><t t-esc="record.price_total.value"/></span>
+                                                        <span class="pull-right text-right">
+                                                            <t t-esc="record.price_total.value"/>
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -118,27 +139,45 @@
                                 </kanban>
                             </field>
                             <group class="oe_subtotal_footer oe_right" colspan="2" name="Total Amount">
-                                <field name="claimed_amount_total" widget='monetary'/>
+                                <field name="claimed_amount_total" widget="monetary"/>
                             </group>
                             <div class="oe_clear"/>
                         </page>
                         <page string="Sale Orders">
                             <separator string="Sale Orders"/>
                             <field name="sale_orders" nolabel="1">
-                                <!-- <tree string="Sale Orders">
+                                <tree string="Sale Orders">
                                     <field name="name" string="Order Number"/>
                                     <field name="date_order"/>
                                     <field name="partner_id"/>
                                     <field name="user_id"/>
-                                    <field name="amount_total" sum="Total Tax Included" widget="monetary"/>
-                                </tree> -->
+                                    <field name="payment_type"/>
+                                    <field name="amount_total"
+                                    sum="Total Tax Included" widget="monetary"/>
+                                </tree>
                             </field>
                         </page>
-                        <page string="Eligibility Details">
-                            
+                        <page string="Eligibility Details" attrs="{'invisible': [('state', 'in', ('confirmed','submitted'))]}">
+                            <!-- <field name="insurance_eligibility" nolabel="1">
+                                <tree string="Insurance Eligibility">
+                                    <field name="insuree_name" string="Insuree" readonly="1"/>
+                                    <field name="nhis_number" string="NHIS Number" readonly="1"/>
+                                    <field name="valid_from" string="Valid From" readonly="1"/>
+                                    <field name="valid_till" string="Valid Till" readonly="1"/>
+                                    <field name="amount_total" string="Balance" widget="monetary" readonly="1"/>
+                                </tree>
+                            </field> -->
                         </page>
                         <page string="Claim History">
-                            
+                            <field name="insurance_claim_history" nolabel="1">
+                                <field name="claim_code" readonly="1"/>
+                                <field name="partner_id" readonly="1"/>
+                                <field name="claim_manager_id" readonly="1"/>
+                                <field name="state" readonly="1"/>
+                                <field name="claim_comments" readonly="1"/>
+                                <field name="rejection_reason" readonly="1"/>
+                                <field name="create_date" String="Date" readonly="1"/>
+                            </field>
                         </page>
                     </notebook>
                 </sheet>
@@ -149,5 +188,15 @@
             </form>
         </field>
     </record>
-    
+    <record id="action_insurance_submitted_claims_view" model="ir.actions.act_window">
+        <field name="name">Submitted Claims</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">insurance.claim</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="domain">[('state', '=', 'submitted')]</field>
+    </record>
+    <menuitem action="action_insurance_submitted_claims_view"
+        id="menu_insurance_submitted_claims" name="Submitted Claims"
+        parent="bahmni-insurance-odoo.menu_insurance_title" sequence="2"/>
 </odoo>

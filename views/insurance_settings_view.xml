@@ -43,6 +43,10 @@
                             <label for="claim_id_end_range" string="End Range"/>
                             <field name="claim_id_end_range"/>
                         </div>
+                        <div>
+                            <label for="claim_number_next_val" string="Next Value"/>
+                            <field name="claim_number_next_val"/>
+                        </div>
                     </div>
                 </group>
                 <div>
