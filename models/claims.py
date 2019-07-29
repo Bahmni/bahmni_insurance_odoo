@@ -63,14 +63,21 @@ class claims(models.Model):
         
 
     
-    @api.multi
+    @api.model
     @api.onchange('partner_id')
     def _get_insurance_details(self):
         """
             Get insurance details
         """
         _logger.info("_get_insurance_details")
-        insurance_eligibility = self.env['insurance.eligibility'].get_insurance_eligibility(self.partner_id)
+        for claim in self:
+            _logger.info(claim.partner_id.id)
+            _logger.info(claim.id)
+            _logger.info("______")
+            insurance_eligibility = self.env['insurance.eligibility']._get_insurance_details(claim.partner_id)
+            if insurance_eligibility:
+                self.insurance_eligibility = insurance_eligibility
+                _logger.info(self.insurance_eligibility)
     
     @api.multi
     def _create_claim(self, sale_order):
@@ -84,6 +91,9 @@ class claims(models.Model):
                 Create and save claims
             '''
             external_id = sale_order.order_line[0].external_id
+            if external_id is None:
+                raise UserError("Sales order doesn't have visit id to be associated with claim")
+            
             claim_in_db = order_in_db = self.env['insurance.claim'].search([('external_uuid', '=', external_id)])
             if claim_in_db:
                 '''Update existing claim'''
@@ -121,22 +131,27 @@ class claims(models.Model):
                     self._create_claim_line(claim_in_db, sale_order)
                     
                     insurance_claim_lines = self.env['insurance.claim.line'].search([('claim_id', '=', claim_in_db.id)])
-                    claim_in_db.update({'insurance_claim_line': insurance_claim_lines})
-                    
+                    if insurance_claim_lines:
+                        claim_in_db.update({'insurance_claim_line': insurance_claim_lines})
+                    else:
+                        _logger.info("\n No claim line item present: %s", err)
+                        raise UserError('NO claim line item present')
                     
                     # Add history
-                    claim_history_line = self.env['insurance.claim.history']._add_claim_history(claim_in_db)
-                    
-                    claim_history = self.env['insurance.claim.history'].search([('claim_id', '=', claim_in_db.id)])
-                    if claim_history:
-                        claim_in_db.update({'insurance_claim_history': claim_history})
-                    
+                    self._add_history(claim_in_db)
                     
                     
                 except Exception as err:
                     _logger.info("\n Error Generating claim draft: %s", err)
                     raise UserError(err)
-            
+                
+    def _add_history(self, claim_in_db):
+        # Add history
+        claim_history_line = self.env['insurance.claim.history']._add_claim_history(claim_in_db)
+                    
+        claim_history = self.env['insurance.claim.history'].search([('claim_id', '=', claim_in_db.id)])
+        if claim_history:
+            claim_in_db.update({'insurance_claim_history': claim_history})   
     
     def _create_claim_line(self, claim, sale_order):
         _logger.info("Inside _create_claim_line")
@@ -207,6 +222,77 @@ class claims(models.Model):
             Submit the claim to insurance-integration
         '''
         _logger.info("_submit_claims")
+        #check if state is draft or rejected
+        try:
+            for claim in self:
+                if claim.state == 'confirmed':
+                    #Generate Claim Number
+                    if claim.claim_code:
+                        #Resubmission
+                        _logger.info("Resubmission")
+                        claim_code = claim.claim_code
+                        
+                        '''
+                            Prepare Claim Code Base on Previous Submits
+                            R -> Resubmit
+                            RS -> Resubmited Second Time
+                            RSS -> Resubmited Third Time
+                            and so on
+                        '''
+                        
+                        if "RS" in claim_code:
+                            claim_code = claim_code[:1] + 'S' + s[1:]
+                        elif "R" in claim_code:
+                            claim_code = "RS" + claim_code
+                        else:
+                            claim_code = "R" + claim_code
+                        
+                    else:
+                        _logger.info("Submission")
+                        claim_code = self.env['insurance.config.settings']._get_next_value()
+                    
+                    claim.update({
+                        'claim_code':claim_code,
+                        'state': 'submitted'
+                    })
+                    
+                    self._add_history(claim)
+                    
+                    
+                    claim_request = {
+                        "patientUUID": claim.partner_uuid,
+                        "visitUUID": claim.external_id,
+                        "claimId": claim.claim_code,
+                        "insureeId": claim.nhis_number,
+                        "item": []
+                    }
+                    
+                    #Prepare Claim line item
+                    sequence = 1
+                    for claim_line in claim:
+                        if claim_line.imis_product_code :
+                            claim_line.update({
+                                'state': 'submitted'
+                            })
+                            claim_request.item.append({
+                                "category": "item",
+                                "quantity": claim_line.product_qty,
+                                "sequence": sequence,
+                                "service": claim_line.imis_product_code,
+                                "unitPrice": claim_line.price_unit,
+                                "totalClaimed": claim_line.price_total,
+                                "status": claim_line.state,
+                                "rejectedReason": claim_line.rejection_reason,
+                                "totalApproved": claim_line.amount_approved
+                            })
+                            sequence += 1
+                    
+            #Submit Claim for Processing
+            response = self.env['insurance.connect']._submit_claims(claim_request)
+        except Exception as err:
+            _logger.error(err)
+            raise UserError(err)
+                        
     
     claim_code = fields.Char(string='Claim Code', help="Claim Code")
     claim_manager_id = fields.Many2one('res.users', string='Claims Manager', index=True, track_visibility='onchange', default=lambda self: self.env.user)
@@ -225,7 +311,7 @@ class claims(models.Model):
         ], string='Claim Status', default='draft', readonly=True)
     claim_comments = fields.Text(string='Comments')
     rejection_reason = fields.Text(string='Rejection Reason')
-    insurance_claim_line = fields.One2many("insurance.claim.line", "claim_id", string='Claim Lines', states={'confirmed': [('readonly', True)], 'submitted': [('readonly', True)], 'rejected': [('readonly', True)]}, copy=True)
+    insurance_claim_line = fields.One2many("insurance.claim.line", "claim_id", string='Claim Lines', states={'confirmed': [('readonly', True)], 'submitted': [('readonly', True)]}, copy=True)
     sale_orders = fields.Many2many('sale.order', string='Sale Orders')
     external_uuid = fields.Char(string="External Id", help="This field is used to store external id of related sale order")
     partner_uuid = fields.Char(related='partner_id.uuid', string='Customer UUID', store=True, readonly=True)

@@ -22,7 +22,13 @@
                         <field name="valid_till"/>
                     </group>
                     <group>
-                        <field name="balance"/>
+                        <field name="eligibility_balance"/>
+                    </group>
+                    <group>
+                        <field name="status"/>
+                    </group>
+                    <group>
+                        <field name="card_issued"/>
                     </group>
                 </group>
                 <footer>

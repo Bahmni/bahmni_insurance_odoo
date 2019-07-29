@@ -11,6 +11,7 @@
                     or
                     <button string="Cancel" type="object"
                         name="cancel" class="oe_link"/>
+                    
                 </header>
                 <separator string="Insurance Connect Configuration"/>
                 <group string="Credentials">
@@ -32,6 +33,9 @@
                             <field name="base_url"/>
                         </div>
                     </div>
+                    <button class="btn-primary"
+                        name="action_test_connection"
+                        string="Test Connection" type="object"/>
                 </group>
                 <group string="Claim Id Setup">
                     <div>

@@ -42,19 +42,19 @@
                 <header>
                     <button class="btn-primary"
                         attrs="{'invisible': [('state', 'in', ['draft', 'submitted', 'rejected'])]}"
-                        name="action_claim_submit" states="confirmed"
+                        name="action_claim_submit"
                         string="Submit Claim" type="object"/>
                     <button class="btn-primary o_sale_confirm"
-                        attrs="{'invisible': [('state', 'in', ['draft', 'submitted', 'rejected'])]}"
-                        name="action_confirm" states="draft"
+                        attrs="{'invisible': [('state', 'in', ['confirmed', 'submitted'])]}"
+                        name="action_confirm"
                         string="Confirm Claim" type="object"/>
                     <button class="btn-primary o_sale_confirm"
                         attrs="{'invisible': [('state', 'in', ['draft', 'confirmed', 'rejected'])]}"
-                        name="action_track_status" states="submitted"
+                        name="action_track_status"
                         string="Track Claim" type="object"/>
                     <button class="btn-primary" name="print_claim"
                         string="Print" type="object"/>   
-                    <field name="state" statusbar_visible="draft,confirmed,submitted" widget="statusbar"/>
+                    <field name="state" statusbar_visible="draft, confirmed, submitted" widget="statusbar"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
@@ -90,6 +90,15 @@
                                             <field name="product_qty" required="1"/>
                                             <field name="price_unit" required="1"/>
                                             <field name="price_total" required="1"/>
+                                            
+                                            
+                                            
+                                            <field name="claim_id" readonly="1"/>
+                                            <field name="claim_manager_id" readonly="1"/>
+                                            <field name="claim_partner_id" readonly="1"/>
+                                            <field name="product_uom" readonly="1"/>
+                                            <field name="currency_id" readonly="1"/>
+                                            <field name="state" readonly="1"/>
                                         </group>
                                     </group>
                                 </form>
@@ -101,6 +110,14 @@
                                     <field name="amount_approved"/>
                                     <field name="rejection_reason"/>
                                     <field invisible="1" name="currency_id"/>
+                                    
+                                    
+                                    <field name="claim_id" readonly="1"/>
+                                    <field name="claim_manager_id" readonly="1"/>
+                                    <field name="claim_partner_id" readonly="1"/>
+                                    <field name="product_uom" readonly="1"/>
+                                    <field name="currency_id" readonly="1"/>
+                                    <field name="state" readonly="1"/>
                                 </tree>
                                 <kanban class="o_kanban_mobile">
                                     <field name="product_id"/>
