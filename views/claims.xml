@@ -90,15 +90,7 @@
                                             <field name="product_qty" required="1"/>
                                             <field name="price_unit" required="1"/>
                                             <field name="price_total" required="1"/>
-                                            
-                                            
-                                            
-                                            <field name="claim_id" readonly="1"/>
-                                            <field name="claim_manager_id" readonly="1"/>
-                                            <field name="claim_partner_id" readonly="1"/>
-                                            <field name="product_uom" readonly="1"/>
-                                            <field name="currency_id" readonly="1"/>
-                                            <field name="state" readonly="1"/>
+                                            <field invisible="1" name="currency_id"/>
                                         </group>
                                     </group>
                                 </form>
@@ -110,14 +102,6 @@
                                     <field name="amount_approved"/>
                                     <field name="rejection_reason"/>
                                     <field invisible="1" name="currency_id"/>
-                                    
-                                    
-                                    <field name="claim_id" readonly="1"/>
-                                    <field name="claim_manager_id" readonly="1"/>
-                                    <field name="claim_partner_id" readonly="1"/>
-                                    <field name="product_uom" readonly="1"/>
-                                    <field name="currency_id" readonly="1"/>
-                                    <field name="state" readonly="1"/>
                                 </tree>
                                 <kanban class="o_kanban_mobile">
                                     <field name="product_id"/>
