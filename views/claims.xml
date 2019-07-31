@@ -147,7 +147,7 @@
                         <page string="Sale Orders">
                             <separator string="Sale Orders"/>
                             <field name="sale_orders" nolabel="1">
-                                <tree string="Sale Orders">
+                                <!-- <tree string="Sale Orders">
                                     <field name="name" string="Order Number"/>
                                     <field name="date_order"/>
                                     <field name="partner_id"/>
@@ -155,7 +155,7 @@
                                     <field name="payment_type"/>
                                     <field name="amount_total"
                                     sum="Total Tax Included" widget="monetary"/>
-                                </tree>
+                                </tree> -->
                             </field>
                         </page>
                         <page string="Eligibility Details" attrs="{'invisible': [('state', 'in', ('confirmed','submitted'))]}">

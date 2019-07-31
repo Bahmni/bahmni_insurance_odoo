@@ -90,11 +90,16 @@ class claims(models.Model):
             '''
                 Create and save claims
             '''
+            insurance_sale_order_lines = sale_order.order_line.filtered(lambda r: r.payment_type == 'insurance')
+            if len(insurance_sale_order_lines) == 0 :
+                raise UserError("No Sales order line marked as Insurance Payment type")
+            
             external_id = sale_order.order_line[0].external_id
             if external_id is None:
                 raise UserError("Sales order doesn't have visit id to be associated with claim")
             
             claim_in_db = order_in_db = self.env['insurance.claim'].search([('external_uuid', '=', external_id)])
+            
             if claim_in_db:
                 '''Update existing claim'''
                 _logger.info("About to edit claim")
@@ -103,9 +108,8 @@ class claims(models.Model):
                     
                 ''' Update contents of claim line only if payment type is insurance'''
                 ''' Check whether a given product has a line item, if yes add quantity, if no add line item'''
-                    
-                self._update_claim_line(claim_in_db, sale_order)
-                    
+                if sale_order.id not in claim_in_db.sale_orders.ids:
+                    claim_in_db.update({'sale_orders': claim_in_db.sale_orders + sale_order})
             else:
                 '''Create new claim'''
                 _logger.info("About to Create new claim")
@@ -119,31 +123,34 @@ class claims(models.Model):
                     'partner_id' : sale_order.partner_id.id,
                     'state' : 'draft',
                     'external_uuid' : insurance_sale_order_lines[0].external_id,
-                    'partner_uuid' : sale_order.partner_uuid
+                    'partner_uuid' : sale_order.partner_uuid,
+                    'currency_id': sale_order.currency_id.id,
+                    'sale_orders': sale_order
                 }
                 
                 _logger.info("claim=%s",claim)
                 
-                try:
-                    claim_in_db = self.env['insurance.claim'].create(claim)
+                claim_in_db = self.env['insurance.claim'].create(claim)    
+                
+            try:
+                _logger.info(claim_in_db)   
+                
+                # Add insurance claim line
+                self._create_claim_line(claim_in_db, sale_order)
                     
-                    # Add insurance claim line
-                    self._create_claim_line(claim_in_db, sale_order)
+                insurance_claim_lines = self.env['insurance.claim.line'].search([('claim_id', '=', claim_in_db.id)])
+                if insurance_claim_lines:
+                    claim_in_db.update({'insurance_claim_line': insurance_claim_lines})
+                else:
+                    _logger.info("\n No claim line item present: %s", err)
+                    raise UserError('NO claim line item present')
                     
-                    insurance_claim_lines = self.env['insurance.claim.line'].search([('claim_id', '=', claim_in_db.id)])
-                    if insurance_claim_lines:
-                        claim_in_db.update({'insurance_claim_line': insurance_claim_lines})
-                    else:
-                        _logger.info("\n No claim line item present: %s", err)
-                        raise UserError('NO claim line item present')
+                # Add history
+                self._add_history(claim_in_db)
                     
-                    # Add history
-                    self._add_history(claim_in_db)
-                    
-                    
-                except Exception as err:
-                    _logger.info("\n Error Generating claim draft: %s", err)
-                    raise UserError(err)
+            except Exception as err:
+                _logger.info("\n Error Generating claim draft: %s", err)
+                raise UserError(err)
                 
     def _add_history(self, claim_in_db):
         # Add history
@@ -167,19 +174,14 @@ class claims(models.Model):
             if imis_mapped_row is None:
                 raise UserError("%s is not mapped to insurance product",sale_order_line.product_id.name)
             
-            self.create_new_claim_line(claim, sale_order_line, imis_mapped_row)
-            
-    def _update_claim_line(self, claim, sale_order_line):
-        _logger.info("Inside _update_claim_line")
+            #Check if a product is already present. If yes update quantity
+            insurance_claim_line = claim.insurance_claim_line.filtered(lambda r: r.product_id.id == sale_order_line.product_id.id)
         
-        #Check if a product is already present. If yes update quantity
-        insurance_claim_line = claim.insurance_claim_line.filtered(lambda r: r.product_id.id == sale_order_line.product_id.id)
-       
-        if insurance_claim_line:
-            insurance_claim_line.update({'product_qty': insurance_claim_line + sale_order_line.product_uom_qty })
-        else:
-            self._create_claim_line(claim, sale_order_line)
-    
+            if insurance_claim_line:
+                insurance_claim_line.update({'product_qty': insurance_claim_line + sale_order.product_uom_qty })
+            else:
+                self.create_new_claim_line(claim, sale_order_line, imis_mapped_row)
+            
     def create_new_claim_line(self, claim, sale_order_line, imis_mapped_row):    
         claim_line_item = {
             'claim_id' : claim.id,
@@ -189,23 +191,29 @@ class claims(models.Model):
             'state' : 'draft',
             'imis_product' : imis_mapped_row.id,
             'imis_product_code' : imis_mapped_row.item_code,
-            'price_unit' : imis_mapped_row.insurance_price
+            'price_unit' : imis_mapped_row.insurance_price,
+            'currency_id': claim.currency_id
         }
-        self.env['insurance.claim.line'].create(claim_line_item)
+        claim_line_in_db = self.env['insurance.claim.line'].create(claim_line_item)
+        _logger.info(claim_line_in_db)
     
     @api.model
     def action_confirm(self):
         '''
             Confirm claim for submission
         ''' 
+        _logger.info("action_confirm")
         #check if state is draft or rejected
         for claim in self:
+            _logger.info(claim)
             if claim.state in ('draft', 'rejected'):
-                claim.state = 'confirmed'
                 #Check if amount claimed is in the range of eligibility
-                
+                claim.update({
+                    'state': 'confirmed'
+                })
                 #Validation passes then confirm
                 for claim_line in claim:
+                    _logger.info(claim_line)
                     if claim_line.imis_product_code :
                         claim_line.update({
                             'state': 'confirmed'
