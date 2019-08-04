@@ -11,6 +11,7 @@
                     or
                     <button string="Cancel" type="object"
                         name="cancel" class="oe_link"/>
+                    
                 </header>
                 <separator string="Insurance Connect Configuration"/>
                 <group string="Credentials">
@@ -32,6 +33,9 @@
                             <field name="base_url"/>
                         </div>
                     </div>
+                    <button class="btn-primary"
+                        name="action_test_connection"
+                        string="Test Connection" type="object"/>
                 </group>
                 <group string="Claim Id Setup">
                     <div>
@@ -42,6 +46,10 @@
                         <div>
                             <label for="claim_id_end_range" string="End Range"/>
                             <field name="claim_id_end_range"/>
+                        </div>
+                        <div>
+                            <label for="claim_number_next_val" string="Next Value"/>
+                            <field name="claim_number_next_val"/>
                         </div>
                     </div>
                 </group>
@@ -54,12 +62,13 @@
     
      <record id="insurance_connect_config_action" model="ir.actions.act_window">
         <field name="name">Insurance Connect Configuration</field>
+        <field name="type">ir.actions.act_window</field>
         <field name="res_model">insurance.config.settings</field>
         <field name="view_mode">form</field>
         <field name="target">inline</field>
     </record>
     
     <menuitem id="insurance_connect_config_menu" name="Insurance Settings" 
-        parent="sales_team.menu_sale_config" sequence="10" 
+        parent="bahmni-insurance-odoo.menu_insurance_config" sequence="10" 
         action="insurance_connect_config_action" groups="base.group_system"/>
 </odoo>

@@ -26,6 +26,7 @@
 
     # always loaded
     'data': [
+        'views/insurance_views.xml',
         'views/quotation_view.xml',
         'views/insurance_odoo_product_map_view.xml',
         'views/claims.xml',

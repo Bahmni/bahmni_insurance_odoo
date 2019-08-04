@@ -3,6 +3,7 @@ from odoo import models, fields, api
 from datetime import datetime
 import logging
 import json
+from _ast import Param
 _logger = logging.getLogger(__name__)
 
 
@@ -13,8 +14,25 @@ class insurance_eligibility (models.TransientModel):
     insuree_name = fields.Char(string="Insuree Name",readonly=1)
     valid_from = fields.Datetime(string="Valid From", readonly=1)
     valid_till = fields.Datetime(string="Valid Till", readonly=1)
-    balance = fields.Float(string="Available Balance", readonly=1)
+    eligibility_balance = fields.Float(string="Available Balance", readonly=1)
     nhis_number = fields.Char(string="NHIS Number", readonly=1)
+    status = fields.Char(string="Status", readonly=1)
+    card_issued = fields.Char(string="Card Issued", readonly=1)
+    
+    @api.multi
+    def get_insurance_eligibility(self, partner_id):
+        _logger.info("Inside map response")
+        nhis_number = self.env['res.partner']._get_nhis_number(partner_id.id)
+        if nhis_number:
+            response = self.env['insurance.connect']._check_eligibility(nhis_number)
+            self.insuree_name = partner_id.name
+            self.valid_from =  response['validityFrom']
+            self.valid_till =  response['validityTo']
+            self.eligibility_balance =  response['eligibilityBalance'][0]['benefitBalance']
+            self.nhis_number = nhis_number
+            self.status = response['status']
+            self.card_issued = response['cardIssued']
+        return self
     
     @api.multi
     def _get_insurance_details(self, partner_id):
@@ -22,11 +40,16 @@ class insurance_eligibility (models.TransientModel):
         nhis_number = self.env['res.partner']._get_nhis_number(partner_id.id)
         if nhis_number:
             response = self.env['insurance.connect']._check_eligibility(nhis_number)
+            
+            _logger.info(response)
             params = {
                   'insuree_name':partner_id.name,
                   'nhis_number': nhis_number,
-                  'balance': 12344,
-                  'valid_from': datetime.now(),
-                  'valid_till': datetime.now()
+                  'valid_from': response['validityFrom'],
+                  'valid_till': response['validityTo'],
+                  'status': response['status'],
+                  'card_issued': response['cardIssued'],
+                  'eligibility_balance': response['eligibilityBalance'][0]['benefitBalance']
                 }
+            _logger.info(params)
             return params

@@ -7,20 +7,21 @@ _logger = logging.getLogger(__name__)
 class ResPartner(models.Model):
     _inherit = 'res.partner'
     
-    @api.model
+    @api.multi
     def _retrieve_nhis_number(self):
         _logger.info("Inside _retrieve_nhis_number")
-        self.nhis_number = self._get_nhis_number(self.id)
+        for partner in self:
+            self.nhis_number = self._get_nhis_number(partner.id)
     
     @api.multi
     def _get_nhis_number(self, partner_id):
         _logger.info("Inside get_nhis number")
         attributes = self.env['res.partner.attributes'].search([('partner_id' , '=', partner_id),('name', '=', 'NHIS Number')])
-        _logger.info(attributes)
         if attributes:
             return attributes.value
         
     nhis_number = fields.Char(string='NHIS Number', compute=_retrieve_nhis_number)
+    uuid = fields.Char(string = "UUID")
     
     
 
