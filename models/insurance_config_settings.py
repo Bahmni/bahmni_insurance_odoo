@@ -47,14 +47,14 @@ class insurance_config_settings(models.TransientModel):
     
     @api.model
     def _get_next_value(self):
-        if self.claim_number_next_val:
-            next_val = self.claim_number_previous_value + 1
-        else:
-            next_val = self.claim_id_start_range
+        self.next_val = self.env['ir.values'].get_default('insurance.config.settings', 'claim_number_next_val')
+        self.start_range = self.env['ir.values'].get_default('insurance.config.settings', 'claim_id_start_range')
+        self.end_range = self.env['ir.values'].get_default('insurance.config.settings', 'claim_id_end_range')
+        self.validate_next_val()
         self.update({
-            'claim_number_next_val': next_val
+            'claim_number_next_val': self.next_val + 1
         })
-        return next_val
+        return self.next_val
     
     @api.model
     def get_insurance_connect_configurations(self):
@@ -64,9 +64,10 @@ class insurance_config_settings(models.TransientModel):
             'base_url': self.env['ir.values'].get_default('insurance.config.settings', 'base_url')
         }
     
-    @api.model
+    @api.multi
     def action_test_connection(self):
-       response = self.env['insurance.connect'].authenticate()    
+       response = self.env['insurance.connect'].authenticate()
+           
             
     @api.multi
     def set_params(self):

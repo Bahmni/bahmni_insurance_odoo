@@ -4,6 +4,7 @@ import json
 from odoo.exceptions import UserError
 
 import odoo.addons.decimal_precision as dp
+from xmlrpclib import DateTime
 
 _logger = logging.getLogger(__name__)
 
@@ -31,7 +32,7 @@ class claims(models.Model):
                 'amount_approved_total': amount_approved_total
             })    
         
-    @api.model
+    @api.multi
     def action_track_status(self):
         '''
             Track Status of the claims
@@ -43,7 +44,7 @@ class claims(models.Model):
         raise UserError("Claim has not been submitted to be tracked")
     
         
-    @api.model
+    @api.multi
     def print_claim(self):
         '''
             Print Claim
@@ -168,11 +169,16 @@ class claims(models.Model):
         
         for sale_order_line in insurance_sale_order_lines:
             _logger.info("Inside sale_order_line loop")
-            imis_mapped_row = self.env['insurance.odoo.product.map'].search([('odoo_product_id', '=', sale_order_line.product_id.id)])
+            imis_mapped_row = self.env['insurance.odoo.product.map'].search([('odoo_product_id', '=', sale_order_line.product_id.id), ('is_active', '=', 'True')])
             _logger.debug("imis_mapped_row ->%s", imis_mapped_row)
             
-            if imis_mapped_row is None:
-                raise UserError("%s is not mapped to insurance product",sale_order_line.product_id.name)
+            if imis_mapped_row is None or len(imis_mapped_row) == 0 :
+                _logger.debug("imis_mapped_row mapping not found")
+                raise UserError("%s is not mapped to insurance product"%(sale_order_line.product_id.name))
+            
+            if len(imis_mapped_row) > 1 :
+                _logger.debug("multiple mappings found")
+                raise UserError("Multiple mappings found for %s"%(sale_order_line.product_id.name))
             
             #Check if a product is already present. If yes update quantity
             insurance_claim_line = claim.insurance_claim_line.filtered(lambda r: r.product_id.id == sale_order_line.product_id.id)
@@ -182,7 +188,8 @@ class claims(models.Model):
             else:
                 self.create_new_claim_line(claim, sale_order_line, imis_mapped_row)
             
-    def create_new_claim_line(self, claim, sale_order_line, imis_mapped_row):    
+    def create_new_claim_line(self, claim, sale_order_line, imis_mapped_row):
+        _logger.debug("Inside create_new_claim_line")
         claim_line_item = {
             'claim_id' : claim.id,
             'product_id' : sale_order_line.product_id.id,
@@ -197,31 +204,35 @@ class claims(models.Model):
         claim_line_in_db = self.env['insurance.claim.line'].create(claim_line_item)
         _logger.info(claim_line_in_db)
     
-    @api.model
+    @api.multi
     def action_confirm(self):
         '''
             Confirm claim for submission
         ''' 
-        _logger.info("action_confirm")
+        _logger.debug("action_confirm")
+        
+        #TODO check if the current visit is closed or not
+        
+        
         #check if state is draft or rejected
         for claim in self:
-            _logger.info(claim)
+            _logger.debug(claim)
             if claim.state in ('draft', 'rejected'):
                 #Check if amount claimed is in the range of eligibility
                 claim.update({
                     'state': 'confirmed'
                 })
                 #Validation passes then confirm
-                for claim_line in claim:
+                for claim_line in claim.insurance_claim_line:
                     _logger.info(claim_line)
                     if claim_line.imis_product_code :
                         claim_line.update({
                             'state': 'confirmed'
                         })
                     else:
-                        raise UserError("Product has no mapping present.Map the product and retry again.")
+                        raise UserError("%s has no mapping present.Map the product and retry again."%(claim_line.product_id.name))
     
-    @api.model
+    @api.multi
     def action_claim_submit(self):
         '''
             Generate the claim number based on the range
@@ -258,10 +269,12 @@ class claims(models.Model):
                     else:
                         _logger.info("Submission")
                         claim_code = self.env['insurance.config.settings']._get_next_value()
+                        _logger.info(claim_code)
                     
                     claim.update({
                         'claim_code':claim_code,
-                        'state': 'submitted'
+                        'state': 'submitted',
+                        'claimed_date': fields.Datetime.now()
                     })
                     
                     self._add_history(claim)
@@ -269,7 +282,7 @@ class claims(models.Model):
                     
                     claim_request = {
                         "patientUUID": claim.partner_uuid,
-                        "visitUUID": claim.external_id,
+                        "visitUUID": claim.external_uuid,
                         "claimId": claim.claim_code,
                         "insureeId": claim.nhis_number,
                         "item": []
@@ -277,13 +290,13 @@ class claims(models.Model):
                     
                     #Prepare Claim line item
                     sequence = 1
-                    for claim_line in claim:
+                    for claim_line in claim.insurance_claim_line:
                         if claim_line.imis_product_code :
                             claim_line.update({
                                 'state': 'submitted'
                             })
-                            claim_request.item.append({
-                                "category": "item",
+                            claim_request['item'].append({
+                                "category": 'item',
                                 "quantity": claim_line.product_qty,
                                 "sequence": sequence,
                                 "service": claim_line.imis_product_code,
@@ -294,7 +307,8 @@ class claims(models.Model):
                                 "totalApproved": claim_line.amount_approved
                             })
                             sequence += 1
-                    
+                
+                    _logger.debug(claim_request)
             #Submit Claim for Processing
             response = self.env['insurance.connect']._submit_claims(claim_request)
         except Exception as err:

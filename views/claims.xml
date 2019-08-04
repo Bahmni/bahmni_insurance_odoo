@@ -5,6 +5,7 @@
         <field name="name">insurance.claim.tree</field>
         <field name="model">insurance.claim</field>
         <field name="priority">1</field>
+        <field name="domain">[('state', '!=', 'submitted')]</field>
         <field name="arch" type="xml">
             <tree string="Claims">
                 <field name="claim_code" string="Claim Number"/>

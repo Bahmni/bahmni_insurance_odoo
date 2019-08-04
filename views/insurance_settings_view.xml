@@ -33,9 +33,11 @@
                             <field name="base_url"/>
                         </div>
                     </div>
-                    <button class="btn-primary"
-                        name="action_test_connection"
-                        string="Test Connection" type="object"/>
+                     <div>
+                        <button class="btn-primary"
+                            name="action_test_connection"
+                            string="Test Connection" type="object"/>
+                    </div>
                 </group>
                 <group string="Claim Id Setup">
                     <div>
