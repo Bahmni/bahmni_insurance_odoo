@@ -40,6 +40,7 @@ class insurance_connect(models.TransientModel):
             insurance_configs = self.get_insurance_configurations()
             url = self.prepare_url("/submit/claim", insurance_configs)
             encoded_data = json.dumps(claim_request).encode('utf-8')
+            _logger.info(encoded_data)
             http = urllib3.PoolManager()
             req = http.request('POST', url, headers=self.get_header(insurance_configs), body = encoded_data)
                 
@@ -50,6 +51,8 @@ class insurance_connect(models.TransientModel):
                 _logger.info(response)
                 return reponse
             else:
+                response = json.loads(req.data.decode('utf-8'))
+                _logger.info(response)
                 raise UserError("Submission Failed. Please Check insurance-connect service and retry again.")
         except Exception as err:
             _logger.info("\n Processing event threw error: %s", err)
