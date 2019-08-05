@@ -91,6 +91,9 @@ class claims(models.Model):
             '''
                 Create and save claims
             '''
+            if sale_order.nhis_number is None or len(sale_order.nhis_number) == 0:
+                raise UserError("Claim can't be created. NHIS number is not present.")
+            
             insurance_sale_order_lines = sale_order.order_line.filtered(lambda r: r.payment_type == 'insurance')
             if len(insurance_sale_order_lines) == 0 :
                 raise UserError("No Sales order line marked as Insurance Payment type")
@@ -299,11 +302,11 @@ class claims(models.Model):
                                 "category": 'item',
                                 "quantity": claim_line.product_qty,
                                 "sequence": sequence,
-                                "service": claim_line.imis_product_code,
+                                "code": claim_line.imis_product_code,
                                 "unitPrice": claim_line.price_unit,
                                 "totalClaimed": claim_line.price_total,
                                 "status": claim_line.state,
-                                "rejectedReason": claim_line.rejection_reason,
+                                "rejectedReason": str(claim_line.rejection_reason),
                                 "totalApproved": claim_line.amount_approved
                             })
                             sequence += 1
