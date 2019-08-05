@@ -171,14 +171,14 @@
                             </field> -->
                         </page>
                         <page string="Claim History">
-                            <field name="insurance_claim_history" nolabel="1">
-                                <field name="claim_code" readonly="1"/>
+                            <field name="insurance_claim_history" nolabel="1" readonly="1">
+                                <!-- <field name="claim_code" readonly="1"/>
                                 <field name="partner_id" readonly="1"/>
                                 <field name="claim_manager_id" readonly="1"/>
                                 <field name="state" readonly="1"/>
                                 <field name="claim_comments" readonly="1"/>
                                 <field name="rejection_reason" readonly="1"/>
-                                <field name="create_date" String="Date" readonly="1"/>
+                                <field name="create_date" String="Date" readonly="1"/> -->
                             </field>
                         </page>
                     </notebook>
@@ -190,6 +190,24 @@
             </form>
         </field>
     </record>
+    
+    <record id="insurance_claims_history_tree_view" model="ir.ui.view">
+        <field name="name">insurance.claim.history.tree</field>
+        <field name="model">insurance.claim.history</field>
+        <field name="priority">1</field>
+        <field name="arch" type="xml">
+            <tree string="Claim History">
+                <field name="claim_code" readonly="1"/>
+                <field name="partner_id" readonly="1"/>
+                <field name="claim_manager_id" readonly="1"/>
+                <field name="state" readonly="1"/>
+                <field name="claim_comments" readonly="1"/>
+                <field name="rejection_reason" readonly="1"/>
+                <field name="create_date" String="Date" readonly="1"/>
+            </tree>
+        </field>
+    </record>
+    
     <record id="action_insurance_submitted_claims_view" model="ir.actions.act_window">
         <field name="name">Submitted Claims</field>
         <field name="type">ir.actions.act_window</field>

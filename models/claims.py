@@ -112,6 +112,9 @@ class claims(models.Model):
                     
                 ''' Update contents of claim line only if payment type is insurance'''
                 ''' Check whether a given product has a line item, if yes add quantity, if no add line item'''
+                if claim_in_db.state in ['confirmed','submitted']:
+                    raise UserError("Claim not %s draft state. So new items can't be added"%(claim_in_db.state))
+                
                 if sale_order.id not in claim_in_db.sale_orders.ids:
                     claim_in_db.update({'sale_orders': claim_in_db.sale_orders + sale_order})
             else:
@@ -225,6 +228,9 @@ class claims(models.Model):
                 claim.update({
                     'state': 'confirmed'
                 })
+                
+                self._add_history(claim)
+                
                 #Validation passes then confirm
                 for claim_line in claim.insurance_claim_line:
                     _logger.info(claim_line)
@@ -281,7 +287,6 @@ class claims(models.Model):
                     })
                     
                     self._add_history(claim)
-                    
                     
                     claim_request = {
                         "patientUUID": claim.partner_uuid,
