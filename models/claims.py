@@ -113,7 +113,7 @@ class claims(models.Model):
                 ''' Update contents of claim line only if payment type is insurance'''
                 ''' Check whether a given product has a line item, if yes add quantity, if no add line item'''
                 if claim_in_db.state in ['confirmed','submitted']:
-                    raise UserError("Claim not %s draft state. So new items can't be added"%(claim_in_db.state))
+                    raise UserError("Claim in %s state. Claim should be in draft state to be editable. So new items can't be added"%(claim_in_db.state))
                 
                 if sale_order.id not in claim_in_db.sale_orders.ids:
                     claim_in_db.update({'sale_orders': claim_in_db.sale_orders + sale_order})
