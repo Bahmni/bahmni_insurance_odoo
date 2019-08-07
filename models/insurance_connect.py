@@ -18,6 +18,7 @@ class insurance_connect(models.TransientModel):
         url = self.prepare_url("/request/authenticate", insurance_connect_configurations)
         url = url%(nhis_number)
         http = urllib3.PoolManager()
+
         req = http.request('GET', url, headers=self.get_header(insurance_connect_configurations))
         
         resp_status = req.status    
@@ -39,17 +40,19 @@ class insurance_connect(models.TransientModel):
         try:
             insurance_configs = self.get_insurance_configurations()
             url = self.prepare_url("/submit/claim", insurance_configs)
-            encoded_data = json.dumps(claim_request).encode('utf-8')
+            encoded_data = json.dumps(claim_request)
             _logger.info(encoded_data)
             http = urllib3.PoolManager()
-            req = http.request('POST', url, headers=self.get_header(insurance_configs), body = encoded_data)
-                
+            custom_headers = {'Content-Type': 'application/json'}
+            headers = self.get_header(insurance_configs)
+            custom_headers.update(headers)
+            req = http.request('POST', url, headers=custom_headers, body = encoded_data)
             _logger.info("========= Response===============")
             _logger.info(req)
             if req.status == 200:
                 response = json.loads(req.data.decode('utf-8'))
                 _logger.info(response)
-                return reponse
+                return response
             else:
                 response = json.loads(req.data.decode('utf-8'))
                 _logger.info(response)
@@ -89,4 +92,3 @@ class insurance_connect(models.TransientModel):
         
     def get_header(self, insurance_connect_configurations):
         return urllib3.util.make_headers(basic_auth="%s:%s"%(insurance_connect_configurations['username'], insurance_connect_configurations['password']))
-          
