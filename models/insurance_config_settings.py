@@ -65,8 +65,16 @@ class insurance_config_settings(models.TransientModel):
         }
     
     @api.multi
-    def action_test_connection(self):
-       response = self.env['insurance.connect'].authenticate()
+    def action_test_connection(self, username, password, url):
+        _logger.info("model username->%s", self.username)
+        _logger.info("model password->%s",self.password)
+        _logger.info("model url->%s",self.base_url)
+        
+        _logger.info("From View->\n\n\n\n")
+        _logger.info("username->%s", username)
+        _logger.info("password->%s", password)
+        _logger.info("url->%s", url)
+        response = self.env['insurance.connect'].authenticate(username, password, url)
            
             
     @api.multi

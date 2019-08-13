@@ -55,7 +55,7 @@
                         string="Track Claim" type="object"/>
                     <button class="btn-primary" name="print_claim"
                         string="Print" type="object"/>   
-                    <field name="state" statusbar_visible="draft, confirmed, submitted" widget="statusbar"/>
+                    <field name="state" statusbar_visible="draft, confirmed, submitted, processed, valuated" widget="statusbar"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
