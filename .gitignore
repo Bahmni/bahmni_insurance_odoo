@@ -2,8 +2,8 @@
 
 .pydevproject
 
-.settings/
+.settings/*
 
 *.pyc
 
-.idea/
+.idea/*

@@ -44,7 +44,7 @@ class claims(models.Model):
             raise UserError("Claim has not been submitted to be tracked")
         
         #Track Claim
-        response = self.env['insurance.connect']._track_claim(claim_id)
+        response = self.env['insurance.connect']._track_claim('L12')
         if response:
             self.update_claim_from_claim_response(claim, response.data)
             
@@ -89,9 +89,9 @@ class claims(models.Model):
     def _check_if_eligible(self, claim):
         _logger.info("_check_eligiblity")
         insurance_eligibility = self.env['insurance.eligibility']._get_insurance_details(claim.partner_id)
-        amount_to_be_claimed = claim.claimed_amount_total - claim.amount_approved_total
-        if amount_to_be_claimed > insurance_eligibility['eligibility_balance']:
-            _logger.info("Claimed amount less than amount eligible")
+
+        if claim.claimed_amount_total > insurance_eligibility['eligibility_balance']:
+            _logger.info("Claimed amount greater than amount eligible")
             return False
         else: 
             return True
@@ -231,11 +231,10 @@ class claims(models.Model):
         #Check visit
         #get visit details
         response = self.env['insurance.connect']._get_visit(visit_uuid)
-        if response.status == 200:
-            if response['stopDateTime']:
-                return True
-            else:
-                return False
+        if 'stopDateTime' in response:
+            return True
+        else:
+            return False
     
     @api.multi
     def action_confirm(self):
@@ -249,9 +248,9 @@ class claims(models.Model):
             _logger.debug(claim)
             
             if self._check_if_eligible(claim) == False:
-                raise UserError("Claim can't be processed. Claimed amount less than amount eligible.")
+                 raise UserError("Claim can't be processed. Claimed amount greater than eligible amount.")
             
-            #TODO check if the current visit is closed or not
+            # TODO check if the current visit is closed or not
             if self.check_visit_closed(claim.external_uuid) == False:
                 raise UserError("The current visit has not been closed. So can't be confirmed now.")
             
@@ -366,7 +365,7 @@ class claims(models.Model):
             raise UserError(err)
     
     
-    def update_claim_from_claim_response(self, claim, claim_response):
+    def update_claim_from_claim_response(self, claim, response):
         _logger.info("_submit_claims")
         claim.update({
             'state' : response.claimStatus,
