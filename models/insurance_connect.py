@@ -10,18 +10,29 @@ class insurance_connect(models.TransientModel):
     _name = 'insurance.connect'
     
     @api.model
-    def authenticate(self, username, password, url):
+    def authenticate(self):
         _logger.info("Inside authenticate")
-        insurance_connect_configurations = self.env['insurance.config.settings'].get_insurance_connect_configurations()
-        if insurance_connect_configurations is None:
-            raise UserError("Insurance configurations not set")
+#         insurance_connect_configurations = self.env['insurance.config.settings'].get_insurance_connect_configurations()
+#         if insurance_connect_configurations is None:
+#             raise UserError("Insurance configurations not set")
+    
+        #Mocking insurance connect configurations
+        insurance_connect_configurations = {
+            'username': username,
+            'password': password,
+            'url': url
+        }
         url = self.prepare_url("/request/authenticate", insurance_connect_configurations)
-        url = url%(nhis_number)
+        #url = url%(nhis_number)
         http = urllib3.PoolManager()
 
         req = http.request('GET', url, headers=self.get_header(insurance_connect_configurations))
         
-        resp_status = req.status    
+        if req.status == 200:
+            #Display dialogue box for successful
+            ola = 1
+        else:
+            raise UserError("Connection failed.")
         response = req.data
         _logger.info(response)
     
@@ -58,34 +69,81 @@ class insurance_connect(models.TransientModel):
                 _logger.info(response)
                 raise UserError("Submission Failed. Please Check insurance-connect service and retry again.")
         except Exception as err:
-            _logger.info("\n Processing event threw error: %s", err)
+            _logger.error("\n Processing event threw error: %s", err)
             raise
     
     @api.multi
-    def _check_eligibility(self, nhis_number):
+    def _check_eligibility(self, elig_params):
         _logger.info("Inside check_eligibility")
         try:
             insurance_connect_configurations = self.env['insurance.config.settings'].get_insurance_connect_configurations()
             if insurance_connect_configurations is None:
                 raise UserError("Insurance configurations not set")
             
-            url = self.prepare_url("/get/eligibilityResponse/%s", insurance_connect_configurations)
-            url = url%(nhis_number)
+            url = self.prepare_url("/check/eligibility", insurance_connect_configurations)
+            # url = url%(nhis_number)
             http = urllib3.PoolManager()
-            req = http.request('GET', url, headers=self.get_header(insurance_connect_configurations))
-            
-            _logger.info("========= Response===============")
-            if req.status == 200:
-                response = json.loads(req.data.decode('utf-8'))
-                _logger.info(response)
-                return response
-            else:
-                raise UserError("Some issues with insurance connect service. Please verify and retry again")
+            custom_headers = {'Content-Type': 'application/json'}
+            headers = self.get_header(insurance_connect_configurations)
+            custom_headers.update(headers)
+            encoded_data = json.dumps(elig_params)
+            _logger.info(encoded_data)
+            req = http.request('POST', url, headers=custom_headers, body = encoded_data)
+            return self.response_processor(req)
             
         except Exception as err:
-            _logger.info("\n Processing event threw error: %s", err)
+            _logger.error("\n Processing event threw error: %s", err)
             raise
         
+    @api.multi
+    def _get_visit(self, visit_uuid):
+        _logger.info("Inside _check_visit")
+        visit_uuid = "52d869d3-58e7-49dd-88b9-f179c10be7b6"
+        try:
+            insurance_connect_configurations = self.env['insurance.config.settings'].get_insurance_connect_configurations()
+            if insurance_connect_configurations is None:
+                raise UserError("Insurance configurations not set")
+            
+            url = self.prepare_url("/visit/%s", insurance_connect_configurations)
+            url = url%(visit_uuid)
+            http = urllib3.PoolManager()
+            req = http.request('GET', url, headers=self.get_header(insurance_connect_configurations))
+            return self.response_processor(req)
+            
+        except Exception as err:
+            _logger.error("\n Processing event threw error: %s", err)
+            raise
+    
+    @api.multi
+    def _track_claim(self, claim_id):
+        _logger.info("Inside _track_claim")
+        try:
+            insurance_connect_configurations = self.env['insurance.config.settings'].get_insurance_connect_configurations()
+            if insurance_connect_configurations is None:
+                raise UserError("Insurance configurations not set")
+            
+            url = self.prepare_url("get/claimresponse/%s", insurance_connect_configurations)
+            url = url%(claim_id)
+            http = urllib3.PoolManager()
+            req = http.request('GET', url, headers=self.get_header(insurance_connect_configurations))
+            self.response_processor(req)
+                    
+        except Exception as err:
+            _logger.error("\n Processing event threw error: %s", err)
+            raise
+    
+    def response_processor(self, response):
+        _logger.info("========= Response===============")
+        _logger.info(response.status)
+
+        if response.status == 200:
+            response = json.loads(response.data.decode('utf-8'))
+            _logger.info(json.dumps(response))
+            return response
+        else:
+            _logger.error("\n Failed Request to insurance connect: %s", response)
+            raise UserError("%s, %s \n Failed Request to insurance connect"%(response.error, response.message))
+
     
     def prepare_url(self, end_point, insurance_connect_configurations):
         return insurance_connect_configurations['base_url'] + end_point

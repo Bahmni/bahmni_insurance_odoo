@@ -5,9 +5,9 @@ from odoo.exceptions import UserError
 
 import odoo.addons.decimal_precision as dp
 from xmlrpclib import DateTime
+import re
 
 _logger = logging.getLogger(__name__)
-
 
 class claims(models.Model):
     _name = 'insurance.claim'
@@ -50,7 +50,6 @@ class claims(models.Model):
             
         raise UserError("Claim has not been submitted to be tracked")
     
-        
     @api.multi
     def print_claim(self):
         '''
@@ -86,6 +85,17 @@ class claims(models.Model):
             if insurance_eligibility:
                 self.insurance_eligibility = insurance_eligibility
                 _logger.info(self.insurance_eligibility)
+                
+    def _check_if_eligible(self, claim):
+        _logger.info("_check_eligiblity")
+        insurance_eligibility = self.env['insurance.eligibility']._get_insurance_details(claim.partner_id)
+
+        if claim.claimed_amount_total > insurance_eligibility['eligibility_balance']:
+            _logger.info("Claimed amount greater than amount eligible")
+            return False
+        else: 
+            return True
+            
     
     @api.multi
     def _create_claim(self, sale_order):
@@ -218,6 +228,15 @@ class claims(models.Model):
         claim_line_in_db = self.env['insurance.claim.line'].create(claim_line_item)
         _logger.info(claim_line_in_db)
     
+    def check_visit_closed(self, visit_uuid):
+        #Check visit
+        #get visit details
+        response = self.env['insurance.connect']._get_visit(visit_uuid)
+        if 'stopDateTime' in response:
+            return True
+        else:
+            return False
+    
     @api.multi
     def action_confirm(self):
         '''
@@ -225,18 +244,15 @@ class claims(models.Model):
         ''' 
         _logger.debug("action_confirm")
         
-        #TODO check if the current visit is closed or not
-        
-        
         #check if state is draft or rejected
         for claim in self:
             _logger.debug(claim)
             
             if self._check_if_eligible(claim) == False:
-                raise UserError("Claim can't be processed. Claimed amount less than amount eligible.")
+                 raise UserError("Claim can't be processed. Claimed amount greater than eligible amount.")
             
-            #TODO check if the current visit is closed or not
-            if self.check_visit_closed(claim.external_visit_uuid) == False:
+            # TODO check if the current visit is closed or not
+            if self.check_visit_closed(claim.external_uuid) == False:
                 raise UserError("The current visit has not been closed. So can't be confirmed now.")
             
             if claim.state in ('draft', 'rejected'):
@@ -317,10 +333,17 @@ class claims(models.Model):
                     for claim_line in claim.insurance_claim_line:
                         if claim_line.imis_product_code :
                             claim_line.update({
-                                'state': 'submitted'
+                                'state': 'submitted',
+                                'claim_sequence': sequence
                             })
+                            
+                            if claim_line.product_id.product_tmpl_id.type.lower() == 'service':
+                                category = 'Service'
+                            else:
+                                category = 'Item'
+                            
                             claim_request['item'].append({
-                                "category": 'item',
+                                "category": category,
                                 "quantity": claim_line.product_qty,
                                 "sequence": sequence,
                                 "code": claim_line.imis_product_code,
@@ -335,10 +358,37 @@ class claims(models.Model):
                     _logger.debug(claim_request)
             #Submit Claim for Processing
             response = self.env['insurance.connect']._submit_claims(claim_request)
+            if response:
+                self.update_claim_from_claim_response(claim, response.data)
+                    
         except Exception as err:
             _logger.error(err)
             raise UserError(err)
-                        
+    
+    
+    def update_claim_from_claim_response(self, claim, response):
+        _logger.info("_submit_claims")
+        claim.update({
+            'state' : response.claimStatus,
+            'rejectedReason' : response.rejectionReason,
+            'amount_approved_total' : response.approvedTotal,
+        })
+        
+        for claim_response_line in response['claimLineItems']:
+            claim_line = self['claim.line'].search([('claim_sequence','=', claim_response_line.sequence),('claim_id', '=', claim.id)])
+            if claim_line:
+                claim_line.update({
+                    'state' : claim_response_line.status,
+                    'rejectedReason': claim_response_line.rejectedReason,
+                    'amount_approved': claim_response_line.totalApproved,
+                    'quantity_approved': claim_response_line.quantityApproved
+                })
+            else:
+                raise UserError("The line item for current claim not found.")
+            
+        
+                
+                          
     
     claim_code = fields.Char(string='Claim Code', help="Claim Code")
     claim_manager_id = fields.Many2one('res.users', string='Claims Manager', index=True, track_visibility='onchange', default=lambda self: self.env.user)
@@ -419,6 +469,8 @@ class claims_line(models.Model):
         ], related='claim_id.state', string='Claim Status', readonly=True, copy=False, store=True, default='draft')
     claim_comments = fields.Text(string='Comments')
     rejection_reason = fields.Text(string='Rejection Reason')
+    claim_sequence = fields.Integer(string='Sequence', readonly=True)
+    quantity_approved = fields.Integer(string='Quantity Approved', store=True)
     
     
 class claim_history(models.Model):
