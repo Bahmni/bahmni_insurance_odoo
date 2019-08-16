@@ -5,3 +5,6 @@
 .idea/*
 .idea/workspace.xml
 *.pyc
+.idea/
+.project
+.pydevproject
