@@ -26,7 +26,8 @@ class OrderSaveService(models.Model):
         
         if sale_order_lines_in_db:
             _logger.info('Sale order line found')
-            sale_order = self.env['sale.order'].search(('id', '=', sale_order_lines_in_db[0].order_id))
+            sale_order = sale_order_lines_in_db[0].order_id
+            _logger.info(sale_order)
             sale_order.update({
                 'external_visit_uuid': visit_uuid
             })
