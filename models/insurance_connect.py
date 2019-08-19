@@ -59,8 +59,8 @@ class insurance_connect(models.TransientModel):
             custom_headers.update(headers)
             req = http.request('POST', url, headers=custom_headers, body = encoded_data)
             _logger.info("========= Response===============")
-            _logger.info(req)
             if req.status == 200:
+                _logger.info(req.status)
                 response = json.loads(req.data.decode('utf-8'))
                 _logger.info(response)
                 return response
@@ -79,9 +79,7 @@ class insurance_connect(models.TransientModel):
             insurance_connect_configurations = self.env['insurance.config.settings'].get_insurance_connect_configurations()
             if insurance_connect_configurations is None:
                 raise UserError("Insurance configurations not set")
-            
             url = self.prepare_url("/check/eligibility", insurance_connect_configurations)
-            # url = url%(nhis_number)
             http = urllib3.PoolManager()
             custom_headers = {'Content-Type': 'application/json'}
             headers = self.get_header(insurance_connect_configurations)

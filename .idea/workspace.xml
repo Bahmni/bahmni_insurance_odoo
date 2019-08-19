@@ -5,6 +5,9 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/models/claims.py" afterPath="$PROJECT_DIR$/models/claims.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/models/insurance_connect.py" afterPath="$PROJECT_DIR$/models/insurance_connect.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/models/res_partner.py" afterPath="$PROJECT_DIR$/models/res_partner.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/views/claims.xml" afterPath="$PROJECT_DIR$/views/claims.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/views/quotation_view.xml" afterPath="$PROJECT_DIR$/views/quotation_view.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/wizard/insurance_eligibility.py" afterPath="$PROJECT_DIR$/wizard/insurance_eligibility.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -14,14 +17,26 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="DatabaseView">
+    <option name="SHOW_INTERMEDIATE" value="true" />
+    <option name="GROUP_SCHEMA" value="true" />
+    <option name="GROUP_CONTENTS" value="false" />
+    <option name="SORT_POSITIONED" value="false" />
+    <option name="SHOW_TABLE_DETAILS" value="true" />
+    <option name="SHOW_EMPTY_GROUPS" value="false" />
+    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
+  </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
+  <component name="FavoritesManager">
+    <favorites_list name="bahmni-insurance-odoo" />
+  </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="claims.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="claims.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/models/claims.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="286">
-              <caret line="256" column="52" lean-forward="true" selection-start-line="256" selection-start-column="52" selection-end-line="256" selection-end-column="52" />
+            <state relative-caret-position="245">
+              <caret line="383" column="17" lean-forward="true" selection-start-line="383" selection-start-column="17" selection-end-line="383" selection-end-column="17" />
               <folding />
             </state>
           </provider>
@@ -40,8 +55,8 @@
       <file leaf-file-name="sale_order.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/models/sale_order.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="357">
-              <caret line="23" column="8" lean-forward="false" selection-start-line="23" selection-start-column="8" selection-end-line="23" selection-end-column="8" />
+            <state relative-caret-position="459">
+              <caret line="29" column="61" lean-forward="false" selection-start-line="29" selection-start-column="61" selection-end-line="29" selection-end-column="61" />
               <folding>
                 <element signature="e#0#36#0" expanded="true" />
               </folding>
@@ -49,21 +64,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="insurance_settings_view.xml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/views/insurance_settings_view.xml">
+      <file leaf-file-name="claims.xml" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/views/claims.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state relative-caret-position="202">
+              <caret line="104" column="68" lean-forward="true" selection-start-line="104" selection-start-column="68" selection-end-line="104" selection-end-column="68" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="claims.xml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/views/claims.xml">
+      <file leaf-file-name="customer_view.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/views/customer_view.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="748">
-              <caret line="44" column="24" lean-forward="false" selection-start-line="44" selection-start-column="24" selection-end-line="44" selection-end-column="100" />
+            <state relative-caret-position="136">
+              <caret line="8" column="40" lean-forward="false" selection-start-line="8" selection-start-column="29" selection-end-line="8" selection-end-column="40" />
               <folding />
             </state>
           </provider>
@@ -72,8 +87,8 @@
       <file leaf-file-name="quotation_view.xml" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/views/quotation_view.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="731">
-              <caret line="43" column="52" lean-forward="false" selection-start-line="43" selection-start-column="40" selection-end-line="43" selection-end-column="52" />
+            <state relative-caret-position="714">
+              <caret line="42" column="47" lean-forward="false" selection-start-line="42" selection-start-column="30" selection-end-line="42" selection-end-column="47" />
               <folding />
             </state>
           </provider>
@@ -82,8 +97,8 @@
       <file leaf-file-name="insurance_config_settings.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/models/insurance_config_settings.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="867">
-              <caret line="54" column="52" lean-forward="false" selection-start-line="54" selection-start-column="52" selection-end-line="54" selection-end-column="52" />
+            <state relative-caret-position="1173">
+              <caret line="72" column="43" lean-forward="false" selection-start-line="72" selection-start-column="43" selection-end-line="72" selection-end-column="43" />
               <folding>
                 <element signature="e#0#36#0" expanded="true" />
               </folding>
@@ -94,10 +109,10 @@
       <file leaf-file-name="insurance_connect.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/models/insurance_connect.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="210">
-              <caret line="75" column="26" lean-forward="false" selection-start-line="75" selection-start-column="8" selection-end-line="75" selection-end-column="26" />
+            <state relative-caret-position="680">
+              <caret line="45" column="22" lean-forward="false" selection-start-line="45" selection-start-column="8" selection-end-line="45" selection-end-column="22" />
               <folding>
-                <marker date="1565798615885" expanded="true" signature="284:329" ph="..." />
+                <marker date="1566047714777" expanded="true" signature="284:329" ph="..." />
               </folding>
             </state>
           </provider>
@@ -107,7 +122,7 @@
         <entry file="file://$PROJECT_DIR$/wizard/insurance_eligibility.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="748">
-              <caret line="48" column="57" lean-forward="true" selection-start-line="48" selection-start-column="57" selection-end-line="48" selection-end-column="57" />
+              <caret line="48" column="32" lean-forward="false" selection-start-line="48" selection-start-column="32" selection-end-line="48" selection-end-column="56" />
               <folding />
             </state>
           </provider>
@@ -116,8 +131,8 @@
       <file leaf-file-name="res_partner.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/models/res_partner.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="170">
-              <caret line="12" column="19" lean-forward="false" selection-start-line="12" selection-start-column="12" selection-end-line="12" selection-end-column="19" />
+            <state relative-caret-position="340">
+              <caret line="22" column="8" lean-forward="false" selection-start-line="22" selection-start-column="8" selection-end-line="22" selection-end-column="8" />
               <folding />
             </state>
           </provider>
@@ -127,37 +142,40 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>========= Response===============</find>
-      <find>get_header</find>
-      <find>insurance_connect_configurations</find>
-      <find>encode</find>
-      <find>action_claim_submit</find>
-      <find>Check Eligibility</find>
-      <find>check_eligibility</find>
-      <find>state</find>
-      <find>C</find>
-      <find>CAS</find>
-      <find>CASH</find>
-      <find>_track_claim</find>
-      <find>action_track_status</find>
-      <find>response_processor</find>
-      <find>get_insurance_eligibility</find>
-      <find>_get_insurance_details</find>
+      <find>insu</find>
+      <find>insurance</find>
+      <find>insurance.cla</find>
+      <find>insurance.clai</find>
+      <find>insurance.claim.insurance_claim_line</find>
+      <find>insurance.claim.</find>
+      <find>insurance.claim.lin</find>
+      <find>insurance.claim</find>
+      <find>self.env['insurance.claim.line']</find>
+      <find>claim_id</find>
+      <find>claim.line</find>
+      <find>self.env['insurance.claim.history'].create</find>
+      <find>self.env['insurance.claim.histor'].create</find>
+      <find>self.env['insurance.claim.histo'].create</find>
+      <find>self.env['insurance.claim.hist'].create</find>
+      <find>self.env['insurance.claim.hi'].create</find>
+      <find>self.env['insurance.claim.h'].create</find>
+      <find>self.env['insurance.claim.'].create</find>
+      <find>self.env['insurance.claim.l'].create</find>
+      <find>self.env['insurance.claim.li'].create</find>
+      <find>self.env['insurance.claim.lin'].create</find>
+      <find>self.env['insurance.claim.line'].create</find>
+      <find>claim_sequence</find>
+      <find>insurance_claim_line</find>
+      <find>insurance_claim_lines</find>
       <find>_submit_claims</find>
-      <find>Inside _check_visit</find>
-      <find>200</find>
-      <find>U</find>
-      <find>UTF</find>
-      <find>d</find>
-      <find>dumps</find>
-      <find>check_visit_closed</find>
-      <find>return</find>
-      <find>submit</find>
-      <find>_check_if_eligible</find>
-      <find>Claim can't be processed. Claimed amount less than amount eligible.</find>
-      <find>_get_visit</find>
-      <find>_check_eligibility</find>
+      <find>'insurance.claim.line'</find>
+      <find>create_new_claim_line</find>
+      <find>_create_claim_line</find>
+      <find>rejection_reason</find>
     </findStrings>
+    <dirStrings>
+      <dir>D:\Projects\bahmni\bahmni-insurance-odoo</dir>
+    </dirStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -166,11 +184,12 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/__manifest__.py" />
-        <option value="$PROJECT_DIR$/views/claims.xml" />
+        <option value="$PROJECT_DIR$/models/res_partner.py" />
         <option value="$PROJECT_DIR$/views/quotation_view.xml" />
-        <option value="$PROJECT_DIR$/models/insurance_connect.py" />
         <option value="$PROJECT_DIR$/wizard/insurance_eligibility.py" />
+        <option value="$PROJECT_DIR$/models/insurance_connect.py" />
         <option value="$PROJECT_DIR$/models/claims.py" />
+        <option value="$PROJECT_DIR$/views/claims.xml" />
       </list>
     </option>
   </component>
@@ -202,8 +221,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -240,16 +257,33 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="views" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bahmni-insurance-odoo" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="bahmni-insurance-odoo" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="models" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -426,20 +460,28 @@
     </task>
     <servers />
   </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <editor active="true" />
     <layout>
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15885799" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24158126" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -448,6 +490,7 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -462,16 +505,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/models/sale_order.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
-          <caret line="20" column="38" lean-forward="true" selection-start-line="20" selection-start-column="38" selection-end-line="20" selection-end-column="38" />
-          <folding>
-            <element signature="e#0#36#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/views/claims.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="323">
@@ -502,7 +535,7 @@
         <state relative-caret-position="612">
           <caret line="41" column="51" lean-forward="false" selection-start-line="41" selection-start-column="38" selection-end-line="41" selection-end-column="51" />
           <folding>
-            <marker date="1565798615885" expanded="true" signature="284:329" ph="..." />
+            <marker date="1566047714777" expanded="true" signature="284:329" ph="..." />
           </folding>
         </state>
       </provider>
@@ -621,14 +654,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/models/res_partner.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="12" column="19" lean-forward="false" selection-start-line="12" selection-start-column="12" selection-end-line="12" selection-end-column="19" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/views/insurance_views.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="85">
@@ -650,7 +675,7 @@
         <state relative-caret-position="459">
           <caret line="32" column="4" lean-forward="false" selection-start-line="32" selection-start-column="4" selection-end-line="32" selection-end-column="14" />
           <folding>
-            <marker date="1565798615885" expanded="true" signature="284:329" ph="..." />
+            <marker date="1566047714777" expanded="true" signature="284:329" ph="..." />
           </folding>
         </state>
       </provider>
@@ -703,7 +728,7 @@
         <state relative-caret-position="612">
           <caret line="41" column="51" lean-forward="false" selection-start-line="41" selection-start-column="38" selection-end-line="41" selection-end-column="51" />
           <folding>
-            <marker date="1565798615885" expanded="true" signature="284:329" ph="..." />
+            <marker date="1566047714777" expanded="true" signature="284:329" ph="..." />
           </folding>
         </state>
       </provider>
@@ -756,7 +781,7 @@
         <state relative-caret-position="612">
           <caret line="41" column="51" lean-forward="false" selection-start-line="41" selection-start-column="38" selection-end-line="41" selection-end-column="51" />
           <folding>
-            <marker date="1565798615885" expanded="true" signature="284:329" ph="..." />
+            <marker date="1566047714777" expanded="true" signature="284:329" ph="..." />
           </folding>
         </state>
       </provider>
@@ -804,16 +829,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/models/insurance_config_settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="867">
-          <caret line="54" column="52" lean-forward="false" selection-start-line="54" selection-start-column="52" selection-end-line="54" selection-end-column="52" />
-          <folding>
-            <element signature="e#0#36#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/__manifest__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="663">
@@ -842,54 +857,80 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/views/claims.xml">
+    <entry file="file://$PROJECT_DIR$/models/insurance_config_settings.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="748">
-          <caret line="44" column="24" lean-forward="false" selection-start-line="44" selection-start-column="24" selection-end-line="44" selection-end-column="100" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/quotation_view.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="731">
-          <caret line="43" column="52" lean-forward="false" selection-start-line="43" selection-start-column="40" selection-end-line="43" selection-end-column="52" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/sale_order.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="357">
-          <caret line="23" column="8" lean-forward="false" selection-start-line="23" selection-start-column="8" selection-end-line="23" selection-end-column="8" />
+        <state relative-caret-position="1173">
+          <caret line="72" column="43" lean-forward="false" selection-start-line="72" selection-start-column="43" selection-end-line="72" selection-end-column="43" />
           <folding>
             <element signature="e#0#36#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/models/insurance_connect.py">
+    <entry file="file://$PROJECT_DIR$/views/customer_view.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="75" column="26" lean-forward="false" selection-start-line="75" selection-start-column="8" selection-end-line="75" selection-end-column="26" />
+        <state relative-caret-position="136">
+          <caret line="8" column="40" lean-forward="false" selection-start-line="8" selection-start-column="29" selection-end-line="8" selection-end-column="40" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/res_partner.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="22" column="8" lean-forward="false" selection-start-line="22" selection-start-column="8" selection-end-line="22" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/sale_order.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="459">
+          <caret line="29" column="61" lean-forward="false" selection-start-line="29" selection-start-column="61" selection-end-line="29" selection-end-column="61" />
           <folding>
-            <marker date="1565798615885" expanded="true" signature="284:329" ph="..." />
+            <element signature="e#0#36#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/quotation_view.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="714">
+          <caret line="42" column="47" lean-forward="false" selection-start-line="42" selection-start-column="30" selection-end-line="42" selection-end-column="47" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/wizard/insurance_eligibility.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="748">
-          <caret line="48" column="57" lean-forward="true" selection-start-line="48" selection-start-column="57" selection-end-line="48" selection-end-column="57" />
+          <caret line="48" column="32" lean-forward="false" selection-start-line="48" selection-start-column="32" selection-end-line="48" selection-end-column="56" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/insurance_connect.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="680">
+          <caret line="45" column="22" lean-forward="false" selection-start-line="45" selection-start-column="8" selection-end-line="45" selection-end-column="22" />
+          <folding>
+            <marker date="1566047714777" expanded="true" signature="284:329" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/models/claims.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="286">
-          <caret line="256" column="52" lean-forward="true" selection-start-line="256" selection-start-column="52" selection-end-line="256" selection-end-column="52" />
+        <state relative-caret-position="245">
+          <caret line="383" column="17" lean-forward="true" selection-start-line="383" selection-start-column="17" selection-end-line="383" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/claims.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="202">
+          <caret line="104" column="68" lean-forward="true" selection-start-line="104" selection-start-column="68" selection-end-line="104" selection-end-column="68" />
           <folding />
         </state>
       </provider>
