@@ -248,8 +248,8 @@ class claims(models.Model):
         for claim in self:
             _logger.debug(claim)
             
-            if self._check_if_eligible(claim) == False:
-                 raise UserError("Claim can't be processed. Claimed amount greater than eligible amount.")
+            # if self._check_if_eligible(claim) == False:
+            #      raise UserError("Claim can't be processed. Claimed amount greater than eligible amount.")
             
             #TODO check if the current visit is closed or not
             if self.check_visit_closed(claim.external_visit_uuid) == False:
@@ -281,7 +281,7 @@ class claims(models.Model):
             Prepare json
             Submit the claim to insurance-integration
         '''
-        _logger.info("_submit_claims")
+        _logger.info("action_claim_submit")
         #check if state is draft or rejected
         try:
             for claim in self:
@@ -319,12 +319,13 @@ class claims(models.Model):
                     })
                     
                     self._add_history(claim)
-                    
+                    # TODO: hardoded visitUUID  claim.external_uuid
                     claim_request = {
                         "patientUUID": claim.partner_uuid,
                         "visitUUID": claim.external_visit_uuid,
                         "claimId": claim.claim_code,
                         "insureeId": claim.nhis_number,
+                        "total" : claim.claimed_amount_total,
                         "item": []
                     }
                     
@@ -338,28 +339,24 @@ class claims(models.Model):
                             })
                             
                             if claim_line.product_id.product_tmpl_id.type.lower() == 'service':
-                                category = 'Service'
+                                category = 'service'
                             else:
-                                category = 'Item'
+                                category = 'item'
                             
                             claim_request['item'].append({
                                 "category": category,
                                 "quantity": claim_line.product_qty,
                                 "sequence": sequence,
                                 "code": claim_line.imis_product_code,
-                                "unitPrice": claim_line.price_unit,
-                                "totalClaimed": claim_line.price_total,
-                                "status": claim_line.state,
-                                "rejectedReason": str(claim_line.rejection_reason),
-                                "totalApproved": claim_line.amount_approved
+                                "unitPrice": claim_line.price_unit
                             })
                             sequence += 1
                 
                     _logger.debug(claim_request)
-            #Submit Claim for Processing
+            # Submit Claim for Processing
             response = self.env['insurance.connect']._submit_claims(claim_request)
             if response:
-                self.update_claim_from_claim_response(claim, response.data)
+                self.update_claim_from_claim_response(claim, response)
                     
         except Exception as err:
             _logger.error(err)
@@ -367,29 +364,27 @@ class claims(models.Model):
     
     
     def update_claim_from_claim_response(self, claim, response):
-        _logger.info("_submit_claims")
-        claim.update({
-            'state' : response.claimStatus,
-            'rejectedReason' : response.rejectionReason,
-            'amount_approved_total' : response.approvedTotal,
-        })
-        
+        _logger.info("update_claim_from_claim_response")
+        claim.amount_approved_total = response['approvedTotal']
+        claim.rejected_reason = response['rejectionReason']
+        claim.state = response['claimStatus']
+        # _logger.info(claim)
+
         for claim_response_line in response['claimLineItems']:
-            claim_line = self['claim.line'].search([('claim_sequence','=', claim_response_line.sequence),('claim_id', '=', claim.id)])
+            _logger.info(json.dumps(claim_response_line))
+            claim_line = self.env['insurance.claim.line'].search([('claim_sequence', '=', claim_response_line['sequence']), ('claim_id', '=', claim.id)])
+            _logger.info(claim_response_line['sequence'])
             if claim_line:
                 claim_line.update({
-                    'state' : claim_response_line.status,
-                    'rejectedReason': claim_response_line.rejectedReason,
-                    'amount_approved': claim_response_line.totalApproved,
-                    'quantity_approved': claim_response_line.quantityApproved
+                    'state' : claim_response_line['status']
                 })
+
+                claim_line.rejection_reason = claim_response_line['rejectedReason']
+                claim_line.amount_approved = claim_response_line['totalApproved']
+                claim_line.quantity_approved = claim_response_line['quantityApproved']
             else:
                 raise UserError("The line item for current claim not found.")
-            
-        
-                
-                          
-    
+
     claim_code = fields.Char(string='Claim Code', help="Claim Code")
     claim_manager_id = fields.Many2one('res.users', string='Claims Manager', index=True, track_visibility='onchange', default=lambda self: self.env.user)
     claimed_date = fields.Datetime(string='Creation Date', index=True, help="Date on which claim is created.")
@@ -486,7 +481,7 @@ class claim_history(models.Model):
             'claim_manager_id' : claim.claim_manager_id.id,
             'claim_code' : claim.claim_code,
             'state' : claim.state,
-            'claim_comments' : claim.claim_comments,
+            'claim_comments': claim.claim_comments,
             'rejection_reason' : claim.rejection_reason
         }
         return self.env['insurance.claim.history'].create(claim_history)

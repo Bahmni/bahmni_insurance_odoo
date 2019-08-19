@@ -39,7 +39,7 @@ class insurance_eligibility (models.TransientModel):
         _logger.info("Inside _get_insurance_details")
         nhis_number = self.env['res.partner']._get_nhis_number(partner_id.id)
         elig_request_param = {
-            'chfid': nhis_number
+            'chfID': nhis_number
         }
         if nhis_number:
             response = self.env['insurance.connect']._check_eligibility(elig_request_param)

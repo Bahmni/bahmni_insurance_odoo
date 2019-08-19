@@ -101,6 +101,7 @@
                                     <field name="price_unit"/>
                                     <field name="price_total"/>
                                     <field name="amount_approved"/>
+                                    <field name="state"/>
                                     <field name="rejection_reason"/>
                                     <field invisible="1" name="currency_id"/>
                                 </tree>
