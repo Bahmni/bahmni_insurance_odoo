@@ -42,13 +42,13 @@ class claims(models.Model):
         
         if claim.state in ('draft', 'rejected', 'confirmed'):
             raise UserError("Claim has not been submitted to be tracked")
-        
+        if not claim.claim_code:
+            raise UserError("Claim has not been submitted to be tracked")
         #Track Claim
         response = self.env['insurance.connect']._track_claim(claim.claim_code)
         if response:
             self.update_claim_from_claim_response(claim, response.data)
             
-        raise UserError("Claim has not been submitted to be tracked")
     
     @api.multi
     def print_claim(self):
