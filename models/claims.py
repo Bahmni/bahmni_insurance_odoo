@@ -19,7 +19,7 @@ class claims(models.Model):
         Compute the total amounts of the claim
         """
         _logger.info("Inside _amount_all")
-        for cc in self:
+        for claim in self:
             claimed_amount_total = 0.0
             amount_approved_total = 0.0
             
