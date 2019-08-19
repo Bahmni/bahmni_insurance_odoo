@@ -147,7 +147,7 @@ class claims(models.Model):
                     'claimed_date' : sale_order.create_date,
                     'partner_id' : sale_order.partner_id.id,
                     'state' : 'draft',
-                    'external_visit_uuid' : insurance_sale_order_lines[0].external_visit_uuid,
+                    'external_visit_uuid' : sale_order.external_visit_uuid,
                     'partner_uuid' : sale_order.partner_uuid,
                     'currency_id': sale_order.currency_id.id,
                     'sale_orders': sale_order
