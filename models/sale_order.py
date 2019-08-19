@@ -53,7 +53,16 @@ class sale_order(models.Model):
         for sale_order in self:
             for line in sale_order.order_line:
                 if line.payment_type in ('insurance'):
-                    claimable_amount_total += line.price_total
+                    imis_mapped_row = self.env['insurance.odoo.product.map'].search([('odoo_product_id', '=', line.product_id.id), ('is_active', '=', 'True')])
+                    if imis_mapped_row is None or len(imis_mapped_row) == 0 :
+                        _logger.debug("imis_mapped_row mapping not found")
+                        raise UserError("%s is not mapped to insurance product"%(line.product_id.name))
+                
+                    if len(imis_mapped_row) > 1 :
+                        _logger.debug("multiple mappings found")
+                        raise UserError("Multiple mappings found for %s"%(line.product_id.name))
+                        
+                    claimable_amount_total += imis_mapped_row.insurance_price * line.product_uom_qty
         return claimable_amount_total
         
     @api.multi
