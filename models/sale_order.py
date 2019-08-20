@@ -99,7 +99,7 @@ class sale_order(models.Model):
     nhis_number = fields.Char(string='NHIS Number', compute=_get_nhis_number)
     external_id = fields.Char(string="External Id", help="This field is used to store encounter ID of bahmni api call")
     partner_uuid = fields.Char(string='Customer UUID', store=True, readonly=True)
-    
+    external_visit_uuid = fields.Char(string="External Id", help="This field is used to store visit ID of bahmni api call")
 
 class sale_order_line(models.Model):
     _name = 'sale.order.line'

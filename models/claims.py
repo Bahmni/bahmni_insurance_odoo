@@ -42,14 +42,14 @@ class claims(models.Model):
         
         if claim.state in ('draft', 'rejected', 'confirmed'):
             raise UserError("Claim has not been submitted to be tracked")
-        
+        if not claim.claim_code:
+            raise UserError("Claim has not been submitted to be tracked")
         #Track Claim
-        response = self.env['insurance.connect']._track_claim('L12')
+        response = self.env['insurance.connect']._track_claim(claim.claim_code)
         if response:
             self.update_claim_from_claim_response(claim, response.data)
             
-        
-        
+    
     @api.multi
     def print_claim(self):
         '''
@@ -115,11 +115,12 @@ class claims(models.Model):
             if len(insurance_sale_order_lines) == 0 :
                 raise UserError("No Sales order line marked as Insurance Payment type")
             
-            external_id = sale_order.order_line[0].external_id
-            if external_id is None:
+            visit_uuid = sale_order.external_visit_uuid
+            
+            if visit_uuid is None:
                 raise UserError("Sales order doesn't have visit id to be associated with claim")
             
-            claim_in_db = order_in_db = self.env['insurance.claim'].search([('external_uuid', '=', external_id)])
+            claim_in_db = order_in_db = self.env['insurance.claim'].search([('external_visit_uuid', '=', visit_uuid)])
             
             if claim_in_db:
                 '''Update existing claim'''
@@ -146,7 +147,7 @@ class claims(models.Model):
                     'claimed_date' : sale_order.create_date,
                     'partner_id' : sale_order.partner_id.id,
                     'state' : 'draft',
-                    'external_uuid' : insurance_sale_order_lines[0].external_id,
+                    'external_visit_uuid' : sale_order.external_visit_uuid,
                     'partner_uuid' : sale_order.partner_uuid,
                     'currency_id': sale_order.currency_id.id,
                     'sale_orders': sale_order
@@ -252,9 +253,9 @@ class claims(models.Model):
             # if self._check_if_eligible(claim) == False:
             #      raise UserError("Claim can't be processed. Claimed amount greater than eligible amount.")
             
-            # TODO check if the current visit is closed or not
-            # if self.check_visit_closed(claim.external_uuid) == False:
-            #     raise UserError("The current visit has not been closed. So can't be confirmed now.")
+            #TODO check if the current visit is closed or not
+            if self.check_visit_closed(claim.external_visit_uuid) == False:
+                raise UserError("The current visit has not been closed. So can't be confirmed now.")
             
             if claim.state in ('draft', 'rejected'):
                 #Check if amount claimed is in the range of eligibility
@@ -323,7 +324,7 @@ class claims(models.Model):
                     # TODO: hardoded visitUUID  claim.external_uuid
                     claim_request = {
                         "patientUUID": claim.partner_uuid,
-                        "visitUUID": claim.external_uuid,
+                        "visitUUID": claim.external_visit_uuid,
                         "claimId": claim.claim_code,
                         "insureeId": claim.nhis_number,
                         "total" : claim.claimed_amount_total,
@@ -405,12 +406,11 @@ class claims(models.Model):
     rejection_reason = fields.Text(string='Rejection Reason')
     insurance_claim_line = fields.One2many("insurance.claim.line", "claim_id", string='Claim Lines', states={'confirmed': [('readonly', True)], 'submitted': [('readonly', True)]}, copy=True)
     sale_orders = fields.Many2many('sale.order', string='Sale Orders')
-    external_uuid = fields.Char(string="External Id", help="This field is used to store external id of related sale order")
     partner_uuid = fields.Char(related='partner_id.uuid', string='Customer UUID', store=True, readonly=True)
     currency_id = fields.Many2one(related='sale_orders.currency_id', string="Currency", readonly=True, required=True)
     insurance_claim_history = fields.One2many('insurance.claim.history', 'claim_id', string='Claim Lines', states={'confirmed': [('readonly', True)], 'submitted': [('readonly', True)], 'rejected': [('readonly', True)]}, copy=True)
     insurance_eligibility = fields.Reference(selection=_get_insurance_details, string='Insurance Eligibility')
-    
+    external_visit_uuid = fields.Char(string="External Visit Id", help="This field is used to store visit id of patient")
 
 class claims_line(models.Model):
     _name = 'insurance.claim.line'
