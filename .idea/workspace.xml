@@ -4,10 +4,7 @@
     <list default="true" id="528e9d5c-5b8b-42eb-aca4-963a0dd538a7" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/models/claims.py" afterPath="$PROJECT_DIR$/models/claims.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/models/insurance_connect.py" afterPath="$PROJECT_DIR$/models/insurance_connect.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/models/sale_order.py" afterPath="$PROJECT_DIR$/models/sale_order.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/views/claims.xml" afterPath="$PROJECT_DIR$/views/claims.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/wizard/insurance_eligibility.py" afterPath="$PROJECT_DIR$/wizard/insurance_eligibility.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -31,11 +28,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="claims.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="claims.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/models/claims.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="24">
-              <caret line="350" column="56" lean-forward="true" selection-start-line="350" selection-start-column="56" selection-end-line="350" selection-end-column="56" />
+            <state relative-caret-position="441">
+              <caret line="380" column="33" lean-forward="false" selection-start-line="380" selection-start-column="33" selection-end-line="380" selection-end-column="33" />
               <folding />
             </state>
           </provider>
@@ -64,8 +61,8 @@
       <file leaf-file-name="sale_order.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/models/sale_order.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="289">
-              <caret line="32" column="48" lean-forward="true" selection-start-line="32" selection-start-column="48" selection-end-line="32" selection-end-column="48" />
+            <state relative-caret-position="493">
+              <caret line="32" column="37" lean-forward="false" selection-start-line="32" selection-start-column="37" selection-end-line="32" selection-end-column="37" />
               <folding>
                 <element signature="e#0#36#0" expanded="true" />
               </folding>
@@ -93,11 +90,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="insurance_connect.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="insurance_connect.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/models/insurance_connect.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="186">
-              <caret line="120" column="43" lean-forward="true" selection-start-line="120" selection-start-column="43" selection-end-line="120" selection-end-column="43" />
+            <state relative-caret-position="2227">
+              <caret line="136" column="8" lean-forward="false" selection-start-line="136" selection-start-column="8" selection-end-line="136" selection-end-column="8" />
               <folding>
                 <marker date="1566387264849" expanded="true" signature="284:329" ph="..." />
               </folding>
@@ -108,8 +105,8 @@
       <file leaf-file-name="insurance_eligibility.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/wizard/insurance_eligibility.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="383">
-              <caret line="35" column="4" lean-forward="true" selection-start-line="35" selection-start-column="4" selection-end-line="35" selection-end-column="4" />
+            <state relative-caret-position="561">
+              <caret line="37" column="29" lean-forward="false" selection-start-line="37" selection-start-column="8" selection-end-line="37" selection-end-column="29" />
               <folding />
             </state>
           </provider>
@@ -119,7 +116,7 @@
         <entry file="file://$PROJECT_DIR$/models/res_partner.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="204">
-              <caret line="14" column="4" lean-forward="true" selection-start-line="14" selection-start-column="4" selection-end-line="14" selection-end-column="4" />
+              <caret line="14" column="4" lean-forward="false" selection-start-line="14" selection-start-column="4" selection-end-line="14" selection-end-column="4" />
               <folding />
             </state>
           </provider>
@@ -129,13 +126,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>insurance_claim_lines</find>
-      <find>'insurance.claim.line'</find>
-      <find>create_new_claim_line</find>
-      <find>_create_claim_line</find>
-      <find>rejection_reason</find>
-      <find>check_eligibility</find>
-      <find>The current visit has not been closed. So can't be confirmed now.</find>
       <find>_get_visit</find>
       <find>check_visit_closed</find>
       <find>external_visit_uuid</find>
@@ -154,11 +144,18 @@
       <find>status</find>
       <find>passed</find>
       <find>state</find>
-      <find>draft</find>
       <find>update_claim_from_claim_response</find>
       <find>histor</find>
       <find>_track_claim</find>
       <find>Inside _track_claim</find>
+      <find>check_if_insuree_is_eligible</find>
+      <find>Sales order can't be confirmed. No sufficient amount to process claim</find>
+      <find>Error Generating claim draft:</find>
+      <find>Inside sale_order_line loop</find>
+      <find>if response['stopDateTime']</find>
+      <find>if response['stopDateTime']:</find>
+      <find>draft</find>
+      <find>The line item for current claim not found.</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -177,10 +174,10 @@
         <option value="$PROJECT_DIR$/models/res_partner.py" />
         <option value="$PROJECT_DIR$/views/quotation_view.xml" />
         <option value="$PROJECT_DIR$/wizard/insurance_eligibility.py" />
-        <option value="$PROJECT_DIR$/models/sale_order.py" />
         <option value="$PROJECT_DIR$/views/claims.xml" />
-        <option value="$PROJECT_DIR$/models/claims.py" />
         <option value="$PROJECT_DIR$/models/insurance_connect.py" />
+        <option value="$PROJECT_DIR$/models/sale_order.py" />
+        <option value="$PROJECT_DIR$/models/claims.py" />
       </list>
     </option>
   </component>
@@ -213,7 +210,6 @@
     </navigator>
     <panes>
       <pane id="Scope" />
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -270,11 +266,13 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
+    <property name="SearchEverywhereHistoryKey" value="&#9;FILE&#9;file://D:/Projects/bahmni/bahmni-insurance-odoo/models/claims.py" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -464,7 +462,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1382" height="744" extended-state="7" />
+    <frame x="-8" y="-8" width="1382" height="744" extended-state="1" />
     <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
@@ -473,7 +471,7 @@
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32922733" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.26928896" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.27760968" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -864,7 +862,7 @@
     <entry file="file://$PROJECT_DIR$/models/res_partner.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="204">
-          <caret line="14" column="4" lean-forward="true" selection-start-line="14" selection-start-column="4" selection-end-line="14" selection-end-column="4" />
+          <caret line="14" column="4" lean-forward="false" selection-start-line="14" selection-start-column="4" selection-end-line="14" selection-end-column="4" />
           <folding />
         </state>
       </provider>
@@ -885,24 +883,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/wizard/insurance_eligibility.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="383">
-          <caret line="35" column="4" lean-forward="true" selection-start-line="35" selection-start-column="4" selection-end-line="35" selection-end-column="4" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/sale_order.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="32" column="48" lean-forward="true" selection-start-line="32" selection-start-column="48" selection-end-line="32" selection-end-column="48" />
-          <folding>
-            <element signature="e#0#36#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/views/claims.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="221">
@@ -911,21 +891,39 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/models/claims.py">
+    <entry file="file://$PROJECT_DIR$/wizard/insurance_eligibility.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="24">
-          <caret line="350" column="56" lean-forward="true" selection-start-line="350" selection-start-column="56" selection-end-line="350" selection-end-column="56" />
+        <state relative-caret-position="561">
+          <caret line="37" column="29" lean-forward="false" selection-start-line="37" selection-start-column="8" selection-end-line="37" selection-end-column="29" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/sale_order.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="493">
+          <caret line="32" column="37" lean-forward="false" selection-start-line="32" selection-start-column="37" selection-end-line="32" selection-end-column="37" />
+          <folding>
+            <element signature="e#0#36#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/models/insurance_connect.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="186">
-          <caret line="120" column="43" lean-forward="true" selection-start-line="120" selection-start-column="43" selection-end-line="120" selection-end-column="43" />
+        <state relative-caret-position="2227">
+          <caret line="136" column="8" lean-forward="false" selection-start-line="136" selection-start-column="8" selection-end-line="136" selection-end-column="8" />
           <folding>
             <marker date="1566387264849" expanded="true" signature="284:329" ph="..." />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/claims.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="441">
+          <caret line="380" column="33" lean-forward="false" selection-start-line="380" selection-start-column="33" selection-end-line="380" selection-end-column="33" />
+          <folding />
         </state>
       </provider>
     </entry>
