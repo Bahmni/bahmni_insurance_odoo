@@ -155,8 +155,10 @@ class claims(models.Model):
                 
                 _logger.info("claim=%s",claim)
                 
-                claim_in_db = self.env['insurance.claim'].create(claim)    
+                claim_in_db = self.env['insurance.claim'].create(claim)
                 
+                #Exculsively adding sales order
+                claim_in_db.update({'sale_orders': claim_in_db.sale_orders + sale_order})
             try:
                 _logger.info(claim_in_db)   
                 
@@ -232,7 +234,7 @@ class claims(models.Model):
         #Check visit
         #get visit details
         response = self.env['insurance.connect']._get_visit(visit_uuid)
-        if 'stopDateTime' in response:
+        if response['stopDateTime']:
             return True
         else:
             return False
