@@ -5,7 +5,6 @@ from odoo.exceptions import UserError
 
 import odoo.addons.decimal_precision as dp
 from xmlrpclib import DateTime
-import re
 
 _logger = logging.getLogger(__name__)
 

@@ -1,4 +1,5 @@
 from odoo import models, fields, api
+from odoo.exceptions import UserError
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -16,7 +17,7 @@ class sale_order(models.Model):
     @api.multi
     def action_invoice_create(self, grouped=False, final=False):
         _logger.info("Inside action_invoice_create overwritten")
-        if self.check_eligibility() == True:
+        if self.check_if_insuree_is_eligible() == True:
             record = super(sale_order, self).action_invoice_create(grouped, final)
             for order in self:
                 _logger.info("sale_order")
@@ -26,13 +27,14 @@ class sale_order(models.Model):
     @api.multi
     def action_confirm(self):
         _logger.info("Inside action_confirm overwritten")
-        if self.check_eligibility() == True:
+        if self.check_if_insuree_is_eligible() == True:
             super(sale_order, self).action_confirm()
     
-    def check_eligibility(self):
+    def check_if_insuree_is_eligible(self):
+        _logger.info("Inside check_eligibility")
         #check if payment type is insurance/partial. If yes proceed with this flow else skip to default flow
         if self.payment_type in ('insurance', 'partial'):
-            params = self.env['insurance.eligibility']._get_insurance_details(partner_id)
+            params = self.env['insurance.eligibility']._get_insurance_details(self.partner_id)
             claimable_amount = self.calculate_claimable_amount()
             #Check if insurance can be processed. Perform validations here. If true go ahead
             if claimable_amount <= params['eligibility_balance']:
