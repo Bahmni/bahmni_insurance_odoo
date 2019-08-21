@@ -16,11 +16,54 @@ class sale_order(models.Model):
     @api.multi
     def action_invoice_create(self, grouped=False, final=False):
         _logger.info("Inside action_invoice_create overwritten")
-        record = super(sale_order, self).action_invoice_create(grouped, final)
-        for order in self:
-            _logger.info("sale_order")
-            _logger.info(order)
-            self.env['insurance.claim']._create_claim(order)
+        if self.check_eligibility() == True:
+            record = super(sale_order, self).action_invoice_create(grouped, final)
+            for order in self:
+                _logger.info("sale_order")
+                _logger.info(order)
+                self.env['insurance.claim']._create_claim(order)
+            
+    @api.multi
+    def action_confirm(self):
+        _logger.info("Inside action_confirm overwritten")
+        if self.check_eligibility() == True:
+            super(sale_order, self).action_confirm()
+    
+    def check_eligibility(self):
+        #check if payment type is insurance/partial. If yes proceed with this flow else skip to default flow
+        if self.payment_type in ('insurance', 'partial'):
+            params = self.env['insurance.eligibility']._get_insurance_details(partner_id)
+            claimable_amount = self.calculate_claimable_amount()
+            #Check if insurance can be processed. Perform validations here. If true go ahead
+            if claimable_amount <= params['eligibility_balance']:
+                return True
+            elif claimable_amount == 0.0 :
+                raise UserError("Sales order can't be confirmed. No item present to be claimed.")
+            else:
+                raise UserError("Sales order can't be confirmed. No sufficient amount to process claim")
+        return True
+    
+    @api.multi
+    def calculate_claimable_amount(self):
+        """
+        Compute the total amounts that can be claimed
+        """
+        _logger.info("Inside calculate_claimable_amount")
+        claimable_amount_total = 0.0
+        for sale_order in self:
+            for line in sale_order.order_line:
+                if line.payment_type in ('insurance'):
+                    imis_mapped_row = self.env['insurance.odoo.product.map'].search([('odoo_product_id', '=', line.product_id.id), ('is_active', '=', 'True')])
+                    if imis_mapped_row is None or len(imis_mapped_row) == 0 :
+                        _logger.debug("imis_mapped_row mapping not found")
+                        raise UserError("%s is not mapped to insurance product"%(line.product_id.name))
+                
+                    if len(imis_mapped_row) > 1 :
+                        _logger.debug("multiple mappings found")
+                        raise UserError("Multiple mappings found for %s"%(line.product_id.name))
+                        
+                    claimable_amount_total += imis_mapped_row.insurance_price * line.product_uom_qty
+        return claimable_amount_total
         
     @api.multi
     def check_eligibility(self):
