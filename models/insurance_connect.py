@@ -47,7 +47,7 @@ class insurance_connect(models.TransientModel):
         _logger.info("Inside _submit_claims")
         if claim_request is None:
             raise UserError("Nothing to Claim")
-            
+
         try:
             insurance_configs = self.get_insurance_configurations()
             url = self.prepare_url("/submit/claim", insurance_configs)
@@ -66,8 +66,13 @@ class insurance_connect(models.TransientModel):
                 return response
             else:
                 response = json.loads(req.data.decode('utf-8'))
-                _logger.info(response)
-                raise UserError("Submission Failed. Please Check insurance-connect service and retry again.")
+                _logger.info(json.dumps(response))
+                if response["operationOutComeException"] is None:
+                    error_msg = "Claim Submission Failed, Please contact your app admin"
+                else:
+                    error_msg = response["operationOutComeException"]
+                # error = "Submission Failed" % str(response["operationOutComeException"])
+                raise UserError(error_msg)
         except Exception as err:
             _logger.error("\n Processing event threw error: %s", err)
             raise
@@ -96,7 +101,6 @@ class insurance_connect(models.TransientModel):
     @api.multi
     def _get_visit(self, visit_uuid):
         _logger.info("Inside _check_visit")
-        visit_uuid = "52d869d3-58e7-49dd-88b9-f179c10be7b6"
         try:
             insurance_connect_configurations = self.env['insurance.config.settings'].get_insurance_connect_configurations()
             if insurance_connect_configurations is None:
@@ -120,11 +124,11 @@ class insurance_connect(models.TransientModel):
             if insurance_connect_configurations is None:
                 raise UserError("Insurance configurations not set")
             
-            url = self.prepare_url("get/claimresponse/%s", insurance_connect_configurations)
+            url = self.prepare_url("/get/claimresponse/%s", insurance_connect_configurations)
             url = url%(claim_id)
             http = urllib3.PoolManager()
             req = http.request('GET', url, headers=self.get_header(insurance_connect_configurations))
-            self.response_processor(req)
+            return self.response_processor(req)
                     
         except Exception as err:
             _logger.error("\n Processing event threw error: %s", err)

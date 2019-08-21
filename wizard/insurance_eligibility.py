@@ -35,7 +35,7 @@ class insurance_eligibility (models.TransientModel):
         return self
     
     @api.multi
-    def _get_insurance_details(self, partner_id):
+    def get_insurance_details(self, partner_id):
         _logger.info("Inside _get_insurance_details")
         nhis_number = self.env['res.partner']._get_nhis_number(partner_id.id)
         elig_request_param = {

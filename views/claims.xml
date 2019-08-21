@@ -5,7 +5,7 @@
         <field name="name">insurance.claim.tree</field>
         <field name="model">insurance.claim</field>
         <field name="priority">1</field>
-        <field name="domain">[('state', '!=', 'submitted')]</field>
+        <field name="domain">[('state', '!=', 'Submitted')]</field>
         <field name="arch" type="xml">
             <tree string="Claims">
                 <field name="claim_code" string="Claim Number"/>
@@ -42,20 +42,20 @@
             <form class="o_sale_order" string="Claims">
                 <header>
                     <button class="btn-primary"
-                        attrs="{'invisible': [('state', 'in', ['draft', 'submitted', 'rejected'])]}"
+                        attrs="{'invisible': [('state', 'in', ['draft','checked','processed','valuated', 'submitted', 'rejected'])]}"
                         name="action_claim_submit"
                         string="Submit Claim" type="object"/>
                     <button class="btn-primary o_sale_confirm"
-                        attrs="{'invisible': [('state', 'in', ['confirmed', 'submitted'])]}"
+                        attrs="{'invisible': [('state', 'in', ['confirmed', 'submitted','checked','processed','valuated'])]}"
                         name="action_confirm"
                         string="Confirm Claim" type="object"/>
                     <button class="btn-primary o_sale_confirm"
-                        attrs="{'invisible': [('state', 'in', ['draft', 'confirmed', 'rejected'])]}"
+                        attrs="{'invisible': [('state', 'in', ['draft', 'confirmed', 'rejected','valuated'])]}"
                         name="action_track_status"
                         string="Track Claim" type="object"/>
                     <button class="btn-primary" name="print_claim"
                         string="Print" type="object"/>   
-                    <field name="state" statusbar_visible="draft, confirmed, submitted, processed, valuated" widget="statusbar"/>
+                    <field name="state" statusbar_visible="draft, confirmed, checked, submitted, processed, valuated" widget="statusbar"/>
                 </header>
                 <sheet>
                     <div class="oe_title">

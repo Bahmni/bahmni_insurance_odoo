@@ -47,7 +47,7 @@ class claims(models.Model):
         #Track Claim
         response = self.env['insurance.connect']._track_claim(claim.claim_code)
         if response:
-            self.update_claim_from_claim_response(claim, response.data)
+            self.update_claim_from_claim_response(claim, response)
             
     
     @api.multi
@@ -219,7 +219,6 @@ class claims(models.Model):
             'product_id' : sale_order_line.product_id.id,
             'product_qty' : sale_order_line.product_uom_qty,
             'product_uom' : sale_order_line.product_uom.id,
-            'state' : 'draft',
             'imis_product' : imis_mapped_row.id,
             'imis_product_code' : imis_mapped_row.item_code,
             'price_unit' : imis_mapped_row.insurance_price,
@@ -266,11 +265,7 @@ class claims(models.Model):
                 #Validation passes then confirm
                 for claim_line in claim.insurance_claim_line:
                     _logger.info(claim_line)
-                    if claim_line.imis_product_code :
-                        claim_line.update({
-                            'state': 'confirmed'
-                        })
-                    else:
+                    if not claim_line.imis_product_code :
                         raise UserError("%s has no mapping present.Map the product and retry again."%(claim_line.product_id.name))
     
     @api.multi
@@ -334,7 +329,6 @@ class claims(models.Model):
                     for claim_line in claim.insurance_claim_line:
                         if claim_line.imis_product_code :
                             claim_line.update({
-                                'state': 'submitted',
                                 'claim_sequence': sequence
                             })
                             
@@ -367,7 +361,7 @@ class claims(models.Model):
         _logger.info("update_claim_from_claim_response")
         claim.amount_approved_total = response['approvedTotal']
         claim.rejected_reason = response['rejectionReason']
-        claim.state = response['claimStatus']
+        claim.state = response["claimStatus"]
         # _logger.info(claim)
 
         for claim_response_line in response['claimLineItems']:
@@ -376,7 +370,7 @@ class claims(models.Model):
             _logger.info(claim_response_line['sequence'])
             if claim_line:
                 claim_line.update({
-                    'state' : claim_response_line['status']
+                    'state': claim_response_line['status']
                 })
 
                 claim_line.rejection_reason = claim_response_line['rejectedReason']
@@ -398,6 +392,9 @@ class claims(models.Model):
         ('draft', 'Draft'),
         ('confirmed', 'Confirmed'),
         ('submitted', 'Submitted'),
+        ('checked', 'Checked'),
+        ('valuated', 'Valuated'),
+        ('passed', 'Passed'),
         ('rejected', 'Rejected')
         ], string='Claim Status', default='draft', readonly=True)
     claim_comments = fields.Text(string='Comments')
@@ -457,11 +454,9 @@ class claims_line(models.Model):
     currency_id = fields.Many2one(related='claim_id.currency_id', string="Currency", readonly=True, required=True)
 
     state = fields.Selection([
-        ('draft', 'Draft'),
-        ('confirmed', 'Confirmed'),
-        ('submitted', 'Submitted'),
+        ('passed', 'Passed'),
         ('rejected', 'Rejected')
-        ], related='claim_id.state', string='Claim Status', readonly=True, copy=False, store=True, default='draft')
+        ],  string='Claim Status', readonly=True, copy=False, store=True, default='draft')
     claim_comments = fields.Text(string='Comments')
     rejection_reason = fields.Text(string='Rejection Reason')
     claim_sequence = fields.Integer(string='Sequence', readonly=True)
@@ -489,15 +484,19 @@ class claim_history(models.Model):
     
     claim_id = fields.Many2one('insurance.claim', string='Claim ID', required=True, ondelete='cascade', index=True, copy=False)
     partner_id = fields.Many2one(related='claim_id.partner_id', string='Insuree', readonly=True, required=True, change_default=True, index=True, track_visibility='always')
-    claim_manager_id = fields.Many2one(related='claim_id.claim_manager_id', store=True, string='Claims Manager', readonly=True)
-    claim_code = fields.Char(related='claim_id.claim_code', store=True, string='Claim Code')
+    claim_manager_id = fields.Many2one( store=True, string='Claims Manager', readonly=True)
+    claim_code = fields.Char( store=True, string='Claim Code')
     state = fields.Selection([
         ('draft', 'Draft'),
-        ('confirmed', 'Confirmed'),
         ('submitted', 'Submitted'),
+        ('checked', 'Checked'),
+        ('valuated', 'Valuated'),
         ('rejected', 'Rejected'),
+        ('processed', 'Processed'),
+        ('passed', 'Passed')
+
     ], related='claim_id.state', string='Claim Status', readonly=True, copy=False, store=True, default='draft')
-    claim_comments = fields.Text(related='claim_id.claim_comments', store=True, string='Claim Comments')
-    rejection_reason = fields.Text(related='claim_id.rejection_reason', store=True, string='Rejection Reason')
+    claim_comments = fields.Text(store=True, string='Claim Comments')
+    rejection_reason = fields.Text( store=True, string='Rejection Reason')
     
     

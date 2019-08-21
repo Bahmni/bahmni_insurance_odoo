@@ -27,7 +27,7 @@ class sale_order(models.Model):
         _logger.info("Inside check_eligibility")
         if self.nhis_number:
             partner_id = self.partner_id
-            params = self.env['insurance.eligibility']._get_insurance_details(partner_id)
+            params = self.env['insurance.eligibility'].get_insurance_details(partner_id)
             ins_elg_obj = self.env['insurance.eligibility'].create(params)
             return {
                 'type': 'ir.actions.act_window',
@@ -64,7 +64,6 @@ class sale_order_line(models.Model):
 
     payment_type = fields.Selection([('insurance', 'INSURANCE'), ('cash', 'CASH')], default='cash', string="Payment Type", required=True)
 
-    
     
     
     
