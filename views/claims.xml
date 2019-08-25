@@ -5,7 +5,6 @@
         <field name="name">insurance.claim.tree</field>
         <field name="model">insurance.claim</field>
         <field name="priority">1</field>
-        <field name="domain">[('state', '!=', 'Submitted')]</field>
         <field name="arch" type="xml">
             <tree string="Claims">
                 <field name="claim_code" string="Claim Number"/>
@@ -24,7 +23,8 @@
         <field name="name">Insurance Claims</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">insurance.claim</field>
-        <!-- <field name="view_id" ref="insurance_claims_tree_view"/> -->
+        <field name="domain">['|',('state','=','draft'),('state','=','confirmed')]</field>
+        <field name="view_id" ref="insurance_claims_tree_view"/>
         <field name="view_type">form</field>
         <field name="view_mode">tree,kanban,form</field>
         <field name="context">{}</field>
@@ -71,6 +71,8 @@
                                 domain="[('customer','=',True)]"
                                 name="partner_id" options="{&quot;always_reload&quot;: True}" readonly='1' required="1"/>
                             <field String="NHIS Number" name="nhis_number" required="1"/>
+                            <field String="Claim Status" name="state" required="1"/>
+
                         </group>
                         <group>
                             <field name="claimed_date" attrs="{'readonly': [('state', 'in', ('draft','confirmed'))]}" required="1"/>
@@ -215,7 +217,7 @@
         <field name="res_model">insurance.claim</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,kanban,form</field>
-        <field name="domain">[('state', '=', 'submitted')]</field>
+        <field name="domain">['|',('state','=','checked'),('state','=','rejected')]</field>
     </record>
     <menuitem action="action_insurance_submitted_claims_view"
         id="menu_insurance_submitted_claims" name="Submitted Claims"
