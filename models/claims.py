@@ -457,7 +457,7 @@ class claims_line(models.Model):
     state = fields.Selection([
         ('passed', 'Passed'),
         ('rejected', 'Rejected')
-        ],  string='Claim Status', readonly=True, copy=False, store=True, default='draft')
+        ],  string='Claim Status', readonly=True, copy=False, store=True)
     claim_comments = fields.Text(string='Comments')
     rejection_reason = fields.Text(string='Rejection Reason')
     claim_sequence = fields.Integer(string='Sequence', readonly=True)
@@ -496,7 +496,7 @@ class claim_history(models.Model):
         ('processed', 'Processed'),
         ('passed', 'Passed')
 
-    ], related='claim_id.state', string='Claim Status', readonly=True, copy=False, store=True, default='draft')
+    ], string='Claim Status', readonly=True, copy=False, store=True, default='draft')
     claim_comments = fields.Text(store=True, string='Claim Comments')
     rejection_reason = fields.Text( store=True, string='Rejection Reason')
     

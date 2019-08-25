@@ -32,6 +32,10 @@ class sale_order(models.Model):
     
     def check_if_insuree_is_eligible(self):
         _logger.info("Inside check_eligibility")
+        
+        #TODO remove this later 
+        return True
+    
         #check if payment type is insurance/partial. If yes proceed with this flow else skip to default flow
         if self.payment_type in ('insurance', 'partial'):
             params = self.env['insurance.eligibility']._get_insurance_details(self.partner_id)
