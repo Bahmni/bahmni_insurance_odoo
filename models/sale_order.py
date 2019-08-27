@@ -86,7 +86,9 @@ class sale_order(models.Model):
                 'view_id': self.env.ref('bahmni-insurance-odoo.insurance_eligibility_check_result_view', False).id,
                 'target': 'new',
             }
-        _logger.info("No NHIS number")
+        else:
+            _logger.info("No NHIS number")
+            raise UserError("No Insuree Id, Please update and retry !")
     
     @api.multi
     def print_consent(self):
