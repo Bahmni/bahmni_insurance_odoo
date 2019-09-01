@@ -158,6 +158,45 @@ class claims(models.Model):
                 
                 #Exculsively adding sales order
                 claim_in_db.update({'sale_orders': claim_in_db.sale_orders + sale_order})
+                
+                if sale_order.care_setting == 'opd':
+                    ''' search for opd service product for hospital type.
+                        If PHC then OPD PHC 
+                        IF Hospital then OPD Hospital
+                        If product found (in imis_odoo_mapper) and its not a product in odoo. 
+                        then throw exception
+                        Add OPD service product for opd visit
+                    '''
+                    hospital_type = sale_order.company_id.hospital_type
+                    
+                    if hospital_type == 'PHC':
+                        imis_product = 'OPD PHC'
+                    else:
+                        imis_product = 'OPD Hospital'
+                    
+                    imis_mapped_row = self.env['insurance.odoo.product.map'].search([('insurance_product', '=', imis_product), ('is_active', '=', 'True')])
+                    if imis_mapped_row is None or len(imis_mapped_row) == 0 :
+                        _logger.debug("imis_mapped_row mapping not found")
+                        raise UserError("%s is not mapped to insurance product"%(imis_product))
+                    
+                    if len(imis_mapped_row) > 1 :
+                        _logger.debug("multiple mappings found")
+                        raise UserError("Multiple mappings found for %s"%(imis_product))
+                        
+                    _logger.debug("imis_mapped_row ->%s", imis_mapped_row)
+                    claim_line_item = {
+                        'claim_id' : claim_in_db.id,
+                        'product_id' : imis_mapped_row.odoo_product_id.id,
+                        'product_qty' : 1,
+                        'product_uom' : imis_mapped_row.odoo_product_id.uom_id.id,
+                        'imis_product' : imis_mapped_row.id,
+                        'imis_product_code' : imis_mapped_row.item_code,
+                        'price_unit' : imis_mapped_row.insurance_price,
+                        'currency_id': claim_in_db.currency_id
+                    }
+                    claim_line_in_db = self.env['insurance.claim.line'].create(claim_line_item)
+                    _logger.info(claim_line_in_db)    
+                
             try:
                 _logger.info(claim_in_db)   
                 
