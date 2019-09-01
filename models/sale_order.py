@@ -38,12 +38,12 @@ class sale_order(models.Model):
             params = self.env['insurance.eligibility'].get_insurance_details(self.partner_id)
             claimable_amount = self.calculate_claimable_amount()
             # Check if insurance can be processed. Perform validations here. If true go ahead
-            if claimable_amount <= params['eligibility_balance']:
-                return True
-            elif claimable_amount == 0.0 :
-                raise UserError("Sales order can't be confirmed. No item present to be claimed.")
-            else:
-                raise UserError("Sales order can't be confirmed. No sufficient amount to process claim")
+            # if claimable_amount <= params['eligibility_balance']:
+            #     return True
+            # elif claimable_amount == 0.0 :
+            #     raise UserError("Sales order can't be confirmed. No item present to be claimed.")
+            # else:
+            #     raise UserError("Sales order can't be confirmed. No sufficient amount to process claim")
 
         return True
     
