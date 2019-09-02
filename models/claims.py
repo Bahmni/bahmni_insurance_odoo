@@ -290,8 +290,8 @@ class claims(models.Model):
             # if self._check_if_eligible(claim) == False:
             #      raise UserError("Claim can't be processed. Claimed amount greater than eligible amount.")
             
-#             if self.check_visit_closed(claim.external_visit_uuid) == False:
-#                 raise UserError("The current visit has not been closed. So can't be confirmed now.")
+            if self.check_visit_closed(claim.external_visit_uuid) == False:
+                raise UserError("The current visit has not been closed. So can't be confirmed now.")
             
             if claim.state in ('draft', 'rejected'):
                 #Check if amount claimed is in the range of eligibility
@@ -528,6 +528,7 @@ class claim_history(models.Model):
     claim_code = fields.Char( store=True, string='Claim Code')
     state = fields.Selection([
         ('draft', 'Draft'),
+        ('confirmed', 'Confirmed'),
         ('submitted', 'Submitted'),
         ('checked', 'Checked'),
         ('valuated', 'Valuated'),
