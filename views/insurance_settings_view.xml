@@ -33,14 +33,11 @@
                             <field name="base_url"/>
                         </div>
                     </div>
-                     <div>
+                    <div style="margin-left:20px; margin-top:15px;">
                         <button class="btn-primary"
                             name="action_test_connection"
-                            string="Test Connection" type="object" context="{
-                               'username': username,
-                               'password': password,
-                               'url': base_url
-                               }" />    
+                            attrs="{'invisible': [('username', '!=', ''),'&amp;',('password','!=', ''),'&amp;',('base_url','!=', '')]}"
+                            string="Test Connection" type="object" />    
                         
                     </div>
                 </group>

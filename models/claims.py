@@ -290,9 +290,8 @@ class claims(models.Model):
             # if self._check_if_eligible(claim) == False:
             #      raise UserError("Claim can't be processed. Claimed amount greater than eligible amount.")
             
-            #TODO check if the current visit is closed or not
-            if self.check_visit_closed(claim.external_visit_uuid) == False:
-                raise UserError("The current visit has not been closed. So can't be confirmed now.")
+#             if self.check_visit_closed(claim.external_visit_uuid) == False:
+#                 raise UserError("The current visit has not been closed. So can't be confirmed now.")
             
             if claim.state in ('draft', 'rejected'):
                 #Check if amount claimed is in the range of eligibility
@@ -345,7 +344,9 @@ class claims(models.Model):
                     else:
                         _logger.info("Submission")
                         claim_code = self.env['insurance.config.settings']._get_next_value()
-                        _logger.info(claim_code)
+                    _logger.info("\n\n\n\n Claim Code=")
+                    _logger.info(claim_code)
+                        
                     
                     claim.update({
                         'claim_code':claim_code,
@@ -354,7 +355,6 @@ class claims(models.Model):
                     })
                     
                     self._add_history(claim)
-                    # TODO: hardoded visitUUID  claim.external_uuid
                     claim_request = {
                         "patientUUID": claim.partner_uuid,
                         "visitUUID": claim.external_visit_uuid,

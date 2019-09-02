@@ -10,20 +10,14 @@ class insurance_connect(models.TransientModel):
     _name = 'insurance.connect'
     
     @api.model
-    def authenticate(self):
+    def authenticate(self, username, password, url):
         _logger.info("Inside authenticate")
-#         insurance_connect_configurations = self.env['insurance.config.settings'].get_insurance_connect_configurations()
-#         if insurance_connect_configurations is None:
-#             raise UserError("Insurance configurations not set")
-    
-        #Mocking insurance connect configurations
         insurance_connect_configurations = {
             'username': username,
             'password': password,
-            'url': url
+            'base_url': url
         }
         url = self.prepare_url("/request/authenticate", insurance_connect_configurations)
-        #url = url%(nhis_number)
         http = urllib3.PoolManager()
 
         req = http.request('GET', url, headers=self.get_header(insurance_connect_configurations))

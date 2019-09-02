@@ -5,7 +5,7 @@
         <field name="name">insurance.claim.tree</field>
         <field name="model">insurance.claim</field>
         <field name="priority">1</field>
-        <field name="domain">[('state', '!=', 'Submitted')]</field>
+        <field name="domain">[('state', 'in', ('draft', 'rejected'))]</field>
         <field name="arch" type="xml">
             <tree string="Claims">
                 <field name="claim_code" string="Claim Number"/>
@@ -24,7 +24,6 @@
         <field name="name">Insurance Claims</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">insurance.claim</field>
-        <!-- <field name="view_id" ref="insurance_claims_tree_view"/> -->
         <field name="view_type">form</field>
         <field name="view_mode">tree,kanban,form</field>
         <field name="context">{}</field>
@@ -215,7 +214,7 @@
         <field name="res_model">insurance.claim</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,kanban,form</field>
-        <field name="domain">[('state', '=', 'submitted')]</field>
+         <field name="domain">[('state', 'not in', ('draft', 'rejected'))]</field>
     </record>
     <menuitem action="action_insurance_submitted_claims_view"
         id="menu_insurance_submitted_claims" name="Submitted Claims"
