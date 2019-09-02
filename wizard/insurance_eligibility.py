@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from odoo.exceptions import UserError
 from odoo import models, fields, api
 from datetime import datetime
 import logging
@@ -37,10 +38,12 @@ class insurance_eligibility (models.TransientModel):
     @api.multi
     def get_insurance_details(self, partner_id):
         _logger.info("Inside _get_insurance_details")
+        _logger.info(partner_id.id)
         nhis_number = self.env['res.partner']._get_nhis_number(partner_id.id)
         elig_request_param = {
             'chfID': nhis_number
         }
+
         if nhis_number:
             response = self.env['insurance.connect']._check_eligibility(elig_request_param)
             params = {
@@ -54,3 +57,5 @@ class insurance_eligibility (models.TransientModel):
                 }
             _logger.info(params)
             return params
+        else:
+            raise UserError("No Insurance Id, Please update and retry !")

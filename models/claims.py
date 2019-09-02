@@ -271,7 +271,7 @@ class claims(models.Model):
         #Check visit
         #get visit details
         response = self.env['insurance.connect']._get_visit(visit_uuid)
-        if response['stopDateTime']:
+        if 'stopDateTime' in response:
             return True
         else:
             return False
@@ -494,6 +494,7 @@ class claims_line(models.Model):
     currency_id = fields.Many2one(related='claim_id.currency_id', string="Currency", readonly=True, required=True)
 
     state = fields.Selection([
+        ('draft', 'Draft'),
         ('passed', 'Passed'),
         ('rejected', 'Rejected')
         ],  string='Claim Status', readonly=True, copy=False, store=True)
