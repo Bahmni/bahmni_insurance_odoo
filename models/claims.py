@@ -209,7 +209,7 @@ class claims(models.Model):
             insurance_claim_line = claim.insurance_claim_line.filtered(lambda r: r.product_id.id == sale_order_line.product_id.id)
         
             if insurance_claim_line:
-                insurance_claim_line.update({'product_qty': insurance_claim_line + sale_order.product_uom_qty })
+                insurance_claim_line.update({'product_qty': insurance_claim_line + sale_order_line.product_uom_qty })
             else:
                 self.create_new_claim_line(claim, sale_order_line, imis_mapped_row)
             
