@@ -11,6 +11,7 @@ _logger = logging.getLogger(__name__)
 class claims(models.Model):
     _name = 'insurance.claim'
     _description = 'Claims'
+    _inherit = ['mail.thread']
     
     @api.depends('insurance_claim_line.price_total')
     def _claimed_amount_all(self):
