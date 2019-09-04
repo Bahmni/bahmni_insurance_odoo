@@ -56,6 +56,11 @@ class claims(models.Model):
             Print Claim
         '''
         _logger.info("print_claim")
+        
+        claim_code = self.env['insurance.config.settings']._get_next_value()
+        _logger.info("\n\n\n\n Claim Code=")
+        _logger.info(claim_code)
+        
         raise UserError("Currently this feature is not available")
         
         
@@ -246,7 +251,7 @@ class claims(models.Model):
                 raise UserError("Multiple mappings found for %s"%(sale_order_line.product_id.name))
             
             #Check if a product is already present. If yes update quantity
-            insurance_claim_line = claim.insurance_claim_line.filtered(lambda r: r.product_id.id == sale_order_line.product_id.id)
+            insurance_claim_line = claim.insurance_claim_line.filtered(lambda r: r.imis_product == imis_mapped_row.imis_product)
         
             if insurance_claim_line:
                 insurance_claim_line.update({'product_qty': insurance_claim_line + sale_order.product_uom_qty })

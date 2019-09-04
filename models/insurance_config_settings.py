@@ -29,9 +29,12 @@ class insurance_config_settings(models.TransientModel):
             raise ValidationError("The Start Range can\'t be empty")
         if self.claim_id_end_range < self.claim_id_start_range:
             raise ValidationError("The End range can\'t be smaller than start range")
-        
+    
+    @api.one
     @api.constrains("claim_number_next_val")
     def validate_next_val(self):
+        _logger.info("Inside validate_next_val")
+        _logger.info("next value=%s",self.claim_number_next_val)
         if self.claim_number_next_val == None:
             raise ValidationError("The Next Values can\'t be empty")
         if self.claim_number_next_val < self.claim_id_start_range:
@@ -45,15 +48,26 @@ class insurance_config_settings(models.TransientModel):
         self.claim_number_next_val = self.claim_id_start_range
     
     
-    @api.model
+    @api.one
     def _get_next_value(self):
+        _logger.info("Inside validate_next_val")
+        self.username = self.env['ir.values'].get_default('insurance.config.settings', 'username')
+        self.password = self.env['ir.values'].get_default('insurance.config.settings', 'password')
         self.next_val = self.env['ir.values'].get_default('insurance.config.settings', 'claim_number_next_val')
         self.start_range = self.env['ir.values'].get_default('insurance.config.settings', 'claim_id_start_range')
         self.end_range = self.env['ir.values'].get_default('insurance.config.settings', 'claim_id_end_range')
         self.validate_next_val()
-        self.update({
+        claim_setting_configs = {
+            'username': self.username,
+            'password': self.password,
+            'base_url': self.base_url,
+            'claim_id_start_range': self.start_range,
+            'claim_id_end_range': self.end_range,
             'claim_number_next_val': self.next_val + 1
-        })
+        }
+        _logger.info(claim_setting_configs)
+        claim_in_db = self.env['insurance.config.settings'].create(claim_setting_configs)
+        _logger.info(self.next_val)
         return self.next_val
     
     @api.model
