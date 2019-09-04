@@ -251,7 +251,7 @@ class claims(models.Model):
                 raise UserError("Multiple mappings found for %s"%(sale_order_line.product_id.name))
             
             #Check if a product is already present. If yes update quantity
-            insurance_claim_line = claim.insurance_claim_line.filtered(lambda r: r.imis_product == imis_mapped_row.imis_product)
+            insurance_claim_line = claim.insurance_claim_line.filtered(lambda r: r.imis_product == imis_mapped_row.insurance_product)
         
             if insurance_claim_line:
                 insurance_claim_line.update({'product_qty': insurance_claim_line + sale_order_line.product_uom_qty })
