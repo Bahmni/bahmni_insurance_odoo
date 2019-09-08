@@ -57,6 +57,15 @@
                         </div>
                     </div>
                 </group>
+                
+                <group string="Journal Setup">
+                    <div>
+                        <div>
+                            <label for="insurance_journal" string="Insurance Journal Name"/>
+                            <field name="insurance_journal"/>
+                        </div>
+                    </div>
+                </group>
                 <div>
                     <span>(*) This configuration is related to the company you're logged into.</span>
                 </div>

@@ -4,7 +4,7 @@ from odoo.exceptions import ValidationError
 import logging
 _logger = logging.getLogger(__name__)
 
-class insurance_config_settings(models.TransientModel):
+class insurance_config_settings(models.Model):
     _inherit = 'res.config.settings'
     _name = 'insurance.config.settings'
 
@@ -14,6 +14,7 @@ class insurance_config_settings(models.TransientModel):
     claim_id_start_range = fields.Integer(string="Start Range", required=True, help="Start Value for claim code")
     claim_id_end_range = fields.Integer(string="Start Range", required=True, help="End Value for claim code")
     claim_number_next_val = fields.Integer(string="Next Value", required=True)
+    insurance_journal = fields.Char(string="Insurance Journal", required=True, help="Name of the journal which will handle insurance payments")
     
     @api.constrains("claim_id_start_range")
     def validate_start_range(self):
@@ -29,6 +30,14 @@ class insurance_config_settings(models.TransientModel):
             raise ValidationError("The Start Range can\'t be empty")
         if self.claim_id_end_range < self.claim_id_start_range:
             raise ValidationError("The End range can\'t be smaller than start range")
+        
+    @api.constrains("insurance_journal")
+    def validate_insurance_journal(self):
+        _logger.info("Inside validate_insurance_journal")
+        _logger.info("insurance_journal = %s", self.insurance_journal)
+        journal_name = self.env['account.journal'].search([('name', 'ilike', self.insurance_journal)])
+        if not journal_name:
+            raise ValidationError("Please add a valid journal")
     
     @api.one
     @api.constrains("claim_number_next_val")
@@ -43,32 +52,51 @@ class insurance_config_settings(models.TransientModel):
             raise ValidationError("The Next value range can\'t be greater than end range")
     
     
-    @api.onchange('claim_id_start_range')
-    def _change_next_val(self):
-        self.claim_number_next_val = self.claim_id_start_range
+#     @api.onchange('claim_id_start_range')
+#     def _change_next_val(self):
+#         _logger.info("Inside _change_next_val")
+#         _logger.info("next value=%s",self.claim_number_next_val)
+#         self.claim_number_next_val = self.claim_id_start_range
     
     
-    @api.one
+    @api.model
     def _get_next_value(self):
         _logger.info("Inside validate_next_val")
-        self.username = self.env['ir.values'].get_default('insurance.config.settings', 'username')
-        self.password = self.env['ir.values'].get_default('insurance.config.settings', 'password')
-        self.next_val = self.env['ir.values'].get_default('insurance.config.settings', 'claim_number_next_val')
-        self.start_range = self.env['ir.values'].get_default('insurance.config.settings', 'claim_id_start_range')
-        self.end_range = self.env['ir.values'].get_default('insurance.config.settings', 'claim_id_end_range')
-        self.validate_next_val()
+        
+        _logger.info(self.username)
+        _logger.info(self.password)
+        _logger.info(self.claim_number_next_val)
+        
+#         insurance_config_setting = self.env['insurance.config.settings'].search([('external_visit_uuid', '=', visit_uuid)], order='create_date desc', limit=1)
+        username = self.env['ir.values'].get_default('insurance.config.settings', 'username')
+        password = self.env['ir.values'].get_default('insurance.config.settings', 'password')
+        base_url = self.env['ir.values'].get_default('insurance.config.settings', 'base_url')
+        next_val = self.env['ir.values'].get_default('insurance.config.settings', 'claim_number_next_val')
+        start_range = self.env['ir.values'].get_default('insurance.config.settings', 'claim_id_start_range')
+        end_range = self.env['ir.values'].get_default('insurance.config.settings', 'claim_id_end_range')
+        insurance_journal = self.env['ir.values'].get_default('insurance.config.settings', 'insurance_journal')
+#         self.validate_next_val()
+#         next_val = insurance_config_setting.claim_number_next_val
+#         updated_next_val = insurance_config_setting.claim_number_next_val + 1
+#         
+
         claim_setting_configs = {
-            'username': self.username,
-            'password': self.password,
-            'base_url': self.base_url,
-            'claim_id_start_range': self.start_range,
-            'claim_id_end_range': self.end_range,
-            'claim_number_next_val': self.next_val + 1
+            'username': username,
+            'password': password,
+            'base_url': base_url,
+            'claim_id_start_range': start_range,
+            'claim_id_end_range': end_range,
+            'claim_number_next_val': next_val + 1,
+            'insurance_journal': insurance_journal
         }
-        _logger.info(claim_setting_configs)
-        claim_in_db = self.env['insurance.config.settings'].create(claim_setting_configs)
-        _logger.info(self.next_val)
-        return self.next_val
+#         _logger.info(claim_setting_configs)
+#         insurance_config_setting.update({
+#             'claim_number_next_val': updated_next_val
+#         })
+        configs = self.env['insurance.config.settings'].create(claim_setting_configs)
+        self.update_params(configs)
+        _logger.info(configs)
+        return next_val
     
     @api.model
     def get_insurance_connect_configurations(self):
@@ -77,6 +105,10 @@ class insurance_config_settings(models.TransientModel):
             'password': self.env['ir.values'].get_default('insurance.config.settings', 'password'),
             'base_url': self.env['ir.values'].get_default('insurance.config.settings', 'base_url')
         }
+        
+    @api.model
+    def get_insurance_journal(self):
+        return self.env['ir.values'].get_default('insurance.config.settings', 'insurance_journal')
     
     @api.multi
     def action_test_connection(self):
@@ -85,16 +117,34 @@ class insurance_config_settings(models.TransientModel):
         _logger.info("model url->%s",self.base_url)
         
         response = self.env['insurance.connect'].authenticate(self.username, self.password, self.base_url)
-           
+    
+    @api.multi
+    def update_params(self, configs):
+        _logger.info("Inside update_params")
+        _logger.info("configs = %s", configs)
+        self.ensure_one()
+        self.env['ir.values'].sudo().set_default('insurance.config.settings', 'username', configs.username)
+        self.env['ir.values'].sudo().set_default('insurance.config.settings', 'password', configs.password)
+        self.env['ir.values'].sudo().set_default('insurance.config.settings', 'base_url', configs.base_url)
+        self.env['ir.values'].sudo().set_default('insurance.config.settings', 'claim_id_start_range', configs.claim_id_start_range)
+        self.env['ir.values'].sudo().set_default('insurance.config.settings', 'claim_id_end_range', configs.claim_id_end_range)
+        self.env['ir.values'].sudo().set_default('insurance.config.settings', 'claim_number_next_val', configs.claim_number_next_val)      
+        self.env['ir.values'].sudo().set_default('insurance.config.settings', 'insurance_journal', configs.insurance_journal)      
             
     @api.multi
     def set_params(self):
+        _logger.info("Inside set_params")
         self.ensure_one()
+        _logger.info(self.username)
+        _logger.info(self.password)
+        _logger.info(self.claim_number_next_val)
+        
+        
         self.env['ir.values'].sudo().set_default('insurance.config.settings', 'username', self.username)
         self.env['ir.values'].sudo().set_default('insurance.config.settings', 'password', self.password)
         self.env['ir.values'].sudo().set_default('insurance.config.settings', 'base_url', self.base_url)
         self.env['ir.values'].sudo().set_default('insurance.config.settings', 'claim_id_start_range', self.claim_id_start_range)
         self.env['ir.values'].sudo().set_default('insurance.config.settings', 'claim_id_end_range', self.claim_id_end_range)
         self.env['ir.values'].sudo().set_default('insurance.config.settings', 'claim_number_next_val', self.claim_number_next_val)
-        
+        self.env['ir.values'].sudo().set_default('insurance.config.settings', 'insurance_journal', self.insurance_journal)
     
