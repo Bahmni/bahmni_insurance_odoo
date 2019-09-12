@@ -5,6 +5,7 @@ from odoo.exceptions import UserError
 
 import odoo.addons.decimal_precision as dp
 from xmlrpclib import DateTime
+from difflib import _calculate_ratio
 
 _logger = logging.getLogger(__name__)
 
@@ -12,6 +13,7 @@ class claims(models.Model):
     _name = 'insurance.claim'
     _description = 'Claims'
     _inherit = ['mail.thread']
+    _auto = False
     
     @api.depends('insurance_claim_line.price_total')
     def _claimed_amount_all(self):
@@ -58,6 +60,10 @@ class claims(models.Model):
         _logger.info("print_claim")
         
         claim_code = self.env['insurance.config.settings']._get_next_value()
+                        
+        if not claim_code:
+            claim_code = self.env['ir.sequence'].next_by_code('insurance.claim.code')
+        
         _logger.info("\n\n\n\n Claim Code=")
         _logger.info(claim_code)
         
@@ -76,12 +82,12 @@ class claims(models.Model):
 
     
     @api.model
-    @api.onchange('partner_id')
+    @api.onchange('partner_id', 'id')
     def _get_insurance_details(self):
         """
             Get insurance details
         """
-        _logger.info("_get_insurance_details")
+        _logger.info("\n\n\n\n Inside _get_insurance_details")
         for claim in self:
             _logger.info(claim.partner_id.id)
             _logger.info(claim.id)
@@ -350,6 +356,13 @@ class claims(models.Model):
                     else:
                         _logger.info("Submission")
                         claim_code = self.env['insurance.config.settings']._get_next_value()
+                        
+                        '''
+                            Check if the claim code has been set through config or not. If not then, use it from sequence
+                        '''
+                        if not claim_code:
+                            claim_code = self.env['ir.sequence'].next_by_code('insurance.claim.code')
+                        
                     _logger.info("\n\n\n\n Claim Code=")
                     _logger.info(claim_code)
                         
@@ -402,7 +415,6 @@ class claims(models.Model):
             _logger.error(err)
             raise UserError(err)
     
-    
     def update_claim_from_claim_response(self, claim, response):
         _logger.info("update_claim_from_claim_response")
         claim.amount_approved_total = response['approvedTotal']
@@ -450,9 +462,10 @@ class claims(models.Model):
     partner_uuid = fields.Char(related='partner_id.uuid', string='Customer UUID', store=True, readonly=True)
     currency_id = fields.Many2one(related='sale_orders.currency_id', string="Currency", readonly=True, required=True)
     insurance_claim_history = fields.One2many('insurance.claim.history', 'claim_id', string='Claim Lines', states={'confirmed': [('readonly', True)], 'submitted': [('readonly', True)], 'rejected': [('readonly', True)]}, copy=True)
-    insurance_eligibility = fields.Reference(selection=_get_insurance_details, string='Insurance Eligibility')
+    insurance_eligibility = fields.Many2many("insurance.eligibility", string='Insurance Eligibility', compute='_get_insurance_details')
     external_visit_uuid = fields.Char(string="External Visit Id", help="This field is used to store visit id of patient")
-
+    
+    
 class claims_line(models.Model):
     _name = 'insurance.claim.line'
     _description = 'Claim Line Items' 
@@ -546,5 +559,4 @@ class claim_history(models.Model):
     ], string='Claim Status', readonly=True, copy=False, store=True, default='draft')
     claim_comments = fields.Text(store=True, string='Claim Comments')
     rejection_reason = fields.Text( store=True, string='Rejection Reason')
-    
     

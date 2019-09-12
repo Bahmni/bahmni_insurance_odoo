@@ -11,14 +11,16 @@ class insurance_config_settings(models.Model):
     username = fields.Char(string="Username", required=True, help="Username for insurance integration module")
     password = fields.Char(string="Password", required=True, help="Username for insurance integration module")
     base_url = fields.Char(string="Insurance Connect Service URL", required=True, help="Base URL for insurance integration module")
-    claim_id_start_range = fields.Integer(string="Start Range", required=True, help="Start Value for claim code")
-    claim_id_end_range = fields.Integer(string="Start Range", required=True, help="End Value for claim code")
-    claim_number_next_val = fields.Integer(string="Next Value", required=True)
+    claim_id_start_range = fields.Integer(string="Start Range", help="Start Value for claim code")
+    claim_id_end_range = fields.Integer(string="Start Range", help="End Value for claim code")
+    claim_number_next_val = fields.Integer(string="Next Value", readonly=True)
     insurance_journal = fields.Char(string="Insurance Journal", required=True, help="Name of the journal which will handle insurance payments")
     
     @api.constrains("claim_id_start_range")
     def validate_start_range(self):
-        if self.claim_id_start_range == None:
+        if not self.claim_id_start_range and not self.claim_id_end_range:
+            return
+        if not self.claim_id_start_range:
             raise ValidationError("The Start Range can\'t be empty")
         if self.claim_id_start_range > self.claim_id_end_range:
             raise ValidationError("The Start range can\'t be greater than End range")
@@ -26,8 +28,10 @@ class insurance_config_settings(models.Model):
          
     @api.constrains("claim_id_end_range")
     def validate_end_range(self):
-        if self.claim_id_end_range == None:
-            raise ValidationError("The Start Range can\'t be empty")
+        if not self.claim_id_start_range and not self.claim_id_end_range:
+            return
+        if not self.claim_id_end_range:
+            raise ValidationError("The End Range can\'t be empty")
         if self.claim_id_end_range < self.claim_id_start_range:
             raise ValidationError("The End range can\'t be smaller than start range")
         
@@ -44,6 +48,8 @@ class insurance_config_settings(models.Model):
     def validate_next_val(self):
         _logger.info("Inside validate_next_val")
         _logger.info("next value=%s",self.claim_number_next_val)
+        if not self.claim_id_start_range and not self.claim_id_end_range:
+            return
         if self.claim_number_next_val == None:
             raise ValidationError("The Next Values can\'t be empty")
         if self.claim_number_next_val < self.claim_id_start_range:
@@ -59,7 +65,7 @@ class insurance_config_settings(models.Model):
 #         self.claim_number_next_val = self.claim_id_start_range
     
     
-    @api.model
+    @api.multi
     def _get_next_value(self):
         _logger.info("Inside validate_next_val")
         
@@ -118,7 +124,7 @@ class insurance_config_settings(models.Model):
         
         response = self.env['insurance.connect'].authenticate(self.username, self.password, self.base_url)
     
-    @api.multi
+    @api.one
     def update_params(self, configs):
         _logger.info("Inside update_params")
         _logger.info("configs = %s", configs)

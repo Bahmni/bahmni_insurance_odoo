@@ -58,6 +58,12 @@ class insurance_connect(models.TransientModel):
                 response = json.loads(req.data.decode('utf-8'))
                 _logger.info(response)
                 return response
+            elif response.status == 503:
+                _logger.error(response.data)
+                raise UserError("Insurance connect service not available. Please contact system administrator")
+            elif response.status == 401:
+                _logger.error(response.data)
+                raise UserError("Please check credentials for insurance connect service and retry again")
             else:
                 response = json.loads(req.data.decode('utf-8'))
                 _logger.info(json.dumps(response))
@@ -136,9 +142,16 @@ class insurance_connect(models.TransientModel):
             response = json.loads(response.data.decode('utf-8'))
             _logger.info(json.dumps(response))
             return response
+        elif response.status == 503:
+            _logger.error(response.data)
+            raise UserError("Insurance connect service not available. Please contact system administrator")
+        elif response.status == 401:
+            _logger.error(response.data)
+            raise UserError("Please check credentials for insurance connect service and retry again")
         else:
-            _logger.error("\n Failed Request to insurance connect: %s", response)
-            raise UserError("%s, %s \n Failed Request to insurance connect"%(response.error, response.message))
+            _logger.error("\n Failed Request to insurance connect: %s", response.data)
+            response = json.loads(response.data.decode('utf-8'))
+            raise UserError("%s, %s \n Failed Request to insurance connect"%(response['error'], response['message']))
 
     
     def prepare_url(self, end_point, insurance_connect_configurations):
