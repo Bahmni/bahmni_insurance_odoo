@@ -59,16 +59,7 @@ class claims(models.Model):
         '''
         _logger.info("print_claim")
         
-        claim_code = self.env['insurance.config.settings']._get_next_value()
-                        
-        if not claim_code:
-            claim_code = self.env['ir.sequence'].next_by_code('insurance.claim.code')
-        
-        _logger.info("\n\n\n\n Claim Code=")
-        _logger.info(claim_code)
-        
         raise UserError("Currently this feature is not available")
-        
         
     
     @api.multi
