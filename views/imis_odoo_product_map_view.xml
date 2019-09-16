@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="imis_odoo_product_map_form_view" model="ir.ui.view">
+        <field name="name">Imis-Odoo Product Mapper</field>
+        <field name="type">form</field>
+        <field name="model">imis.odoo.product.map</field>
+        <field name="arch" type="xml">
+            <form string="Imis-Odoo Product Map">
+		 <sheet>
+			<group>
+				<field name="item_code"/>
+				<field name="imis_product"/>
+				<field name="imis_price"/>
+				<field name="odoo_product_id"/>
+				<field name="valid_from"/>
+				<field name="valid_till"/>
+                <field name="is_active"/>
+            </group>
+		 </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="imis_odoo_product_map_tree_view" model="ir.ui.view">
+        <field name="name">imis.odoo.product.map.tree</field>
+        <field name="model">imis.odoo.product.map</field>
+        <field name="type">tree</field>
+        <field name="arch" type="xml">
+            <tree string="Imis Product Mapper">
+                <field name="item_code"/>
+				<field name="imis_product"/>
+				<field name="imis_price"/>
+				<field name="odoo_product_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="imis_odoo_product_map_filter" model="ir.ui.view">
+        <field name="name">imis.odoo.product.map.filter</field>
+        <field name="model">imis.odoo.product.map</field>
+        <field name="arch" type="xml">
+            <search string="Search Imis Product">
+                <field name="item_code"/>
+				<field name="imis_product"/>
+				<field name="imis_price"/>
+				<field name="odoo_product_id"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_imis_odoo_product_mapping" model="ir.actions.act_window">
+        <field name="name">Imis - Odoo Product mapping</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">imis.odoo.product.map</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+    </record>
+
+	<menuitem action="action_imis_odoo_product_mapping" id="menu_action_imis_odoo_product_mapping" parent="sales_team.menu_sale_config" sequence="34"/>
+
+</odoo>
