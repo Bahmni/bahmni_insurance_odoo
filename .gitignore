@@ -1,0 +1,12 @@
+.project
+.pydevproject
+.settings/*
+*.pyc
+/wizard/*.pyc
+.idea/*
+.idea/workspace.xml
+*.pyc
+.idea/
+.project
+.pydevproject
+wizard/.gitignore

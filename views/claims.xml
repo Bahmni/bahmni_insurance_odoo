@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!--Claims Tree View -->
+    <record id="insurance_claims_tree_view" model="ir.ui.view">
+        <field name="name">insurance.claim.tree</field>
+        <field name="model">insurance.claim</field>
+        <field name="priority">1</field>
+        <field name="domain">[('state', 'in', ('draft', 'confirmed', 'rejected'))]</field>
+        <field name="arch" type="xml">
+            <tree string="Claims">
+                <field name="claim_code" string="Claim Number"/>
+                <field name="claimed_date"/>
+                <field name="partner_id"/>
+                <field name="claim_manager_id"/>
+                <field name="claimed_amount_total" sum="Total Amount Claimed" widget="monetary"/>
+                <field name="amount_approved_total" sum="Total Amount Approved" widget="monetary"/>
+                <field name="state"/>
+                <field name="claim_comments"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record id="action_insurance_claims_view" model="ir.actions.act_window">
+        <field name="name">Insurance Claims</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">insurance.claim</field>
+        <field name="domain">['|',('state','=','draft'),('state','=','confirmed')]</field>
+        <field name="view_id" ref="insurance_claims_tree_view"/>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="context">{}</field>
+    </record>
+    
+    <menuitem action="action_insurance_claims_view"
+        id="menu_insurance_claim" name="Claims"
+        parent="bahmni-insurance-odoo.menu_insurance_title" sequence="1"/>
+        
+    <!--Claims Form View -->
+    <record id="view_claims_form" model="ir.ui.view">
+        <field name="name">insurance.claim.form</field>
+        <field name="model">insurance.claim</field>
+        <field name="arch" type="xml">
+            <form class="o_sale_order" string="Claims">
+                <header>
+                    <button class="btn-primary"
+                        attrs="{'invisible': [('state', 'in', ['draft','checked','processed','valuated', 'submitted', 'rejected'])]}"
+                        name="action_claim_submit"
+                        string="Submit Claim" type="object"/>
+                    <button class="btn-primary o_sale_confirm"
+                        attrs="{'invisible': [('state', 'in', ['confirmed', 'submitted','checked','processed','valuated'])]}"
+                        name="action_confirm"
+                        string="Confirm Claim" type="object"/>
+                    <button class="btn-primary o_sale_confirm"
+                        attrs="{'invisible': [('state', 'in', ['draft', 'confirmed', 'rejected','valuated'])]}"
+                        name="action_track_status"
+                        string="Track Claim" type="object"/>
+                    <button class="btn-primary o_sale_confirm"
+                        attrs="{'invisible': [('state', 'in', ['draft','checked','processed', 'submitted', 'rejected'])]}"
+                        name="action_adjust_payment"
+                        string="Add Claim Payment" type="object"/>
+                    <button class="btn-primary" name="print_claim"
+                        string="Print" type="object"/>   
+                    <field name="state" statusbar_visible="draft, confirmed, checked, submitted, processed, valuated" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field String="Claim Code"
+                                attrs="{'invisible': [('state', 'in', ['draft', 'confirmed'])]}"
+                                name="claim_code" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field context="{'search_default_customer':1}"
+                                domain="[('customer','=',True)]"
+                                name="partner_id" options="{&quot;always_reload&quot;: True}" readonly='1' required="1"/>
+                            <field String="NHIS Number" name="nhis_number" required="1"/>
+                            <field String="Claim Status" name="state" required="1"/>
+
+                        </group>
+                        <group>
+                            <field name="claimed_date" attrs="{'readonly': [('state', 'in', ('draft','confirmed'))]}" required="1"/>
+                            <field name="claim_manager_id" required="1"/>
+                            <field attrs="{'invisible': [('state', 'in', ['submitted'])]}" name="claimed_received_date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Claim Items">
+                            <field attrs="{'readonly': [('state', 'in', ('confirmed','submitted'))]}"
+                                mode="tree,kanban" name="insurance_claim_line">
+                                <form string="Claim Items">
+                                    <group>
+                                        <group>
+                                            <field name="imis_product" required="1"/>
+                                            <field name="imis_product_code" required="1"/>
+                                            <field name="product_id" required="1"/>
+                                            <field name="product_qty" required="1"/>
+                                            <field name="price_unit" required="1"/>
+                                            <field name="price_total" required="1"/>
+                                            <field invisible="1" name="currency_id"/>
+                                        </group>
+                                    </group>
+                                </form>
+                                <tree editable="bottom" string="Claim Item">
+                                    <field name="product_id"/>
+                                    <field name="product_qty"/>
+                                    <field name="price_unit"/>
+                                    <field name="price_total"/>
+                                    <field name="amount_approved"/>
+                                    <field name="state"/>
+                                    <field name="rejection_reason"/>
+                                    <field invisible="1" name="currency_id"/>
+                                </tree>
+                                <kanban class="o_kanban_mobile">
+                                    <field name="product_id"/>
+                                    <field name="product_qty"/>
+                                    <field groups="product.group_uom" name="product_uom"/>
+                                    <field name="price_total"/>
+                                    <field invisible="1" name="currency_id"/>
+                                    <templates>
+                                        <t t-name="kanban-box">
+                                            <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                                                <div class="row">
+                                                    <div class="col-xs-12">
+                                                        <strong>
+                                                            <span>
+                                                                <t t-esc="record.product_id.value"/>
+                                                            </span>
+                                                        </strong>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-8 text-muted">
+                                                        <span>
+                                                            <t t-esc="record.product_qty.value"/>
+                                                            <t t-esc="record.product_uom.value"/>
+                                                        </span>
+                                                    </div>
+                                                    <div class="col-xs-4 text-muted">
+                                                        <span class="pull-right text-right">
+                                                            <t t-esc="record.price_total.value"/>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </templates>
+                                </kanban>
+                            </field>
+                            <group class="oe_subtotal_footer oe_right" colspan="2" name="Total Amount">
+                                <field name="claimed_amount_total" widget="monetary"/>
+                            </group>
+                            <div class="oe_clear"/>
+                        </page>
+                        <page string="Sale Orders">
+                            <separator string="Sale Orders"/>
+                            <field name="sale_orders" nolabel="1"></field>
+                        </page>
+                        <page string="Eligibility Details" attrs="{'invisible': [('state', 'in', ('confirmed','submitted'))]}">
+                            <form string="Eligibility Details">
+                                <group>>
+                                    <group>
+                                        <field name="insuree_name" string="Insuree" readonly="1"/>
+                                        <field name="eligibility_status" string="Status"/>
+                                        <field name="eligibility_balance" string="Balance" readonly="1"/>
+                                    </group>
+                                    <group>
+                                        <field name="card_issued" string="Card Issued" readonly="1"/>
+                                        <field name="valid_from" string="Valid From" readonly="1"/>
+                                        <field name="valid_till" string="Valid Till" readonly="1"/>
+                                    </group>
+                                </group>
+                            </form>
+
+                        </page>
+                        <page string="Claim History">
+                            <field name="insurance_claim_history" nolabel="1" readonly="1">
+                            </field>
+                        </page>
+                        <page string="Claim Fhir" attrs="{'invisible': [('state', 'in', ('confirmed','draft'))]}">
+                            <field name="claim_fhir" nolabel="1" readonly="0">
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!--<record id="insurance_claims_eligibility_tree_view" model="ir.ui.view">-->
+        <!--<field name="name">insurance.claim.eligibility.tree</field>-->
+        <!--<field name="model">insurance.claim.eligibility</field>-->
+        <!--<field name="arch" type="xml">-->
+            <!--<tree string="insurance claim eligibility">-->
+                <!--<field name="status" readonly="1"/>-->
+            <!--</tree>-->
+        <!--</field>-->
+    <!--</record>-->
+
+    <record id="insurance_claims_history_tree_view" model="ir.ui.view">
+        <field name="name">insurance.claim.history.tree</field>
+        <field name="model">insurance.claim.history</field>
+        <field name="priority">1</field>
+        <field name="arch" type="xml">
+            <tree string="Claim History">
+                <field name="claim_code" readonly="1"/>
+                <field name="partner_id" readonly="1"/>
+                <field name="claim_manager_id" readonly="1"/>
+                <field name="state" readonly="1"/>
+                <field name="claim_comments" readonly="1"/>
+                <field name="rejection_reason" readonly="1"/>
+                <field name="create_date" String="Date" readonly="1"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record id="action_insurance_submitted_claims_view" model="ir.actions.act_window">
+        <field name="name">Submitted Claims</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">insurance.claim</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,kanban,form</field>
+         <field name="domain">[('state', 'not in', ('draft', 'rejected', 'confirmed'))]</field>
+    </record>
+    <menuitem action="action_insurance_submitted_claims_view"
+        id="menu_insurance_submitted_claims" name="Submitted Claims"
+        parent="bahmni-insurance-odoo.menu_insurance_title" sequence="2"/>
+</odoo>
