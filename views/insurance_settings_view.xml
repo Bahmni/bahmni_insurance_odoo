@@ -33,14 +33,11 @@
                             <field name="base_url"/>
                         </div>
                     </div>
-                     <div>
+                    <div style="margin-left:20px; margin-top:15px;">
                         <button class="btn-primary"
                             name="action_test_connection"
-                            string="Test Connection" type="object" context="{
-                               'username': username,
-                               'password': password,
-                               'url': base_url
-                               }" />    
+                            attrs="{'invisible': [('username', '!=', ''),'&amp;',('password','!=', ''),'&amp;',('base_url','!=', '')]}"
+                            string="Test Connection" type="object" />    
                         
                     </div>
                 </group>
@@ -57,6 +54,15 @@
                         <div>
                             <label for="claim_number_next_val" string="Next Value"/>
                             <field name="claim_number_next_val"/>
+                        </div>
+                    </div>
+                </group>
+                
+                <group string="Journal Setup">
+                    <div>
+                        <div>
+                            <label for="insurance_journal" string="Insurance Journal Name"/>
+                            <field name="insurance_journal"/>
                         </div>
                     </div>
                 </group>

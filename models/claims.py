@@ -5,12 +5,14 @@ from odoo.exceptions import UserError
 
 import odoo.addons.decimal_precision as dp
 from xmlrpclib import DateTime
+from difflib import _calculate_ratio
 
 _logger = logging.getLogger(__name__)
 
 class claims(models.Model):
     _name = 'insurance.claim'
     _description = 'Claims'
+    _inherit = ['mail.thread']
 
     def _extract_claim_fhir(self):
         if self.claim_fhir:
@@ -93,8 +95,18 @@ class claims(models.Model):
             Print Claim
         '''
         _logger.info("print_claim")
-        raise UserError("Currently this feature is not available")
         
+        raise UserError("Currently this feature is not available")
+    
+    @api.multi
+    def action_adjust_payment(self):
+        '''
+            Adjust the amount received from the claim
+        '''
+        _logger.info("Inside action_adjust_payment")
+        
+        raise UserError("Currently this feature is not available")
+    
         
     
     @api.multi
@@ -106,7 +118,7 @@ class claims(models.Model):
         _logger.info("onchange_sale_orders_add_claim")
 
     @api.model
-    @api.onchange('partner_id')
+    @api.onchange('partner_id', 'id')
     def _get_insurance_details(self):
         """
             Get insurance details
@@ -195,6 +207,45 @@ class claims(models.Model):
                 
                 #Exculsively adding sales order
                 claim_in_db.update({'sale_orders': claim_in_db.sale_orders + sale_order})
+                
+                if sale_order.care_setting == 'opd':
+                    ''' search for opd service product for hospital type.
+                        If PHC then OPD PHC 
+                        IF Hospital then OPD Hospital
+                        If product found (in imis_odoo_mapper) and its not a product in odoo. 
+                        then throw exception
+                        Add OPD service product for opd visit
+                    '''
+                    hospital_type = sale_order.company_id.hospital_type
+                    
+                    if hospital_type == 'PHC':
+                        imis_product = 'OPD PHC'
+                    else:
+                        imis_product = 'OPD Hospital'
+                    
+                    imis_mapped_row = self.env['insurance.odoo.product.map'].search([('insurance_product', '=', imis_product), ('is_active', '=', 'True')])
+                    if imis_mapped_row is None or len(imis_mapped_row) == 0 :
+                        _logger.debug("imis_mapped_row mapping not found")
+                        raise UserError("%s is not mapped to insurance product"%(imis_product))
+                    
+                    if len(imis_mapped_row) > 1 :
+                        _logger.debug("multiple mappings found")
+                        raise UserError("Multiple mappings found for %s"%(imis_product))
+                        
+                    _logger.debug("imis_mapped_row ->%s", imis_mapped_row)
+                    claim_line_item = {
+                        'claim_id' : claim_in_db.id,
+                        'product_id' : imis_mapped_row.odoo_product_id.id,
+                        'product_qty' : 1,
+                        'product_uom' : imis_mapped_row.odoo_product_id.uom_id.id,
+                        'imis_product' : imis_mapped_row.id,
+                        'imis_product_code' : imis_mapped_row.item_code,
+                        'price_unit' : imis_mapped_row.insurance_price,
+                        'currency_id': claim_in_db.currency_id
+                    }
+                    claim_line_in_db = self.env['insurance.claim.line'].create(claim_line_item)
+                    _logger.info(claim_line_in_db)    
+                
             try:
                 _logger.info(claim_in_db)   
                 
@@ -243,10 +294,10 @@ class claims(models.Model):
                 raise UserError("Multiple mappings found for %s"%(sale_order_line.product_id.name))
             
             #Check if a product is already present. If yes update quantity
-            insurance_claim_line = claim.insurance_claim_line.filtered(lambda r: r.product_id.id == sale_order_line.product_id.id)
+            insurance_claim_line = claim.insurance_claim_line.filtered(lambda r: r.imis_product == imis_mapped_row.insurance_product)
         
             if insurance_claim_line:
-                insurance_claim_line.update({'product_qty': insurance_claim_line + sale_order.product_uom_qty })
+                insurance_claim_line.update({'product_qty': insurance_claim_line + sale_order_line.product_uom_qty })
             else:
                 self.create_new_claim_line(claim, sale_order_line, imis_mapped_row)
             
@@ -288,7 +339,6 @@ class claims(models.Model):
             # if self._check_if_eligible(claim) == False:
             #      raise UserError("Claim can't be processed. Claimed amount greater than eligible amount.")
             
-            #TODO check if the current visit is closed or not
             if self.check_visit_closed(claim.external_visit_uuid) == False:
                 raise UserError("The current visit has not been closed. So can't be confirmed now.")
             
@@ -343,7 +393,16 @@ class claims(models.Model):
                     else:
                         _logger.info("Submission")
                         claim_code = self.env['insurance.config.settings']._get_next_value()
-                        _logger.info(claim_code)
+                        
+                        '''
+                            Check if the claim code has been set through config or not. If not then, use it from sequence
+                        '''
+                        if not claim_code:
+                            claim_code = self.env['ir.sequence'].next_by_code('insurance.claim.code')
+                        
+                    _logger.info("\n\n\n\n Claim Code=")
+                    _logger.info(claim_code)
+                        
                     
                     claim.update({
                         'claim_code':claim_code,
@@ -352,7 +411,6 @@ class claims(models.Model):
                     })
                     
                     self._add_history(claim)
-                    # TODO: hardoded visitUUID  claim.external_uuid
                     claim_request = {
                         "patientUUID": claim.partner_uuid,
                         "visitUUID": claim.external_visit_uuid,
@@ -393,7 +451,6 @@ class claims(models.Model):
         except Exception as err:
             _logger.error(err)
             raise UserError(err)
-    
     
     def update_claim_from_claim_response(self, claim, response):
         _logger.info("update_claim_from_claim_response")
@@ -451,7 +508,8 @@ class claims(models.Model):
     eligibility_balance = fields.Text(compute=_extract_eligibility, string='Balance', store=False)
     card_issued = fields.Text(compute=_extract_eligibility, string='Card Issued', store=False)
     external_visit_uuid = fields.Char(string="External Visit Id", help="This field is used to store visit id of patient")
-
+    
+    
 class claims_line(models.Model):
     _name = 'insurance.claim.line'
     _description = 'Claim Line Items' 
@@ -501,7 +559,7 @@ class claims_line(models.Model):
         ('draft', 'Draft'),
         ('passed', 'Passed'),
         ('rejected', 'Rejected')
-        ],  string='Claim Status', readonly=True, copy=False, store=True, default='draft')
+        ],  string='Claim Status', readonly=True, copy=False, store=True)
     claim_comments = fields.Text(string='Comments')
     rejection_reason = fields.Text(string='Rejection Reason')
     claim_sequence = fields.Integer(string='Sequence', readonly=True)
@@ -532,6 +590,7 @@ class claim_history(models.Model):
     claim_code = fields.Char( store=True, string='Claim Code')
     state = fields.Selection([
         ('draft', 'Draft'),
+        ('confirmed', 'Confirmed'),
         ('submitted', 'Submitted'),
         ('checked', 'Checked'),
         ('valuated', 'Valuated'),
@@ -539,7 +598,7 @@ class claim_history(models.Model):
         ('processed', 'Processed'),
         ('passed', 'Passed')
 
-    ], related='claim_id.state', string='Claim Status', readonly=True, copy=False, store=True, default='draft')
+    ], string='Claim Status', readonly=True, copy=False, store=True, default='draft')
     claim_comments = fields.Text(store=True, string='Claim Comments')
     rejection_reason = fields.Text( store=True, string='Rejection Reason')
 
@@ -581,5 +640,4 @@ class insurance_claim_eligibility(models.Model):
     nhis_number = fields.Char(string="NHIS Number", readonly=1)
     status = fields.Char(string="Status")
     card_issued = fields.Char(string="Card Issued", readonly=1)
-
 

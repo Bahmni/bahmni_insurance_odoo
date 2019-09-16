@@ -22,10 +22,11 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ["base","sale","account", "bahmni_atom_feed"],
+    'depends': ["base","sale", "mail", "bahmni_atom_feed", "bahmni_account", "account"],
 
     # always loaded
     'data': [
+#        'security/ir.model.access.csv',
         'views/insurance_views.xml',
         'views/quotation_view.xml',
         'views/insurance_odoo_product_map_view.xml',
@@ -34,7 +35,10 @@
         'report/insuree_consent_form.xml',
         'report/consent_form_template.xml',
         'wizard/eligibility_check_response.xml',
-        'views/insurance_settings_view.xml'
+        'views/insurance_settings_view.xml',
+        'views/company_view.xml',
+        'views/account_invoice_view.xml',
+        'data/insurance_claim_data.xml'
     ],
     # only loaded in demonstration mode
     #'demo': [

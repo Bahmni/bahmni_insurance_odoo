@@ -10,20 +10,14 @@ class insurance_connect(models.TransientModel):
     _name = 'insurance.connect'
     
     @api.model
-    def authenticate(self):
+    def authenticate(self, username, password, url):
         _logger.info("Inside authenticate")
-#         insurance_connect_configurations = self.env['insurance.config.settings'].get_insurance_connect_configurations()
-#         if insurance_connect_configurations is None:
-#             raise UserError("Insurance configurations not set")
-    
-        #Mocking insurance connect configurations
         insurance_connect_configurations = {
             'username': username,
             'password': password,
-            'url': url
+            'base_url': url
         }
         url = self.prepare_url("/request/authenticate", insurance_connect_configurations)
-        #url = url%(nhis_number)
         http = urllib3.PoolManager()
 
         req = http.request('GET', url, headers=self.get_header(insurance_connect_configurations))
@@ -64,6 +58,12 @@ class insurance_connect(models.TransientModel):
                 response = json.loads(req.data.decode('utf-8'))
                 _logger.info(response)
                 return response
+            elif req.status == 503:
+                _logger.error(req.data)
+                raise UserError("Insurance connect service not available. Please contact system administrator")
+            elif req.status == 401:
+                _logger.error(req.data)
+                raise UserError("Please check credentials for insurance connect service and retry again")
             else:
                 response = json.loads(req.data.decode('utf-8'))
                 _logger.info(json.dumps(response))
@@ -164,9 +164,16 @@ class insurance_connect(models.TransientModel):
             response = json.loads(response.data.decode('utf-8'))
             _logger.info(json.dumps(response))
             return response
+        elif response.status == 503:
+            _logger.error(response.data)
+            raise UserError("Insurance connect service not available. Please contact system administrator")
+        elif response.status == 401:
+            _logger.error(response.data)
+            raise UserError("Please check credentials for insurance connect service and retry again")
         else:
-            _logger.error("\n Failed Request to insurance connect: %s", response)
-            raise UserError("\n Error from insurance connect, Please contact your app admin: %s", response)
+            _logger.error("\n Failed Request to insurance connect: %s", response.data)
+            response = json.loads(response.data.decode('utf-8'))
+            raise UserError("%s, %s \n Failed Request to insurance connect"%(response['error'], response['message']))
 
     
     def prepare_url(self, end_point, insurance_connect_configurations):

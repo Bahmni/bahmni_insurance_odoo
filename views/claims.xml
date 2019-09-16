@@ -5,6 +5,7 @@
         <field name="name">insurance.claim.tree</field>
         <field name="model">insurance.claim</field>
         <field name="priority">1</field>
+        <field name="domain">[('state', 'in', ('draft', 'confirmed', 'rejected'))]</field>
         <field name="arch" type="xml">
             <tree string="Claims">
                 <field name="claim_code" string="Claim Number"/>
@@ -53,6 +54,10 @@
                         attrs="{'invisible': [('state', 'in', ['draft', 'confirmed', 'rejected','valuated'])]}"
                         name="action_track_status"
                         string="Track Claim" type="object"/>
+                    <button class="btn-primary o_sale_confirm"
+                        attrs="{'invisible': [('state', 'in', ['draft','checked','processed', 'submitted', 'rejected'])]}"
+                        name="action_adjust_payment"
+                        string="Add Claim Payment" type="object"/>
                     <button class="btn-primary" name="print_claim"
                         string="Print" type="object"/>   
                     <field name="state" statusbar_visible="draft, confirmed, checked, submitted, processed, valuated" widget="statusbar"/>
@@ -67,7 +72,7 @@
                     </div>
                     <group>
                         <group>
-                            <field context="{'search_default_customer':1, 'show_address': 1}"
+                            <field context="{'search_default_customer':1}"
                                 domain="[('customer','=',True)]"
                                 name="partner_id" options="{&quot;always_reload&quot;: True}" readonly='1' required="1"/>
                             <field String="NHIS Number" name="nhis_number" required="1"/>
@@ -150,17 +155,7 @@
                         </page>
                         <page string="Sale Orders">
                             <separator string="Sale Orders"/>
-                            <field name="sale_orders" nolabel="1">
-                                <!-- <tree string="Sale Orders">
-                                    <field name="name" string="Order Number"/>
-                                    <field name="date_order"/>
-                                    <field name="partner_id"/>
-                                    <field name="user_id"/>
-                                    <field name="payment_type"/>
-                                    <field name="amount_total"
-                                    sum="Total Tax Included" widget="monetary"/>
-                                </tree> -->
-                            </field>
+                            <field name="sale_orders" nolabel="1"></field>
                         </page>
                         <page string="Eligibility Details" attrs="{'invisible': [('state', 'in', ('confirmed','submitted'))]}">
                             <form string="Eligibility Details">
@@ -189,10 +184,10 @@
                         </page>
                     </notebook>
                 </sheet>
-                <!-- <div class="oe_chatter`">
+                <div class="oe_chatter">
                     <field name="message_follower_ids" widget="mail_followers"/>
                     <field name="message_ids" widget="mail_thread"/>
-                </div> -->
+                </div>
             </form>
         </field>
     </record>
@@ -230,7 +225,7 @@
         <field name="res_model">insurance.claim</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,kanban,form</field>
-        <field name="domain">['|',('state','=','checked'),('state','=','rejected')]</field>
+         <field name="domain">[('state', 'not in', ('draft', 'rejected', 'confirmed'))]</field>
     </record>
     <menuitem action="action_insurance_submitted_claims_view"
         id="menu_insurance_submitted_claims" name="Submitted Claims"
