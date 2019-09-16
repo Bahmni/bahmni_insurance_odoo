@@ -46,7 +46,7 @@ class insurance_eligibility (models.TransientModel):
 
         if nhis_number:
             response = self.env['insurance.connect']._check_eligibility(elig_request_param)
-            params = {
+            elig_response = {
                   'insuree_name':partner_id.name,
                   'nhis_number': nhis_number,
                   'valid_from': response['validityFrom'],
@@ -55,7 +55,7 @@ class insurance_eligibility (models.TransientModel):
                   'card_issued': response['cardIssued'],
                   'eligibility_balance': response['eligibilityBalance'][0]['benefitBalance']
                 }
-            _logger.info(params)
-            return params
+            _logger.info(elig_response)
+            return elig_response
         else:
             raise UserError("No Insurance Id, Please update and retry !")

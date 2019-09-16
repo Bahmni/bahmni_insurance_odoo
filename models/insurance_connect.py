@@ -97,7 +97,29 @@ class insurance_connect(models.TransientModel):
         except Exception as err:
             _logger.error("\n Processing event threw error: %s", err)
             raise
-        
+
+    @api.multi
+    def _get_claim_fhir(self, claim_id):
+        _logger.info("Inside _get_claim_fhir")
+        _logger.info(claim_id)
+        if claim_id:
+            try:
+                insurance_connect_configurations = self.env[
+                    'insurance.config.settings'].get_insurance_connect_configurations()
+                if insurance_connect_configurations is None:
+                    raise UserError("Insurance configurations not set")
+
+                url = self.prepare_url("/get/claimRequest/%s", insurance_connect_configurations)
+                url = url % claim_id
+                http = urllib3.PoolManager()
+                response = http.request('GET', url, headers=self.get_header(insurance_connect_configurations))
+                return response
+                # return self.response_processor(req)
+
+            except Exception as err:
+                _logger.error("\n Processing event threw error: %s", err)
+                raise
+
     @api.multi
     def _get_visit(self, visit_uuid):
         _logger.info("Inside _check_visit")
