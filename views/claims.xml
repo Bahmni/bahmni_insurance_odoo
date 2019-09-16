@@ -163,37 +163,50 @@
                             </field>
                         </page>
                         <page string="Eligibility Details" attrs="{'invisible': [('state', 'in', ('confirmed','submitted'))]}">
-                            <!-- <field name="insurance_eligibility" nolabel="1">
-                                <tree string="Insurance Eligibility">
-                                    <field name="insuree_name" string="Insuree" readonly="1"/>
-                                    <field name="nhis_number" string="NHIS Number" readonly="1"/>
-                                    <field name="valid_from" string="Valid From" readonly="1"/>
-                                    <field name="valid_till" string="Valid Till" readonly="1"/>
-                                    <field name="amount_total" string="Balance" widget="monetary" readonly="1"/>
-                                </tree>
-                            </field> -->
+                            <form string="Eligibility Details">
+                                <group>>
+                                    <group>
+                                        <field name="insuree_name" string="Insuree" readonly="1"/>
+                                        <field name="eligibility_status" string="Status"/>
+                                        <field name="eligibility_balance" string="Balance" readonly="1"/>
+                                    </group>
+                                    <group>
+                                        <field name="card_issued" string="Card Issued" readonly="1"/>
+                                        <field name="valid_from" string="Valid From" readonly="1"/>
+                                        <field name="valid_till" string="Valid Till" readonly="1"/>
+                                    </group>
+                                </group>
+                            </form>
+
                         </page>
                         <page string="Claim History">
                             <field name="insurance_claim_history" nolabel="1" readonly="1">
-                                <!-- <field name="claim_code" readonly="1"/>
-                                <field name="partner_id" readonly="1"/>
-                                <field name="claim_manager_id" readonly="1"/>
-                                <field name="state" readonly="1"/>
-                                <field name="claim_comments" readonly="1"/>
-                                <field name="rejection_reason" readonly="1"/>
-                                <field name="create_date" String="Date" readonly="1"/> -->
+                            </field>
+                        </page>
+                        <page string="Claim Fhir" attrs="{'invisible': [('state', 'in', ('confirmed','draft'))]}">
+                            <field name="claim_fhir" nolabel="1" readonly="0">
                             </field>
                         </page>
                     </notebook>
                 </sheet>
-                <!-- <div class="oe_chatter">
+                <!-- <div class="oe_chatter`">
                     <field name="message_follower_ids" widget="mail_followers"/>
                     <field name="message_ids" widget="mail_thread"/>
                 </div> -->
             </form>
         </field>
     </record>
-    
+
+    <!--<record id="insurance_claims_eligibility_tree_view" model="ir.ui.view">-->
+        <!--<field name="name">insurance.claim.eligibility.tree</field>-->
+        <!--<field name="model">insurance.claim.eligibility</field>-->
+        <!--<field name="arch" type="xml">-->
+            <!--<tree string="insurance claim eligibility">-->
+                <!--<field name="status" readonly="1"/>-->
+            <!--</tree>-->
+        <!--</field>-->
+    <!--</record>-->
+
     <record id="insurance_claims_history_tree_view" model="ir.ui.view">
         <field name="name">insurance.claim.history.tree</field>
         <field name="model">insurance.claim.history</field>

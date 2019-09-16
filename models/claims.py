@@ -11,7 +11,45 @@ _logger = logging.getLogger(__name__)
 class claims(models.Model):
     _name = 'insurance.claim'
     _description = 'Claims'
-    
+
+    def _extract_claim_fhir(self):
+        if self.claim_fhir:
+            _logger.info("Already Computed ")
+            _logger.info(self.claim_fhir)
+
+        if not self.claim_fhir:
+            response = self.env['insurance.connect']._get_claim_fhir(self.claim_code)
+            if response:
+                if response.status == 200:
+                    response = json.loads(response.data.decode('utf-8'))
+                    _logger.info(json.dumps(response))
+                    response_str = json.dumps(response, sort_keys=True, indent=2, separators=(',', ': '))
+                    self.claim_fhir = response_str
+                else:
+                    _logger.error("\n No Claim FHIR request available : %s", response.status)
+                    self.claim_fhir = ""
+
+    def _extract_eligibility(self):
+        _logger.info("Inside _extract_eligibility")
+        _logger.info(self.nhis_number)
+        if not self.eligibility_status:
+            nhis_number = self.nhis_number
+            elig_request_param = {
+                'chfID': nhis_number
+            }
+            if nhis_number:
+                response = self.env['insurance.connect']._check_eligibility(elig_request_param)
+                if response:
+                    self.eligibility_status = response['status']
+                    self.insuree_name = self.partner_id.name
+                    self.valid_from = response['validityFrom']
+                    self.valid_till = response['validityTo']
+                    self.eligibility_balance = response['eligibilityBalance'][0]['benefitBalance']
+                    self.card_issued = response['cardIssued']
+            else:
+                _logger.error("\n No Insurance Id, Please update and retry !")
+
+
     @api.depends('insurance_claim_line.price_total')
     def _claimed_amount_all(self):
         """
@@ -66,9 +104,7 @@ class claims(models.Model):
         Trigger the change of sale order to add claims for associated sale orders
         """
         _logger.info("onchange_sale_orders_add_claim")
-        
 
-    
     @api.model
     @api.onchange('partner_id')
     def _get_insurance_details(self):
@@ -76,14 +112,15 @@ class claims(models.Model):
             Get insurance details
         """
         _logger.info("_get_insurance_details")
-        for claim in self:
-            _logger.info(claim.partner_id.id)
-            _logger.info(claim.id)
-            _logger.info("______")
-            insurance_eligibility = self.env['insurance.eligibility']._get_insurance_details(claim.partner_id)
-            if insurance_eligibility:
-                self.insurance_eligibility = insurance_eligibility
-                _logger.info(self.insurance_eligibility)
+        return 'a'
+        # for claim in self:
+        #     _logger.info(claim.partner_id.id)
+        #     _logger.info(claim.id)
+        #     _logger.info("______")
+        #     insurance_eligibility = self.env['insurance.eligibility']._get_insurance_details(claim.partner_id)
+        #     if insurance_eligibility:
+        #         self.insurance_eligibility = insurance_eligibility
+        #         _logger.info(self.insurance_eligibility)
                 
     def _check_if_eligible(self, claim):
         _logger.info("_check_eligiblity")
@@ -384,11 +421,11 @@ class claims(models.Model):
     claim_manager_id = fields.Many2one('res.users', string='Claims Manager', index=True, track_visibility='onchange', default=lambda self: self.env.user)
     claimed_date = fields.Datetime(string='Creation Date', index=True, help="Date on which claim is created.")
     claimed_received_date = fields.Datetime(string='Processed Date', index=True, help="Date on which claim is processed.")
-    claimed_amount_total = fields.Monetary(string='Total Claimed Amount', store=True, readonly=True, compute='_claimed_amount_all')
+    claimed_amount_total = fields.Monetary(string='Total Claimed Amount', store=True, readonly=True, compute=_claimed_amount_all)
     partner_id = fields.Many2one('res.partner', string='Insuree', required=True, change_default=True, index=True, track_visibility='always')
     nhis_number = fields.Char(related='partner_id.nhis_number', readonly=True, store=True, string='NHIS Number')
     company_id = fields.Many2one('res.company', 'Company', default=lambda self: self.env['res.company']._company_default_get('insurance.claim'))
-    amount_approved_total = fields.Monetary(string='Total Approved Amount', store=True, compute='_claimed_amount_all')
+    amount_approved_total = fields.Monetary(string='Total Approved Amount', store=True, compute=_claimed_amount_all)
     state = fields.Selection([
         ('draft', 'Draft'),
         ('confirmed', 'Confirmed'),
@@ -405,7 +442,14 @@ class claims(models.Model):
     partner_uuid = fields.Char(related='partner_id.uuid', string='Customer UUID', store=True, readonly=True)
     currency_id = fields.Many2one(related='sale_orders.currency_id', string="Currency", readonly=True, required=True)
     insurance_claim_history = fields.One2many('insurance.claim.history', 'claim_id', string='Claim Lines', states={'confirmed': [('readonly', True)], 'submitted': [('readonly', True)], 'rejected': [('readonly', True)]}, copy=True)
-    insurance_eligibility = fields.Reference(selection=_get_insurance_details, string='Insurance Eligibility')
+    # insurance_claim_eligibility = fields.Many2one('insurance.claim.eligibility', 'claim_id')
+    claim_fhir = fields.Text(compute=_extract_claim_fhir, store=False, string='Claim FHIR' )
+    eligibility_status = fields.Text(compute=_extract_eligibility, string='Eligibility Status', store=False)
+    insuree_name = fields.Text(compute=_extract_eligibility, string='insuree_name', store=False)
+    valid_from = fields.Text(compute=_extract_eligibility, string='valid_from', store=False)
+    valid_till = fields.Text(compute=_extract_eligibility, string='valid_till', store=False)
+    eligibility_balance = fields.Text(compute=_extract_eligibility, string='Balance', store=False)
+    card_issued = fields.Text(compute=_extract_eligibility, string='Card Issued', store=False)
     external_visit_uuid = fields.Char(string="External Visit Id", help="This field is used to store visit id of patient")
 
 class claims_line(models.Model):
@@ -450,10 +494,9 @@ class claims_line(models.Model):
     product_qty = fields.Float(string='Quantity', required=True, default=1.0)
     product_uom = fields.Many2one('product.uom', string='Unit of Measure', required=True)
     price_unit = fields.Float(string='Unit Price', required=True, default=0.0)
-    price_total = fields.Monetary(compute='_compute_amount', string='Total', readonly=True, store=True)
+    price_total = fields.Monetary(compute=_compute_amount, string='Total', readonly=True, store=True)
     amount_approved = fields.Monetary(string='Approved amount', store=True)
     currency_id = fields.Many2one(related='claim_id.currency_id', string="Currency", readonly=True, required=True)
-
     state = fields.Selection([
         ('draft', 'Draft'),
         ('passed', 'Passed'),
@@ -482,8 +525,7 @@ class claim_history(models.Model):
             'rejection_reason' : claim.rejection_reason
         }
         return self.env['insurance.claim.history'].create(claim_history)
-    
-    
+
     claim_id = fields.Many2one('insurance.claim', string='Claim ID', required=True, ondelete='cascade', index=True, copy=False)
     partner_id = fields.Many2one(related='claim_id.partner_id', string='Insuree', readonly=True, required=True, change_default=True, index=True, track_visibility='always')
     claim_manager_id = fields.Many2one( store=True, string='Claims Manager', readonly=True)
@@ -500,5 +542,44 @@ class claim_history(models.Model):
     ], related='claim_id.state', string='Claim Status', readonly=True, copy=False, store=True, default='draft')
     claim_comments = fields.Text(store=True, string='Claim Comments')
     rejection_reason = fields.Text( store=True, string='Rejection Reason')
-    
-    
+
+
+class insurance_claim_eligibility(models.Model):
+    _name = 'insurance.claim.eligibility'
+    _description = 'Claim Eligibility'
+
+    def _compute_insurance_details(self):
+        _logger.info("Inside _compute_insurance_details")
+        _logger.info(self.claim_partner_id)
+        nhis_number = self.env['res.partner']._get_nhis_number(self.claim_partner_id)
+        elig_request_param = {
+            'chfID': nhis_number
+        }
+        if nhis_number:
+            response = self.env['insurance.connect']._check_eligibility(elig_request_param)
+            self.status = response['status']
+            # elig_response = {
+            #     'insuree_name': self.claim_partner_id.name,
+            #     'nhis_number': nhis_number,
+            #     'valid_from': response['validityFrom'],
+            #     'valid_till': response['validityTo'],
+            #     'status': response['status'],
+            #     'card_issued': response['cardIssued'],
+            #     'eligibility_balance': response['eligibilityBalance'][0]['benefitBalance']
+            # }
+            # _logger.info(elig_response)
+            # return elig_response
+        else:
+            raise UserError("No Insurance Id, Please update and retry !")
+
+    claim_id = fields.Many2one('insurance.claim', string='Claim ID', required=True, ondelete='cascade', index=True, copy=False)
+    claim_partner_id = fields.Many2one(related='claim_id.partner_id', string='Customer')
+    insuree_name = fields.Text(compute=_compute_insurance_details, store=False, string="Insuree Name", readonly=1)
+    valid_from = fields.Datetime(string="Valid From", readonly=1)
+    valid_till = fields.Datetime(string="Valid Till", readonly=1)
+    eligibility_balance = fields.Float(string="Available Balance", readonly=1)
+    nhis_number = fields.Char(string="NHIS Number", readonly=1)
+    status = fields.Char(string="Status")
+    card_issued = fields.Char(string="Card Issued", readonly=1)
+
+
