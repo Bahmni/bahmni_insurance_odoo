@@ -58,11 +58,11 @@ class insurance_connect(models.TransientModel):
                 response = json.loads(req.data.decode('utf-8'))
                 _logger.info(response)
                 return response
-            elif response.status == 503:
-                _logger.error(response.data)
+            elif req.status == 503:
+                _logger.error(req.data)
                 raise UserError("Insurance connect service not available. Please contact system administrator")
-            elif response.status == 401:
-                _logger.error(response.data)
+            elif req.status == 401:
+                _logger.error(req.data)
                 raise UserError("Please check credentials for insurance connect service and retry again")
             else:
                 response = json.loads(req.data.decode('utf-8'))

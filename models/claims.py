@@ -60,6 +60,16 @@ class claims(models.Model):
         _logger.info("print_claim")
         
         raise UserError("Currently this feature is not available")
+    
+    @api.multi
+    def action_adjust_payment(self):
+        '''
+            Adjust the amount received from the claim
+        '''
+        _logger.info("Inside action_adjust_payment")
+        
+        raise UserError("Currently this feature is not available")
+    
         
     
     @api.multi
