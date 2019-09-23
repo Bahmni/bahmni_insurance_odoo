@@ -212,7 +212,9 @@ class sale_order(models.Model):
         
         
     def check_if_insuree_is_eligible(self):
-        _logger.info("Inside check_eligibility")
+        _logger.info("Inside check_if_insuree_is_eligible")
+        
+        self.check_eligibility();
         
         #TODO remove this 
         return True

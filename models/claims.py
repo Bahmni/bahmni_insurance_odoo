@@ -168,7 +168,7 @@ class claims(models.Model):
             if visit_uuid is None:
                 raise UserError("Sales order doesn't have visit id to be associated with claim")
             
-            claim_in_db = order_in_db = self.env['insurance.claim'].search([('external_visit_uuid', '=', visit_uuid)])
+            claim_in_db = self.env['insurance.claim'].search([('external_visit_uuid', '=', visit_uuid)])
             
             if claim_in_db:
                 '''Update existing claim'''
