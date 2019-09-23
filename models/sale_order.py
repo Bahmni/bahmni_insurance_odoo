@@ -214,23 +214,23 @@ class sale_order(models.Model):
     def check_if_insuree_is_eligible(self):
         _logger.info("Inside check_if_insuree_is_eligible")
         
-        self.check_eligibility();
-        
-        #TODO remove this 
-        return True
-    
         # check if payment type is insurance/partial. If yes proceed with this flow else skip to default flow
         if self.payment_type in ('insurance', 'partial'):
-            params = self.env['insurance.eligibility'].get_insurance_details(self.partner_id)
-            claimable_amount = self.calculate_claimable_amount()
+            self.check_eligibility();
             
-            #Check if insurance can be processed. Perform validations here. If true go ahead
-            if params and claimable_amount <= params['eligibility_balance']:
-                return True
-            elif claimable_amount == 0.0 :
-                raise UserError("Sales order can't be confirmed. No item present to be claimed.")
-            else:
-                raise UserError("Sales order can't be confirmed. No sufficient amount to process claim")
+            return True;
+            
+            #TODO Remove this comment section when eligibilty response is fixed
+#             params = self.env['insurance.eligibility'].get_insurance_details(self.partner_id)
+#             claimable_amount = self.calculate_claimable_amount()
+#             
+#             #Check if insurance can be processed. Perform validations here. If true go ahead
+#             if params and claimable_amount <= params['eligibility_balance']:
+#                 return True
+#             elif claimable_amount == 0.0 :
+#                 raise UserError("Sales order can't be confirmed. No item present to be claimed.")
+#             else:
+#                 raise UserError("Sales order can't be confirmed. No sufficient amount to process claim")
 
         return True
     
