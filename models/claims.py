@@ -324,6 +324,27 @@ class claims(models.Model):
             return True
         else:
             return False
+
+    @api.multi
+    def action_view_eligibility(self):
+        _logger.info("Inside check_eligibility")
+        if self.nhis_number:
+            partner_id = self.partner_id
+            params = self.env['insurance.eligibility'].get_insurance_details(partner_id)
+            ins_elg_obj = self.env['insurance.eligibility'].create(params)
+            return {
+                'type': 'ir.actions.act_window',
+                'name': 'Eligibility Check',
+                'res_model': 'insurance.eligibility',
+                'view_type': 'form',
+                'view_mode': 'form',
+                'res_id': ins_elg_obj.id,
+                'view_id': self.env.ref('bahmni-insurance-odoo.insurance_eligibility_check_result_view', False).id,
+                'target': 'new',
+            }
+        else:
+            _logger.info("No NHIS number")
+            raise UserError("No Insuree Id, Please update and retry !")
     
     @api.multi
     def action_confirm(self):
@@ -501,12 +522,12 @@ class claims(models.Model):
     insurance_claim_history = fields.One2many('insurance.claim.history', 'claim_id', string='Claim Lines', states={'confirmed': [('readonly', True)], 'submitted': [('readonly', True)], 'rejected': [('readonly', True)]}, copy=True)
     # insurance_claim_eligibility = fields.Many2one('insurance.claim.eligibility', 'claim_id')
     claim_fhir = fields.Text(compute=_extract_claim_fhir, store=False, string='Claim FHIR' )
-    eligibility_status = fields.Text(compute=_extract_eligibility, string='Eligibility Status', store=False)
-    insuree_name = fields.Text(compute=_extract_eligibility, string='insuree_name', store=False)
-    valid_from = fields.Text(compute=_extract_eligibility, string='valid_from', store=False)
-    valid_till = fields.Text(compute=_extract_eligibility, string='valid_till', store=False)
-    eligibility_balance = fields.Text(compute=_extract_eligibility, string='Balance', store=False)
-    card_issued = fields.Text(compute=_extract_eligibility, string='Card Issued', store=False)
+    # eligibility_status = fields.Text(compute=_extract_eligibility, string='Eligibility Status', store=False)
+    # insuree_name = fields.Text(compute=_extract_eligibility, string='insuree_name', store=False)
+    # valid_from = fields.Text(compute=_extract_eligibility, string='valid_from', store=False)
+    # valid_till = fields.Text(compute=_extract_eligibility, string='valid_till', store=False)
+    # eligibility_balance = fields.Text(compute=_extract_eligibility, string='Balance', store=False)
+    # card_issued = fields.Text(compute=_extract_eligibility, string='Card Issued', store=False)
     external_visit_uuid = fields.Char(string="External Visit Id", help="This field is used to store visit id of patient")
     
     
@@ -603,41 +624,41 @@ class claim_history(models.Model):
     rejection_reason = fields.Text( store=True, string='Rejection Reason')
 
 
-class insurance_claim_eligibility(models.Model):
-    _name = 'insurance.claim.eligibility'
-    _description = 'Claim Eligibility'
-
-    def _compute_insurance_details(self):
-        _logger.info("Inside _compute_insurance_details")
-        _logger.info(self.claim_partner_id)
-        nhis_number = self.env['res.partner']._get_nhis_number(self.claim_partner_id)
-        elig_request_param = {
-            'chfID': nhis_number
-        }
-        if nhis_number:
-            response = self.env['insurance.connect']._check_eligibility(elig_request_param)
-            self.status = response['status']
-            # elig_response = {
-            #     'insuree_name': self.claim_partner_id.name,
-            #     'nhis_number': nhis_number,
-            #     'valid_from': response['validityFrom'],
-            #     'valid_till': response['validityTo'],
-            #     'status': response['status'],
-            #     'card_issued': response['cardIssued'],
-            #     'eligibility_balance': response['eligibilityBalance'][0]['benefitBalance']
-            # }
-            # _logger.info(elig_response)
-            # return elig_response
-        else:
-            raise UserError("No Insurance Id, Please update and retry !")
-
-    claim_id = fields.Many2one('insurance.claim', string='Claim ID', required=True, ondelete='cascade', index=True, copy=False)
-    claim_partner_id = fields.Many2one(related='claim_id.partner_id', string='Customer')
-    insuree_name = fields.Text(compute=_compute_insurance_details, store=False, string="Insuree Name", readonly=1)
-    valid_from = fields.Datetime(string="Valid From", readonly=1)
-    valid_till = fields.Datetime(string="Valid Till", readonly=1)
-    eligibility_balance = fields.Float(string="Available Balance", readonly=1)
-    nhis_number = fields.Char(string="NHIS Number", readonly=1)
-    status = fields.Char(string="Status")
-    card_issued = fields.Char(string="Card Issued", readonly=1)
+# class insurance_claim_eligibility(models.Model):
+#     _name = 'insurance.claim.eligibility'
+#     _description = 'Claim Eligibility'
+#
+#     def _compute_insurance_details(self):
+#         _logger.info("Inside _compute_insurance_details")
+#         _logger.info(self.claim_partner_id)
+#         nhis_number = self.env['res.partner']._get_nhis_number(self.claim_partner_id)
+#         elig_request_param = {
+#             'chfID': nhis_number
+#         }
+#         if nhis_number:
+#             response = self.env['insurance.connect']._check_eligibility(elig_request_param)
+#             self.status = response['status']
+#             # elig_response = {
+#             #     'insuree_name': self.claim_partner_id.name,
+#             #     'nhis_number': nhis_number,
+#             #     'valid_from': response['validityFrom'],
+#             #     'valid_till': response['validityTo'],
+#             #     'status': response['status'],
+#             #     'card_issued': response['cardIssued'],
+#             #     'eligibility_balance': response['eligibilityBalance'][0]['benefitBalance']
+#             # }
+#             # _logger.info(elig_response)
+#             # return elig_response
+#         else:
+#             raise UserError("No Insurance Id, Please update and retry !")
+#
+#     claim_id = fields.Many2one('insurance.claim', string='Claim ID', required=True, ondelete='cascade', index=True, copy=False)
+#     claim_partner_id = fields.Many2one(related='claim_id.partner_id', string='Customer')
+#     insuree_name = fields.Text(compute=_compute_insurance_details, store=False, string="Insuree Name", readonly=1)
+#     valid_from = fields.Datetime(string="Valid From", readonly=1)
+#     valid_till = fields.Datetime(string="Valid Till", readonly=1)
+#     eligibility_balance = fields.Float(string="Available Balance", readonly=1)
+#     nhis_number = fields.Char(string="NHIS Number", readonly=1)
+#     status = fields.Char(string="Status")
+#     card_issued = fields.Char(string="Card Issued", readonly=1)
 

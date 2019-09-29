@@ -121,7 +121,7 @@ class insurance_config_settings(models.Model):
         _logger.info("model username->%s", self.username)
         _logger.info("model password->%s",self.password)
         _logger.info("model url->%s",self.base_url)
-        
+
         response = self.env['insurance.connect'].authenticate(self.username, self.password, self.base_url)
     
     @api.one

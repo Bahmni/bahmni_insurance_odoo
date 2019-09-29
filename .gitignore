@@ -1,11 +1,9 @@
 .project
 .pydevproject
 .settings/*
-*.pyc
-/wizard/*.pyc
+**.pyc
 .idea/*
 .idea/workspace.xml
-*.pyc
 .idea/
 .project
 .pydevproject

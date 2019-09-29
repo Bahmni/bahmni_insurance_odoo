@@ -19,7 +19,18 @@
             </tree>
         </field>
     </record>
-    
+
+    <!--<record id="check_nhis_number_validity_button" model="ir.ui.view">-->
+        <!--<field name="name">insurance.claim.form</field>-->
+        <!--<field name="model">insurance.claim</field>-->
+        <!--<field name="arch" type="xml">-->
+            <!--<xpath expr="//button[@name='action_confirm']" position="after">-->
+                <!--<button name="check_eligibility" type="object" string="View Eligibility"-->
+                <!--attrs="{'invisible': [('payment_type', 'in', ['cash'])]}" />-->
+            <!--</xpath>-->
+        <!--</field>-->
+    <!--</record>-->
+
     <record id="action_insurance_claims_view" model="ir.actions.act_window">
         <field name="name">Insurance Claims</field>
         <field name="type">ir.actions.act_window</field>
@@ -50,6 +61,11 @@
                         attrs="{'invisible': [('state', 'in', ['confirmed', 'submitted','checked','processed','valuated'])]}"
                         name="action_confirm"
                         string="Confirm Claim" type="object"/>
+                    <button class="btn-primary o_sale_confirm"
+                        attrs="{'invisible': [('state', 'in', ['confirmed', 'submitted','checked','processed','valuated'])]}"
+                        name="action_view_eligibility"
+                        string="View Eligibility" type="object"/>
+
                     <button class="btn-primary o_sale_confirm"
                         attrs="{'invisible': [('state', 'in', ['draft', 'confirmed', 'rejected','valuated'])]}"
                         name="action_track_status"
@@ -157,23 +173,23 @@
                             <separator string="Sale Orders"/>
                             <field name="sale_orders" nolabel="1"></field>
                         </page>
-                        <page string="Eligibility Details" attrs="{'invisible': [('state', 'in', ('confirmed','submitted'))]}">
-                            <form string="Eligibility Details">
-                                <group>>
-                                    <group>
-                                        <field name="insuree_name" string="Insuree" readonly="1"/>
-                                        <field name="eligibility_status" string="Status"/>
-                                        <field name="eligibility_balance" string="Balance" readonly="1"/>
-                                    </group>
-                                    <group>
-                                        <field name="card_issued" string="Card Issued" readonly="1"/>
-                                        <field name="valid_from" string="Valid From" readonly="1"/>
-                                        <field name="valid_till" string="Valid Till" readonly="1"/>
-                                    </group>
-                                </group>
-                            </form>
+                        <!--<page string="Eligibility Details" attrs="{'invisible': [('state', 'in', ('confirmed','submitted'))]}">-->
+                            <!--<form string="Eligibility Details">-->
+                                <!--<group>>-->
+                                    <!--<group>-->
+                                        <!--<field name="insuree_name" string="Insuree" readonly="1"/>-->
+                                        <!--<field name="eligibility_status" string="Status"/>-->
+                                        <!--<field name="eligibility_balance" string="Balance" readonly="1"/>-->
+                                    <!--</group>-->
+                                    <!--<group>-->
+                                        <!--<field name="card_issued" string="Card Issued" readonly="1"/>-->
+                                        <!--<field name="valid_from" string="Valid From" readonly="1"/>-->
+                                        <!--<field name="valid_till" string="Valid Till" readonly="1"/>-->
+                                    <!--</group>-->
+                                <!--</group>-->
+                            <!--</form>-->
 
-                        </page>
+                        <!--</page>-->
                         <page string="Claim History">
                             <field name="insurance_claim_history" nolabel="1" readonly="1">
                             </field>
