@@ -14,44 +14,6 @@ class claims(models.Model):
     _description = 'Claims'
     _inherit = ['mail.thread']
 
-    def _extract_claim_fhir(self):
-        if self.claim_fhir:
-            _logger.info("Already Computed ")
-            _logger.info(self.claim_fhir)
-
-        if not self.claim_fhir:
-            response = self.env['insurance.connect']._get_claim_fhir(self.claim_code)
-            if response:
-                if response.status == 200:
-                    response = json.loads(response.data.decode('utf-8'))
-                    _logger.info(json.dumps(response))
-                    response_str = json.dumps(response, sort_keys=True, indent=2, separators=(',', ': '))
-                    self.claim_fhir = response_str
-                else:
-                    _logger.error("\n No Claim FHIR request available : %s", response.status)
-                    self.claim_fhir = ""
-
-    def _extract_eligibility(self):
-        _logger.info("Inside _extract_eligibility")
-        _logger.info(self.nhis_number)
-        if not self.eligibility_status:
-            nhis_number = self.nhis_number
-            elig_request_param = {
-                'chfID': nhis_number
-            }
-            if nhis_number:
-                response = self.env['insurance.connect']._check_eligibility(elig_request_param)
-                if response:
-                    self.eligibility_status = response['status']
-                    self.insuree_name = self.partner_id.name
-                    self.valid_from = response['validityFrom']
-                    self.valid_till = response['validityTo']
-                    self.eligibility_balance = response['eligibilityBalance'][0]['benefitBalance']
-                    self.card_issued = response['cardIssued']
-            else:
-                _logger.error("\n No Insurance Id, Please update and retry !")
-
-
     @api.depends('insurance_claim_line.price_total')
     def _claimed_amount_all(self):
         """
@@ -326,8 +288,28 @@ class claims(models.Model):
             return False
 
     @api.multi
+    def action_edit_fhir(self):
+        _logger.info("Inside action_edit_fhir")
+        if self.claim_code:
+            params = self.env['insurance.fhir']._retrieve_claim_fhir(self.claim_code)
+            claim_fhir_obj = self.env['insurance.fhir'].create(params)
+            return {
+                'type': 'ir.actions.act_window',
+                'name': 'Insurance Fhir',
+                'res_model': 'insurance.fhir',
+                'view_type': 'form',
+                'view_mode': 'form',
+                'res_id': claim_fhir_obj.id,
+                'view_id': self.env.ref('bahmni-insurance-odoo.insurance_fhir_edit_view', False).id,
+                'target': 'new',
+            }
+        else:
+            _logger.error("No Claim number")
+            raise UserError("No Claim Id, Please update and retry !")
+
+    @api.multi
     def action_view_eligibility(self):
-        _logger.info("Inside check_eligibility")
+        _logger.info("Inside action_view_eligibility")
         if self.nhis_number:
             partner_id = self.partner_id
             params = self.env['insurance.eligibility'].get_insurance_details(partner_id)
@@ -520,14 +502,6 @@ class claims(models.Model):
     partner_uuid = fields.Char(related='partner_id.uuid', string='Customer UUID', store=True, readonly=True)
     currency_id = fields.Many2one(related='sale_orders.currency_id', string="Currency", readonly=True, required=True)
     insurance_claim_history = fields.One2many('insurance.claim.history', 'claim_id', string='Claim Lines', states={'confirmed': [('readonly', True)], 'submitted': [('readonly', True)], 'rejected': [('readonly', True)]}, copy=True)
-    # insurance_claim_eligibility = fields.Many2one('insurance.claim.eligibility', 'claim_id')
-    claim_fhir = fields.Text(compute=_extract_claim_fhir, store=False, string='Claim FHIR' )
-    # eligibility_status = fields.Text(compute=_extract_eligibility, string='Eligibility Status', store=False)
-    # insuree_name = fields.Text(compute=_extract_eligibility, string='insuree_name', store=False)
-    # valid_from = fields.Text(compute=_extract_eligibility, string='valid_from', store=False)
-    # valid_till = fields.Text(compute=_extract_eligibility, string='valid_till', store=False)
-    # eligibility_balance = fields.Text(compute=_extract_eligibility, string='Balance', store=False)
-    # card_issued = fields.Text(compute=_extract_eligibility, string='Card Issued', store=False)
     external_visit_uuid = fields.Char(string="External Visit Id", help="This field is used to store visit id of patient")
     
     

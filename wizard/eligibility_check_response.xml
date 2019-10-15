@@ -5,7 +5,9 @@
         <field name="name">view.insurance.eligibility.result</field>
         <field name="type">form</field>
         <field name="model">insurance.eligibility</field>
+        <field name='flags'>{'initial_mode': 'edit'}</field>
         <field name="arch" type="xml">
+
             <form string="View Insurance details">
             
                 <group>
@@ -33,6 +35,8 @@
                 </group>
                 <footer>
                     <button string="Close" class="oe_link" special="cancel" />
+                    <button name="action_save" type="object" string="Save" class="oe_highlight pull-right"/>
+
                 </footer>
             </form>
         </field>

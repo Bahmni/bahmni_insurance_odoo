@@ -35,6 +35,7 @@
         'report/insuree_consent_form.xml',
         'report/consent_form_template.xml',
         'wizard/eligibility_check_response.xml',
+        'wizard/claim_fhir.xml',
         'views/insurance_settings_view.xml',
         'views/company_view.xml',
         'views/account_invoice_view.xml',

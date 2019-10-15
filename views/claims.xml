@@ -67,6 +67,11 @@
                         string="View Eligibility" type="object"/>
 
                     <button class="btn-primary o_sale_confirm"
+                        attrs="{'invisible': [('state', 'in', ['draft','confirmed', 'submitted','processed','valuated'])]}"
+                        name="action_edit_fhir"
+                        string="Edit Fhir" type="object"/>
+
+                    <button class="btn-primary o_sale_confirm"
                         attrs="{'invisible': [('state', 'in', ['draft', 'confirmed', 'rejected','valuated'])]}"
                         name="action_track_status"
                         string="Track Claim" type="object"/>
@@ -194,10 +199,7 @@
                             <field name="insurance_claim_history" nolabel="1" readonly="1">
                             </field>
                         </page>
-                        <page string="Claim Fhir" attrs="{'invisible': [('state', 'in', ('confirmed','draft'))]}">
-                            <field name="claim_fhir" nolabel="1" readonly="0">
-                            </field>
-                        </page>
+
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">

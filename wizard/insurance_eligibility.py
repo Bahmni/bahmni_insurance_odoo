@@ -15,10 +15,15 @@ class insurance_eligibility (models.TransientModel):
     insuree_name = fields.Char(string="Insuree Name",readonly=1)
     valid_from = fields.Datetime(string="Valid From", readonly=1)
     valid_till = fields.Datetime(string="Valid Till", readonly=1)
-    eligibility_balance = fields.Float(string="Available Balance", readonly=1)
+    eligibility_balance = fields.Float(string="Available Balance")
     nhis_number = fields.Char(string="NHIS Number", readonly=1)
     status = fields.Char(string="Status", readonly=1)
     card_issued = fields.Char(string="Card Issued", readonly=1)
+
+    @api.multi
+    def action_save(self, values):
+        _logger.info(self.eligibility_balance)
+        return super(insurance_eligibility, self).write(values)
     
     @api.multi
     def get_insurance_eligibility(self, partner_id):
@@ -43,7 +48,6 @@ class insurance_eligibility (models.TransientModel):
         elig_request_param = {
             'chfID': nhis_number
         }
-
         if nhis_number:
             response = self.env['insurance.connect']._check_eligibility(elig_request_param)
             elig_response = {

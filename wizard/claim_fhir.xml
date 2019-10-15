@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="insurance_fhir_edit_view" model="ir.ui.view">
+        <field name="name">view.insurance.fhir.edit.result</field>
+        <field name="type">form</field>
+        <field name="model">insurance.fhir</field>
+        <field name='flags'>{'initial_mode': 'edit'}</field>
+        <field name="arch" type="xml">
+
+            <form string="Edit Claim Request Fhir ">
+                <group>
+                     <group>
+                        <field name="claim_number"/>
+                    </group>
+                    <group>
+                        <field name="claim_fhir_request"/>
+                    </group>
+                </group>
+                <footer>
+                    <button string="Close" class="oe_link" special="cancel" />
+                    <button name="action_reprocess_claim" type="object" string="Resubmit" class="oe_highlight pull-right"/>
+
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>
