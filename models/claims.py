@@ -395,17 +395,19 @@ class claims(models.Model):
                         
                     else:
                         _logger.info("Submission")
-                        claim_code = self.env['insurance.config.settings']._get_next_value()
+                        claim_code_setup_flag = self.env['insurance.config.settings']._get_claim_code_setup_option()
+                        
+                        _logger.info("claim_code_setup_flag=%s", claim_code_setup_flag)
                         
                         '''
-                            Check if the claim code has been set through config or not. If not then, use it from sequence
+                            Check if the claim code has been setup manually. If not then, use it from sequence
                         '''
-                        if not claim_code:
+                        if claim_code_setup_flag:
+                            claim_code = self.env['insurance.config.settings']._get_next_value()
+                        else:    
                             claim_code = self.env['ir.sequence'].next_by_code('insurance.claim.code')
                         
-                    _logger.info("\n\n\n\n Claim Code=")
-                    _logger.info(claim_code)
-                        
+                        _logger.info("Claim Code=%s", claim_code)
                     
                     claim.update({
                         'claim_code':claim_code,
