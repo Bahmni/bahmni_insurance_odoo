@@ -8,7 +8,29 @@ _logger = logging.getLogger(__name__)
 
 class insurance_connect(models.TransientModel):
     _name = 'insurance.connect'
-    
+
+
+    def _resubmit_claim_fhir(self, claim_fhir_request):
+        _logger.info("Inside _resubmit_claim_fhir")
+        try:
+            insurance_connect_configurations = self.env[
+                'insurance.config.settings'].get_insurance_connect_configurations()
+            if insurance_connect_configurations is None:
+                raise UserError("Insurance configurations not set")
+            url = self.prepare_url("/resubmit/fhir", insurance_connect_configurations)
+            http = urllib3.PoolManager()
+            custom_headers = {'Content-Type': 'application/json'}
+            headers = self.get_header(insurance_connect_configurations)
+            custom_headers.update(headers)
+            encoded_data = claim_fhir_request
+            _logger.info(encoded_data)
+            response = http.request('POST', url, headers=custom_headers, body=encoded_data)
+            return self.response_processor(response)
+        except Exception as err:
+            _logger.error("\n Processing event threw error: %s", err)
+            raise
+
+
     @api.model
     def authenticate(self, username, password, url):
         _logger.info("Inside authenticate")
@@ -35,6 +57,8 @@ class insurance_connect(models.TransientModel):
         if insurance_connect_configurations is None:
             raise UserError("Insurance configurations not set")
         return  insurance_connect_configurations
+
+
     
     @api.model
     def _submit_claims(self, claim_request):
@@ -91,7 +115,7 @@ class insurance_connect(models.TransientModel):
             custom_headers.update(headers)
             encoded_data = json.dumps(elig_params)
             _logger.info(encoded_data)
-            req = http.request('POST', url, headers=custom_headers, body = encoded_data)
+            req = http.request('POST', url, headers=custom_headers, body=encoded_data)
             return self.response_processor(req)
             
         except Exception as err:
@@ -156,7 +180,7 @@ class insurance_connect(models.TransientModel):
             raise
     
     def response_processor(self, response):
-        _logger.info("========= Response===============")
+        _logger.info("========= Response ===============")
         _logger.info(response.status)
 
         if response.status == 200:

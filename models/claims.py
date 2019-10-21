@@ -45,6 +45,7 @@ class claims(models.Model):
             raise UserError("Claim has not been submitted to be tracked")
         if not claim.claim_code:
             raise UserError("Claim has not been submitted to be tracked")
+
         #Track Claim
         response = self.env['insurance.connect']._track_claim(claim.claim_code)
         if response:

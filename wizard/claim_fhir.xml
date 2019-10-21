@@ -10,10 +10,8 @@
 
             <form string="Edit Claim Request Fhir ">
                 <group>
-                     <group>
-                        <field name="claim_number"/>
-                    </group>
                     <group>
+                        <field name="claim_code"/>
                         <field name="claim_fhir_request"/>
                     </group>
                 </group>
