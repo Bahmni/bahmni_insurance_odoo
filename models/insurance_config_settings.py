@@ -133,10 +133,6 @@ class insurance_config_settings(models.Model):
     def set_params(self):
         _logger.info("Inside set_params")
         self.ensure_one()
-        _logger.info(self.username)
-        _logger.info(self.password)
-        _logger.info(self.claim_number_next_val)
-        _logger.info("next value=%s",self.manually_setup_claim_code)
         
         self.env['ir.values'].sudo().set_default('insurance.config.settings', 'username', self.username)
         self.env['ir.values'].sudo().set_default('insurance.config.settings', 'password', self.password)
