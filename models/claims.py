@@ -387,10 +387,14 @@ class claims(models.Model):
                             and so on
                         '''
                         
-                        if "RS" in claim_code:
-                            claim_code = claim_code[:1] + 'S' + s[1:]
-                        elif "R" in claim_code:
-                            claim_code = "RS" + claim_code
+                        if "R" in claim_code:
+                            claim_code.replace('R', 'S')
+                        elif "S" in claim_code:
+                            claim_code.replace('S', 'T')
+                        elif "T" in claim_code:
+                            claim_code.replace('T', 'F')
+                        elif "RF" in claim_code:
+                            claim_code.replace('RF', 'FF')
                         else:
                             claim_code = "R" + claim_code
                         

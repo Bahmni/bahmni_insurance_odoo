@@ -59,7 +59,6 @@ class insurance_connect(models.TransientModel):
         return  insurance_connect_configurations
 
 
-    
     @api.model
     def _submit_claims(self, claim_request):
         _logger.info("Inside _submit_claims")
