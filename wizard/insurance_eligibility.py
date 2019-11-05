@@ -13,12 +13,10 @@ class insurance_eligibility (models.TransientModel):
     _description = "Insurance Eligibility"
     
     insuree_name = fields.Char(string="Insuree Name",readonly=1)
-    valid_from = fields.Datetime(string="Valid From", readonly=1)
     valid_till = fields.Datetime(string="Valid Till", readonly=1)
     eligibility_balance = fields.Float(string="Available Balance")
     nhis_number = fields.Char(string="NHIS Number", readonly=1)
-    status = fields.Char(string="Status", readonly=1)
-    card_issued = fields.Char(string="Card Issued", readonly=1)
+    category = fields.Char(string="Category", readonly=1)
 
     @api.multi
     def action_save(self, values):
@@ -32,12 +30,12 @@ class insurance_eligibility (models.TransientModel):
         if nhis_number:
             response = self.env['insurance.connect']._check_eligibility(nhis_number)
             self.insuree_name = partner_id.name
-            self.valid_from =  response['validityFrom']
-            self.valid_till =  response['validityTo']
-            self.eligibility_balance =  response['eligibilityBalance'][0]['benefitBalance']
             self.nhis_number = nhis_number
-            self.status = response['status']
-            self.card_issued = response['cardIssued']
+            if response['eligibilityBalance']:
+                self.category = response['eligibilityBalance'][0]['category']
+                self.valid_till = response['eligibilityBalance'][0]['validDate']
+                self.eligibility_balance =  response['eligibilityBalance'][0]['benefitBalance']
+            
         return self
     
     @api.multi
@@ -45,20 +43,21 @@ class insurance_eligibility (models.TransientModel):
         _logger.info("Inside _get_insurance_details")
         _logger.info(partner_id.id)
         nhis_number = self.env['res.partner']._get_nhis_number(partner_id.id)
-        elig_request_param = {
-            'chfID': nhis_number
-        }
+#         elig_request_param = {
+#             'chfID': nhis_number
+#         }
         if nhis_number:
-            response = self.env['insurance.connect']._check_eligibility(elig_request_param)
+            response = self.env['insurance.connect']._check_eligibility(nhis_number)
             elig_response = {
-                  'insuree_name':partner_id.name,
-                  'nhis_number': nhis_number,
-                  'valid_from': response['validityFrom'],
-                  'valid_till': response['validityTo'],
-                  'status': response['status'],
-                  'card_issued': response['cardIssued'],
-                  'eligibility_balance': response['eligibilityBalance'][0]['benefitBalance']
-                }
+                'insuree_name':partner_id.name,
+                'nhis_number': nhis_number,
+            }
+            
+            if response['eligibilityBalance']:
+                elig_response['category'] = response['eligibilityBalance'][0]['category']
+                elig_response['valid_till'] = response['eligibilityBalance'][0]['validDate']
+                elig_response['eligibility_balance'] =  response['eligibilityBalance'][0]['benefitBalance']
+            
             _logger.info(elig_response)
             return elig_response
         else:

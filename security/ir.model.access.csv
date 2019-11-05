@@ -1,5 +1,13 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_insurance_claim,access_insurance_claim,model_insurance_claim,base.group_user,1,0,0,0
-access_insurance_claim_line,access_insurance_claim_line,model_insurance_claim_line,base.group_user,1,0,0,0
-access_insurance_claim_history,access_insurance_claim_history,model_insurance_claim_history,base.group_user,1,0,0,0
-access_insurance_odoo_product_map,access_insurance_odoo_product_map,model_insurance_odoo_product_map,base.group_user,1,0,0,0
+insurance_claim_manager,"Insurance Claim Manager",insurance_claim,group_insurance_manager,1,1,1,1
+insurance_claim_user,"Insurance Claim User",insurance_claim,group_insurance_user,1,0,0,0
+
+insurance_claim_line_manager,"Insurance Claim Line Manager",insurance_claim_line,group_insurance_manager,1,1,1,1
+insurance_claim_line_user,"Insurance Claim Line User",insurance_claim_line,group_insurance_user,1,0,0,0
+
+insurance_claim_history_manager,"Insurance Claim History Manager",insurance_claim_history,group_insurance_manager,1,1,1,1
+insurance_claim_history_user,"Insurance Claim History User",insurance_claim_history,group_insurance_user,1,0,0,0
+
+insurance_config_settings_manager,"Insurance Config Settings Manager",insurance_config_settings,group_insurance_manager,1,1,1,1
+insurance_odoo_product_map_manager,"Insurance Odoo Product Map Manager",insurance_odoo_product_map,group_insurance_manager,1,1,1,1
+

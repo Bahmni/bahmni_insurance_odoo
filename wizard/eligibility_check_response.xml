@@ -18,19 +18,13 @@
                         <field name="nhis_number"/>
                     </group>
                     <group>
-                        <field name="valid_from"/>
-                    </group>
-                    <group>
                         <field name="valid_till"/>
                     </group>
                     <group>
+                        <field name="category"/>
+                    </group>
+                    <group>
                         <field name="eligibility_balance"/>
-                    </group>
-                    <group>
-                        <field name="status"/>
-                    </group>
-                    <group>
-                        <field name="card_issued"/>
                     </group>
                 </group>
                 <footer>
