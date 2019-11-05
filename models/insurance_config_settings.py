@@ -4,7 +4,7 @@ from odoo.exceptions import ValidationError
 import logging
 _logger = logging.getLogger(__name__)
 
-class insurance_config_settings(models.Model):
+class insurance_config_settings(models.TransientModel):
     _inherit = 'res.config.settings'
     _name = 'insurance.config.settings'
 

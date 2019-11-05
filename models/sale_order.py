@@ -24,7 +24,8 @@ class sale_order(models.Model):
     def _get_nhis_number(self):
         _logger.info("Inside _get_nhis_number")
         partner_id = self.partner_id.id
-        self.nhis_number = self.env['res.partner']._get_nhis_number(partner_id)
+        if partner_id:
+            self.nhis_number = self.env['res.partner']._get_nhis_number(partner_id)
     
     @api.multi
     def action_invoice_create(self, grouped=False, final=False):

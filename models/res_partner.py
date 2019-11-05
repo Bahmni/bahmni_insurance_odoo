@@ -15,8 +15,7 @@ class ResPartner(models.Model):
     
     @api.multi
     def _get_nhis_number(self, partner_id):
-        _logger.info("Inside get_nhis number")
-        _logger.info(partner_id)
+        _logger.info("Inside get_nhis number. Partner_id = %s", partner_id)
         attributes = self.env['res.partner.attributes'].search([('partner_id' , '=', partner_id),('name', '=', 'NHIS Number')])
         if attributes:
             return attributes.value
