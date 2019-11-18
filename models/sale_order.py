@@ -355,7 +355,7 @@ class sale_order(models.Model):
                 'view_type': 'form',
                 'view_mode': 'form',
                 'res_id': ins_elg_obj.id,
-                'view_id': self.env.ref('bahmni-insurance-odoo.insurance_eligibility_check_result_view', False).id,
+                'view_id': self.env.ref('bahmni_insurance_odoo.insurance_eligibility_check_result_view', False).id,
                 'target': 'new',
             }
         else:
@@ -369,7 +369,7 @@ class sale_order(models.Model):
             context = dict(self._context or {})
             return {
                 'type': 'ir.actions.report.xml',
-                'report_name': 'bahmni-insurance-odoo.insurance_consent_form',
+                'report_name': 'bahmni_insurance_odoo.insurance_consent_form',
                 'context': context,
             }
 

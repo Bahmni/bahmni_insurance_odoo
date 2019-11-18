@@ -301,7 +301,7 @@ class claims(models.Model):
                 'view_type': 'form',
                 'view_mode': 'form',
                 'res_id': claim_fhir_obj.id,
-                'view_id': self.env.ref('bahmni-insurance-odoo.insurance_fhir_edit_view', False).id,
+                'view_id': self.env.ref('bahmni_insurance_odoo.insurance_fhir_edit_view', False).id,
                 'target': 'new',
             }
         else:
@@ -322,7 +322,7 @@ class claims(models.Model):
                 'view_type': 'form',
                 'view_mode': 'form',
                 'res_id': ins_elg_obj.id,
-                'view_id': self.env.ref('bahmni-insurance-odoo.insurance_eligibility_check_result_view', False).id,
+                'view_id': self.env.ref('bahmni_insurance_odoo.insurance_eligibility_check_result_view', False).id,
                 'target': 'new',
             }
         else:
