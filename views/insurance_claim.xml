@@ -20,17 +20,6 @@
         </field>
     </record>
 
-    <!--<record id="check_nhis_number_validity_button" model="ir.ui.view">-->
-        <!--<field name="name">insurance.claim.form</field>-->
-        <!--<field name="model">insurance.claim</field>-->
-        <!--<field name="arch" type="xml">-->
-            <!--<xpath expr="//button[@name='action_confirm']" position="after">-->
-                <!--<button name="check_eligibility" type="object" string="View Eligibility"-->
-                <!--attrs="{'invisible': [('payment_type', 'in', ['cash'])]}" />-->
-            <!--</xpath>-->
-        <!--</field>-->
-    <!--</record>-->
-
     <record id="action_insurance_claims_view" model="ir.actions.act_window">
         <field name="name">Insurance Claims</field>
         <field name="type">ir.actions.act_window</field>
@@ -43,8 +32,8 @@
     </record>
     
     <menuitem action="action_insurance_claims_view"
-        id="menu_insurance_claim" name="Claims"
-        parent="bahmni-insurance-odoo.menu_insurance_title" sequence="1"/>
+        id="menu_insurance_claim" name="Claims" groups="group_insurance_claim_user"
+        parent="bahmni_insurance_odoo.menu_insurance_title" sequence="1"/>
         
     <!--Claims Form View -->
     <record id="view_claims_form" model="ir.ui.view">
@@ -217,6 +206,6 @@
          <field name="domain">[('state', 'not in', ('draft', 'rejected', 'confirmed'))]</field>
     </record>
     <menuitem action="action_insurance_submitted_claims_view"
-        id="menu_insurance_submitted_claims" name="Submitted Claims"
-        parent="bahmni-insurance-odoo.menu_insurance_title" sequence="2"/>
+        id="menu_insurance_submitted_claims" name="Submitted Claims" groups="group_insurance_claim_user"
+        parent="bahmni_insurance_odoo.menu_insurance_title" sequence="2"/>
 </odoo>

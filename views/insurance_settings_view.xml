@@ -96,6 +96,6 @@
     </record>
     
     <menuitem id="insurance_connect_config_menu" name="Insurance Settings" 
-        parent="bahmni-insurance-odoo.menu_insurance_config" sequence="10" 
-        action="insurance_connect_config_action" groups="base.group_system"/>
+        parent="bahmni_insurance_odoo.menu_insurance_config" groups="group_insurance_claim_manager"
+        sequence="10" action="insurance_connect_config_action"/>
 </odoo>

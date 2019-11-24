@@ -57,6 +57,7 @@
         <field name="context">{}</field>
     </record>
     <menuitem action="action_insurance_odoo_product_mapping"
-        id="menu_action_insurance_odoo_product_mapping"
-        parent="bahmni-insurance-odoo.menu_insurance_config" sequence="11"/>
+        id="menu_action_insurance_odoo_product_mapping" 
+        groups="group_insurance_claim_manager" 
+        parent="bahmni_insurance_odoo.menu_insurance_config" sequence="11"/>
 </odoo>
