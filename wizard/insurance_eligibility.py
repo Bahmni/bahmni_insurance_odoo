@@ -35,7 +35,6 @@ class insurance_eligibility (models.TransientModel):
                 self.category = response['eligibilityBalance'][0]['category']
                 self.valid_till = response['eligibilityBalance'][0]['validDate']
                 self.eligibility_balance =  response['eligibilityBalance'][0]['benefitBalance']
-
         return self
 
     @api.multi
@@ -43,21 +42,16 @@ class insurance_eligibility (models.TransientModel):
         _logger.info("Inside _get_insurance_details")
         _logger.info(partner_id.id)
         nhis_number = self.env['res.partner']._get_nhis_number(partner_id.id)
-#         elig_request_param = {
-#             'chfID': nhis_number
-#         }
         if nhis_number:
             response = self.env['insurance.connect']._check_eligibility(nhis_number)
             elig_response = {
                 'insuree_name':partner_id.name,
                 'nhis_number': nhis_number,
             }
-
             if response['eligibilityBalance']:
                 elig_response['category'] = response['eligibilityBalance'][0]['category']
                 elig_response['valid_till'] = response['eligibilityBalance'][0]['validDate']
                 elig_response['eligibility_balance'] =  response['eligibilityBalance'][0]['benefitBalance']
-
             _logger.info(elig_response)
             return elig_response
         else:

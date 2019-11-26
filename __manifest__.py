@@ -26,11 +26,12 @@
 
     # always loaded
     'data': [
-#        'security/ir.model.access.csv',
+        'security/insurance_security.xml',
+        'security/ir.model.access.csv',
         'views/insurance_views.xml',
         'views/quotation_view.xml',
         'views/insurance_odoo_product_map_view.xml',
-        'views/claims.xml',
+        'views/insurance_claim.xml',
         'views/customer_view.xml',
         'report/insuree_consent_form.xml',
         'report/consent_form_template.xml',
