@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    
+    <record id="tree_claim_summary_report" model="ir.ui.view">
+        <field name="name">tree.claim.summary.report</field>
+        <field name="model">claim.summary.report</field>
+        <field name="arch" type="xml">
+            <tree create="0" string="Claim Report">
+                <field name="partner_id"/>
+                <field name="nhis_number"/>
+                <field name="claim_code"/>
+                <field name="state"/>
+                <field name="claimed_amount_total"/>
+                <field name="amount_approved_total"/>
+                <field name="claimed_date"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record id="action_claim_summary_report" model="ir.actions.act_window">
+        <field name="name">Claim Summary Report</field>
+        <field name="res_model">claim.summary.report</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree</field>
+    </record>
+    
+    <menuitem id="menu_claim_summary_report" action="action_claim_summary_report"
+        parent="menu_insurance_report"/>
+    
+</odoo>

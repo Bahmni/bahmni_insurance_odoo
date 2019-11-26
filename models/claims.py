@@ -499,7 +499,6 @@ class claims(models.Model):
         ('submitted', 'Submitted'),
         ('checked', 'Checked'),
         ('valuated', 'Valuated'),
-        ('passed', 'Passed'),
         ('rejected', 'Rejected')
         ], string='Claim Status', default='draft', readonly=True)
     claim_comments = fields.Text(string='Comments')
