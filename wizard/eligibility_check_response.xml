@@ -7,7 +7,6 @@
         <field name="model">insurance.eligibility</field>
         <field name='flags'>{'initial_mode': 'edit'}</field>
         <field name="arch" type="xml">
-
             <form string="View Insurance details">
             
                 <group>
@@ -17,22 +16,23 @@
                     <group>
                         <field name="nhis_number"/>
                     </group>
-                    <group>
-                        <field name="valid_till"/>
-                    </group>
-                    <group>
-                        <field name="category"/>
-                    </group>
-                    <group>
-                        <field name="eligibility_balance"/>
-                    </group>
                 </group>
+                <group readonly="True">
+                    <field name="eligibility_line_item"  string="Detail" readonly="True">
+                        <tree open="false" >
+                            <field name="valid_till" readonly="True"/>
+                            <field name="category" readonly="True"/>
+                            <field name="eligibility_balance" readonly="True"/>
+                        </tree>
+                    </field>
+                </group>
+            </form>
                 <footer>
                     <button string="Close" class="oe_link" special="cancel" />
-                    <button name="action_save" type="object" string="Save" class="oe_highlight pull-right"/>
+                    <!--<button name="action_save" type="object" string="Save" class="oe_highlight pull-right"/>-->
 
                 </footer>
-            </form>
+
         </field>
     </record>
     
