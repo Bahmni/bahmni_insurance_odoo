@@ -20,7 +20,6 @@ class insurance_eligibility (models.TransientModel):
 
     @api.multi
     def action_save(self, values):
-        _logger.info(self.eligibility_balance)
         return super(insurance_eligibility, self).write(values)
 
     @api.multi
@@ -50,7 +49,6 @@ class insurance_eligibility (models.TransientModel):
             }
             elig_response = self.env['insurance.eligibility'].create(elig_response)
             if response['eligibilityBalance']:
-                _logger.critical(response)
                 for elig_reponse_line in response['eligibilityBalance']:
                     elig_response_line = {
                         'eligibility_balance' : elig_reponse_line['benefitBalance'],
@@ -62,12 +60,7 @@ class insurance_eligibility (models.TransientModel):
                     elig_response_line = self.env['insurance.eligibility.line'].create(elig_response_line)
                     self.env['insurance.eligibility'].update({'eligibility_line_item', elig_response_line_from_db + elig_response_line })
 
-
-                _logger.critical(elig_response.eligibility_line_item)
-
-
             _logger.info(elig_response)
-            _logger.critical("response send")
             return elig_response
         else:
             raise UserError("No Insurance Id, Please update and retry !")

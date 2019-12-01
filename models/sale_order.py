@@ -347,7 +347,6 @@ class sale_order(models.Model):
         if self.nhis_number:
             partner_id = self.partner_id
             elig_response = self.env['insurance.eligibility'].get_insurance_details(partner_id)
-            #ins_elg_obj = self.env['insurance.eligibility'].create(params)
             return {
                 'type': 'ir.actions.act_window',
                 'name': 'Eligibility Check',
