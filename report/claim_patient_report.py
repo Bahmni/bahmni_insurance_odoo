@@ -4,9 +4,9 @@ from odoo.tools import drop_view_if_exists
 from odoo.exceptions import Warning
 
 
-class claim_summary_patient_report(models.Model):
-    _name = "claim.summary.patient.report"
-    _description = "Claim Summary Patient Report"
+class claim_patient_report(models.Model):
+    _name = "claim.patient.report"
+    _description = "Claim Patient Report"
     _auto = False
     _order = 'total_claims desc'
 
@@ -24,9 +24,9 @@ class claim_summary_patient_report(models.Model):
     
     @api.model_cr
     def init(self):
-        drop_view_if_exists(self.env.cr, 'claim_SUMmary_patient_report')
+        drop_view_if_exists(self.env.cr, 'claim_patient_report')
         self.env.cr.execute("""
-            create or replace view claim_SUMmary_patient_report as (
+            create or replace view claim_patient_report as (
                 SELECT
                   clm.partner_id,
                   clm.nhis_number,

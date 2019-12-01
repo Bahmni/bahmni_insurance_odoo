@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="insurance_claim_summary_report" model="ir.actions.report.xml">
+        <field name="name">Insurance Claim Summary</field>
+        <field name="model">bahmni_insurance_odoo.insurance.claim.summary.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">bahmni_insurance_odoo.report_insurance_claim_summary</field>
+    </record>
+    
+</odoo>
