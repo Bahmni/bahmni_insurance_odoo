@@ -346,15 +346,15 @@ class sale_order(models.Model):
         _logger.info("Inside check_eligibility")
         if self.nhis_number:
             partner_id = self.partner_id
-            params = self.env['insurance.eligibility'].get_insurance_details(partner_id)
-            ins_elg_obj = self.env['insurance.eligibility'].create(params)
+            elig_response = self.env['insurance.eligibility'].get_insurance_details(partner_id)
+            #ins_elg_obj = self.env['insurance.eligibility'].create(params)
             return {
                 'type': 'ir.actions.act_window',
                 'name': 'Eligibility Check',
                 'res_model': 'insurance.eligibility',
                 'view_type': 'form',
                 'view_mode': 'form',
-                'res_id': ins_elg_obj.id,
+                'res_id': elig_response.id,
                 'view_id': self.env.ref('bahmni_insurance_odoo.insurance_eligibility_check_result_view', False).id,
                 'target': 'new',
             }

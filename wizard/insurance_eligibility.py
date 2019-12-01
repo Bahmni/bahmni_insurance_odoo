@@ -13,10 +13,10 @@ class insurance_eligibility (models.TransientModel):
     _description = "Insurance Eligibility"
     
     insuree_name = fields.Char(string="Insuree Name",readonly=1)
-    valid_till = fields.Datetime(string="Valid Till", readonly=1)
-    eligibility_balance = fields.Float(string="Available Balance")
     nhis_number = fields.Char(string="NHIS Number", readonly=1)
-    category = fields.Char(string="Category", readonly=1)
+    eligibility_line_item = fields.One2many('insurance.eligibility.line','eligibility_request_id' ,string="eligibility lines")
+
+
 
     @api.multi
     def action_save(self, values):
@@ -48,11 +48,38 @@ class insurance_eligibility (models.TransientModel):
                 'insuree_name':partner_id.name,
                 'nhis_number': nhis_number,
             }
+            elig_response = self.env['insurance.eligibility'].create(elig_response)
             if response['eligibilityBalance']:
-                elig_response['category'] = response['eligibilityBalance'][0]['category']
-                elig_response['valid_till'] = response['eligibilityBalance'][0]['validDate']
-                elig_response['eligibility_balance'] =  response['eligibilityBalance'][0]['benefitBalance']
+                _logger.critical(response)
+                for elig_reponse_line in response['eligibilityBalance']:
+                    elig_response_line = {
+                        'eligibility_balance' : elig_reponse_line['benefitBalance'],
+                        'valid_till' : elig_reponse_line['validDate'],
+                        'category' : elig_reponse_line['category'],
+                        'eligibility_request_id': elig_response.id
+                     }
+                    elig_response_line_from_db = self.env['insurance.eligibility.line'].search([('eligibility_request_id', '=', elig_response.id)])
+                    elig_response_line = self.env['insurance.eligibility.line'].create(elig_response_line)
+                    self.env['insurance.eligibility'].update({'eligibility_line_item', elig_response_line_from_db + elig_response_line })
+
+
+                _logger.critical(elig_response.eligibility_line_item)
+
+
             _logger.info(elig_response)
+            _logger.critical("response send")
             return elig_response
         else:
             raise UserError("No Insurance Id, Please update and retry !")
+
+
+
+    class insurance_eligibility_line (models.TransientModel):
+        _name = 'insurance.eligibility.line'
+        _description = "Insurance Eligibility line"
+
+
+        eligibility_request_id = fields.Many2one('insurance.eligibility',string="Insurance Eligibility")
+        eligibility_balance = fields.Float(store=True, string="Available Balance")
+        valid_till = fields.Datetime(store=True,string="Valid Till")
+        category = fields.Char(store=True,string="Category")
