@@ -4,6 +4,8 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
+import logging
+_logger = logging.getLogger(__name__)
 
 class ClaimSummary(models.TransientModel):
     _name = 'claim.summary.wizard'
@@ -24,10 +26,17 @@ class ClaimSummary(models.TransientModel):
 
     @api.multi
     def generate_report(self):
+        _logger.info("Inside generate report")
         if (not self.env.user.company_id.logo):
             raise UserError(_("You have to set a logo or a layout for your company."))
 #         elif (not self.env.user.company_id.external_report_layout_id):
 #             raise UserError(_("You have to set your reports's header and footer layout."))
         data = {'date_start': self.start_date, 'date_end': self.end_date}
-        return {'type': 'ir.actions.report','report_name': 'bahmni_insurance_odoo.insurance_claim_summary_report','report_type':"qweb-pdf",'data': data,}
+        
+        return {
+                'type': 'ir.actions.report.xml',
+                'report_name': 'bahmni_insurance_odoo.insurance_claim_summary_report',
+                'report_type': 'qweb-pdf',
+                'data': data,
+            }
         
