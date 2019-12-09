@@ -246,10 +246,6 @@ class claims(models.Model):
                 raise UserError("Multiple mappings found for %s"%(imis_product))
                                 
             _logger.debug("imis_mapped_row ->%s", imis_mapped_row)
-            _logger.debug("imis_mapped_row ->%s", imis_mapped_row.odoo_product_id.id)
-            _logger.debug("imis_mapped_row ->%s", imis_mapped_row.id)
-            _logger.debug("imis_mapped_row ->%s", imis_mapped_row.item_code)
-            _logger.debug("imis_mapped_row ->%s", imis_mapped_row.insurance_price)
             claim_line_item = {
                 'claim_id' : claim_in_db.id,
                 'product_id' : imis_mapped_row.odoo_product_id.id,
