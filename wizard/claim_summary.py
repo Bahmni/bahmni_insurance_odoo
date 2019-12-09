@@ -27,16 +27,20 @@ class ClaimSummary(models.TransientModel):
     @api.multi
     def generate_report(self):
         _logger.info("Inside generate report")
-        if (not self.env.user.company_id.logo):
-            raise UserError(_("You have to set a logo or a layout for your company."))
+#         if (not self.env.user.company_id.logo):
+#             raise UserError(_("You have to set a logo or a layout for your company."))
 #         elif (not self.env.user.company_id.external_report_layout_id):
 #             raise UserError(_("You have to set your reports's header and footer layout."))
-        data = {'date_start': self.start_date, 'date_end': self.end_date}
+#         data = {'date_start': self.start_date, 'date_end': self.end_date}
+        context = dict(self._context or {})
+        context.update({'date_start': self.start_date, 'date_end': self.end_date})
         
         return {
                 'type': 'ir.actions.report.xml',
                 'report_name': 'bahmni_insurance_odoo.insurance_claim_summary_report',
                 'report_type': 'qweb-pdf',
-                'data': data,
+                'data': context,
             }
-        
+#         return self.env.ref('bahmni_insurance_odoo.insurance_claim_summary_report').report_action([], data=data)
+
+
