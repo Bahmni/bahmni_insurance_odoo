@@ -178,7 +178,7 @@ class claims(models.Model):
                     Check if adding visit specific product automatically(from config settings), if yes proceed
                 '''
                 if add_visit_specific_product:
-                    self._add_visit_specific_claim_line(claim_in_db)
+                    self._add_visit_specific_claim_line(claim_in_db, sale_order)
                       
                 
             try:
@@ -201,7 +201,10 @@ class claims(models.Model):
                 _logger.info("\n Error Generating claim draft: %s", err)
                 raise UserError(err)
     
-    def _add_visit_specific_claim_line(self, claim_in_db):
+    def _add_visit_specific_claim_line(self, claim_in_db, sale_order):
+        _logger.debug("Inside _add_visit_specific_claim_line")
+        imis_product = ''
+        hospital_type = sale_order.company_id.hospital_type
         if sale_order.care_setting == 'opd':
             ''' search for opd service product for hospital type.
                 If PHC then OPD PHC 
@@ -210,14 +213,13 @@ class claims(models.Model):
                 then throw exception
                 Add OPD service product for opd visit
             '''
-            hospital_type = sale_order.company_id.hospital_type
-                        
+            
             if hospital_type == 'PHC':
                 imis_product = 'OPD PHC'
             else:
                 imis_product = 'OPD Hospital'
                         
-        elif sale_order.care_setting == 'ER':
+        elif sale_order.care_setting == 'emergency':
             ''' search for ER service product for hospital type.
                 If PHC then ER PHC 
                 IF Hospital then ER Hospital
@@ -225,12 +227,14 @@ class claims(models.Model):
                 then throw exception
                 Add ER service product for ER visit
             '''
-            hospital_type = sale_order.company_id.hospital_type
 
             if hospital_type == 'PHC':
                 imis_product = 'ER PHC'
             else:
-                imis_product = 'ER Hospital'   
+                imis_product = 'ER Hospital' 
+                
+        _logger.debug("imis_product ->%s", imis_product)
+          
         if imis_product:
             imis_mapped_row = self.env['insurance.odoo.product.map'].search([('insurance_product', '=', imis_product), ('is_active', '=', 'True')])
             if imis_mapped_row is None or len(imis_mapped_row) == 0 :
@@ -242,6 +246,10 @@ class claims(models.Model):
                 raise UserError("Multiple mappings found for %s"%(imis_product))
                                 
             _logger.debug("imis_mapped_row ->%s", imis_mapped_row)
+            _logger.debug("imis_mapped_row ->%s", imis_mapped_row.odoo_product_id.id)
+            _logger.debug("imis_mapped_row ->%s", imis_mapped_row.id)
+            _logger.debug("imis_mapped_row ->%s", imis_mapped_row.item_code)
+            _logger.debug("imis_mapped_row ->%s", imis_mapped_row.insurance_price)
             claim_line_item = {
                 'claim_id' : claim_in_db.id,
                 'product_id' : imis_mapped_row.odoo_product_id.id,

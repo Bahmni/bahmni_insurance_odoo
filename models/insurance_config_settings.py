@@ -143,4 +143,5 @@ class insurance_config_settings(models.TransientModel):
         self.env['ir.values'].sudo().set_default('insurance.config.settings', 'claim_id_end_range', self.claim_id_end_range)
         self.env['ir.values'].sudo().set_default('insurance.config.settings', 'claim_number_next_val', self.claim_number_next_val)
         self.env['ir.values'].sudo().set_default('insurance.config.settings', 'insurance_journal', self.insurance_journal)
+        self.env['ir.values'].sudo().set_default('insurance.config.settings', 'add_visit_specific_product', self.add_visit_specific_product)
     
