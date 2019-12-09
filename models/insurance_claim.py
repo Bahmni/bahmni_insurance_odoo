@@ -185,6 +185,21 @@ class claims(models.Model):
                         imis_product = 'OPD PHC'
                     else:
                         imis_product = 'OPD Hospital'
+
+                if sale_order.care_setting == 'ER':
+                    ''' search for ER service product for hospital type.
+                        If PHC then ER PHC 
+                        IF Hospital then ER Hospital
+                        If product found (in imis_odoo_mapper) and its not a product in odoo. 
+                        then throw exception
+                        Add ER service product for ER visit
+                    '''
+                    hospital_type = sale_order.company_id.hospital_type
+
+                    if hospital_type == 'PHC':
+                        imis_product = 'ER PHC'
+                    else:
+                        imis_product = 'ER Hospital'
                     
                     imis_mapped_row = self.env['insurance.odoo.product.map'].search([('insurance_product', '=', imis_product), ('is_active', '=', 'True')])
                     if imis_mapped_row is None or len(imis_mapped_row) == 0 :
