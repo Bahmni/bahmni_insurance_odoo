@@ -172,7 +172,6 @@ class claims(models.Model):
                 claim_in_db.update({'sale_orders': claim_in_db.sale_orders + sale_order})
                 
                 add_visit_specific_product = self.env['insurance.config.settings']._get_claim_code_setup_option()
-                        
                 _logger.info("add_visit_specific_product=%s", add_visit_specific_product)
                         
                 '''
@@ -218,15 +217,30 @@ class claims(models.Model):
             else:
                 imis_product = 'OPD Hospital'
                         
+        elif sale_order.care_setting == 'ER':
+            ''' search for ER service product for hospital type.
+                If PHC then ER PHC 
+                IF Hospital then ER Hospital
+                If product found (in imis_odoo_mapper) and its not a product in odoo. 
+                then throw exception
+                Add ER service product for ER visit
+            '''
+            hospital_type = sale_order.company_id.hospital_type
+
+            if hospital_type == 'PHC':
+                imis_product = 'ER PHC'
+            else:
+                imis_product = 'ER Hospital'   
+        if imis_product:
             imis_mapped_row = self.env['insurance.odoo.product.map'].search([('insurance_product', '=', imis_product), ('is_active', '=', 'True')])
             if imis_mapped_row is None or len(imis_mapped_row) == 0 :
                 _logger.debug("imis_mapped_row mapping not found")
                 raise UserError("%s is not mapped to insurance product"%(imis_product))
-                        
+                            
             if len(imis_mapped_row) > 1 :
                 _logger.debug("multiple mappings found")
                 raise UserError("Multiple mappings found for %s"%(imis_product))
-                            
+                                
             _logger.debug("imis_mapped_row ->%s", imis_mapped_row)
             claim_line_item = {
                 'claim_id' : claim_in_db.id,
