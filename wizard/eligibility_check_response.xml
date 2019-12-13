@@ -29,8 +29,6 @@
             </form>
                 <footer>
                     <button string="Close" class="oe_link" special="cancel" />
-                    <!--<button name="action_save" type="object" string="Save" class="oe_highlight pull-right"/>-->
-
                 </footer>
 
         </field>

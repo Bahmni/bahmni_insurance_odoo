@@ -40,7 +40,12 @@
         'views/insurance_settings_view.xml',
         'views/company_view.xml',
         'views/account_invoice_view.xml',
-        'data/insurance_claim_data.xml'
+        'data/insurance_claim_data.xml',
+        'report/claim_report.xml',
+        'report/claim_patient_report.xml',
+        'wizard/claim_summary.xml',
+        'report/report_insurance_claim_summary_template.xml',
+        'report/insurance_claim_summary_report.xml'
     ],
     # only loaded in demonstration mode
     #'demo': [

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    
+    <record id="tree_claim_patient_report" model="ir.ui.view">
+        <field name="name">tree.claim.patient.report</field>
+        <field name="model">claim.patient.report</field>
+        <field name="arch" type="xml">
+            <tree create="0" string="Claim Report">
+                <field name="partner_id"/>
+                <field name="nhis_number"/>
+                <field name="total_claims"/>
+                <field name="total_under_review_claims"/>
+                <field name="claimed_amount_total"/>
+                <field name="total_approved_claims"/>
+                <field name="amount_approved_total"/>
+                <field name="total_rejected_claims"/>
+                <field name="amount_rejected_total"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record id="action_claim_patient_report" model="ir.actions.act_window">
+        <field name="name">Claim Report By Patient</field>
+        <field name="res_model">claim.patient.report</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree</field>
+    </record>
+    
+    <menuitem id="menu_claim_patient_report" action="action_claim_patient_report"
+        parent="menu_insurance_report" sequence="2"/>
+    
+</odoo>

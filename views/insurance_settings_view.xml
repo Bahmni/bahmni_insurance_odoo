@@ -72,6 +72,16 @@
                     </div>
                 </group>
                 
+                <group string="Visit Sepcific Claim Setup">
+                    <div>
+                        <div>
+                            <label for="add_visit_specific_product" string="Add Claim Line specific to Visit Automatically"/>
+                            <span style="margin-right:15px;"></span>
+                            <field name="add_visit_specific_product"/>
+                        </div>
+                    </div>
+                </group>
+                
                 <group string="Journal Setup">
                     <div>
                         <div>
