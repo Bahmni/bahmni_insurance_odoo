@@ -8,13 +8,14 @@
             <tree create="0" string="Claim Report">
                 <field name="partner_id"/>
                 <field name="nhis_number"/>
-                <field name="total_claims"/>
-                <field name="total_under_review_claims"/>
-                <field name="claimed_amount_total"/>
-                <field name="total_approved_claims"/>
-                <field name="amount_approved_total"/>
-                <field name="total_rejected_claims"/>
-                <field name="amount_rejected_total"/>
+                <field name="total_claims" sum="Total Claims" />
+                <field name="claimed_amount_total" sum="Total Claimed Amount" />
+                <field name="total_under_review_claims" sum="Total Under Review Claims" />
+                <field name="amount_under_review_claims" sum="Total Under Review Amount" />
+                <field name="total_approved_claims" sum="Total Approved Claims" />
+                <field name="amount_approved_total" sum="Total Approved Amount" />
+                <field name="total_rejected_claims" sum="Total Rejected Claims" />
+                <field name="amount_rejected_total" sum="Total Rejected Claims" />
             </tree>
         </field>
     </record>

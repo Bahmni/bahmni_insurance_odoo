@@ -22,15 +22,12 @@ class claims(models.Model):
         _logger.info("Inside _amount_all")
         for claim in self:
             claimed_amount_total = 0.0
-            amount_approved_total = 0.0
             
             for line in claim.insurance_claim_line:
                 claimed_amount_total += line.price_total
-                amount_approved_total += line.amount_approved
                 
             claim.update({
-                'claimed_amount_total': claimed_amount_total,
-                'amount_approved_total': amount_approved_total
+                'claimed_amount_total': claimed_amount_total
             })    
         
     @api.multi

@@ -7,6 +7,7 @@ from odoo.exceptions import UserError
 import logging
 _logger = logging.getLogger(__name__)
 
+
 class ClaimSummary(models.TransientModel):
     _name = 'claim.summary.wizard'
     _description = 'Insurance Claim Summary Report'
@@ -35,12 +36,14 @@ class ClaimSummary(models.TransientModel):
         context = dict(self._context or {})
         context.update({'date_start': self.start_date, 'date_end': self.end_date})
         
+#         return self.env.ref('bahmni_insurance_odoo.insurance_claim_summary_report').with_context(discard_logo_check=True).report_action(self)
+        
         return {
                 'type': 'ir.actions.report.xml',
                 'report_name': 'bahmni_insurance_odoo.insurance_claim_summary_report',
                 'report_type': 'qweb-pdf',
                 'data': context,
             }
+        
 #         return self.env.ref('bahmni_insurance_odoo.insurance_claim_summary_report').report_action([], data=data)
-
 

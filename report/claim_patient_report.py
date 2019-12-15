@@ -17,9 +17,9 @@ class claim_patient_report(models.Model):
     total_under_review_claims = fields.Integer(string='Total Under Review Claims')
     amount_under_review_claims = fields.Integer(string='Total Under Review Amount')
     total_approved_claims = fields.Integer(string='Total Approved Claims')
-    amount_approved_total = fields.Float(string='Total Approved Amount', store=True)
+    amount_approved_total = fields.Float(string='Total Approved Amount')
     total_rejected_claims = fields.Integer(string='Total Rejected Claims')
-    amount_rejected_total = fields.Float(string='Total Rejected Amount', store=True)
+    amount_rejected_total = fields.Float(string='Total Rejected Claims')
     
     
     @api.model_cr
@@ -28,7 +28,7 @@ class claim_patient_report(models.Model):
         self.env.cr.execute("""
             create or replace view claim_patient_report as (
                 SELECT
-                  clm.id,
+                  row_number() OVER () AS id,
                   clm.partner_id,
                   clm.nhis_number,
                   count(clm.id) as total_claims,
@@ -64,11 +64,11 @@ class claim_patient_report(models.Model):
                     0 
                   END) as amount_rejected_total
                 FROM insurance_claim clm
+                WHERE clm.state in ('checked', 'valuated', 'rejected')
                   
                 GROUP BY
                   clm.partner_id,
-                  clm.nhis_number,
-                  clm.id
+                  clm.nhis_number
             )""")
 
     @api.multi

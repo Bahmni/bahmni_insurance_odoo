@@ -25,7 +25,7 @@ class claim_report(models.Model):
         self.env.cr.execute("""
             create or replace view claim_report as (
                 SELECT
-                  clm.id,
+                  row_number() OVER () AS id,
                   clm.partner_id,
                   clm.claim_code,
                   clm.claimed_amount_total,
