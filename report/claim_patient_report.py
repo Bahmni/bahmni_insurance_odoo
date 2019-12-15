@@ -11,7 +11,7 @@ class claim_patient_report(models.Model):
     _order = 'total_claims desc'
 
     partner_id = fields.Many2one('res.partner', string='Insuree')
-    nhis_number = fields.Char(related='partner_id.nhis_number', string='NHIS Number')
+    nhis_number = fields.Char(string='NHIS Number')
     total_claims = fields.Integer(string='Total Claims')
     claimed_amount_total = fields.Float(string='Total Claimed Amount')
     total_under_review_claims = fields.Integer(string='Total Under Review Claims')
@@ -28,6 +28,7 @@ class claim_patient_report(models.Model):
         self.env.cr.execute("""
             create or replace view claim_patient_report as (
                 SELECT
+                  clm.id,
                   clm.partner_id,
                   clm.nhis_number,
                   count(clm.id) as total_claims,
@@ -66,7 +67,8 @@ class claim_patient_report(models.Model):
                   
                 GROUP BY
                   clm.partner_id,
-                  clm.nhis_number
+                  clm.nhis_number,
+                  clm.id
             )""")
 
     @api.multi

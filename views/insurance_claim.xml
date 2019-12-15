@@ -7,7 +7,7 @@
         <field name="priority">1</field>
         <field name="domain">[('state', 'in', ('draft', 'confirmed', 'rejected'))]</field>
         <field name="arch" type="xml">
-            <tree string="Claims">
+            <tree string="Claims" default_order='create_date desc'>
                 <field name="claim_code" string="Claim Number"/>
                 <field name="claimed_date"/>
                 <field name="partner_id"/>

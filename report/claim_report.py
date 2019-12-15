@@ -14,7 +14,7 @@ class claim_report(models.Model):
     claim_code = fields.Text(string="Claim ID", readonly=True)
     claimed_amount_total = fields.Float(string='Total Claimed Amount')
     amount_approved_total = fields.Float(string='Total Approved Amount', store=True)
-    nhis_number = fields.Char(related='partner_id.nhis_number', string='NHIS Number')
+    nhis_number = fields.Char(string='NHIS Number')
     state = fields.Text(string="Status")
     claimed_date = fields.Datetime(string="Claimed Date")
     
