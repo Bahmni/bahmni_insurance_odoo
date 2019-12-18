@@ -44,8 +44,8 @@
         'report/claim_report.xml',
         'report/claim_patient_report.xml',
         'wizard/claim_summary.xml',
-        'report/report_insurance_claim_summary_template.xml',
-        'report/insurance_claim_summary_report.xml'
+        'report/insurance_claim_summary_report.xml',
+        'report/report_insurance_claim_summary_template.xml'
     ],
     # only loaded in demonstration mode
     #'demo': [

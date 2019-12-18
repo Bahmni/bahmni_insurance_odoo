@@ -6,8 +6,8 @@
         <field name="arch" type="xml">
             <form string="Insurance Claim summary">
                 <group>
-                    <field name="start_date"/>
-                    <field name="end_date"/>
+                    <field name="date_start"/>
+                    <field name="date_end"/>
                 </group>
                 <footer>
                     <button name="generate_report" string="Print" type="object" class="btn-primary"/>

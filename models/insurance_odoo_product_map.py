@@ -12,8 +12,6 @@ class insurance_odoo_product_map(models.Model):
     odoo_product_id = fields.Many2one('product.product', string="Odoo Product")
     valid_from = fields.Datetime(string="Valid From")
     valid_till = fields.Datetime(string="Valid Till")
-    is_active = fields.Boolean(string="Is active")
-
-    
+    is_active = fields.Boolean(string="Is active")    
     
     
