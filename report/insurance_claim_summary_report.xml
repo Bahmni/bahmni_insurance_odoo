@@ -13,10 +13,9 @@
     
     <data>
         <report 
-            id="insurance_claim_summary_report"
-            model="bahmni_insurance_odoo.insurance.claim.summary.report" 
-            name="bahmni_insurance_odoo.report_insurance_claim_summary"
-            file="bahmni_insurance_odoo.report_insurance_claim_summary" 
+            id="action_insurance_claim_summary_report"
+            model="report.insurance.claim.summary" 
+            name="bahmni_insurance_odoo.insurance_claim_summary"
             report_type="qweb-pdf" 
             string="Insurance Claim Summary"
         />

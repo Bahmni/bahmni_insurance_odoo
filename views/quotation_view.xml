@@ -52,7 +52,8 @@
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
             <xpath expr="//button[@name='check_eligibility']" position="after">
-                <button name="print_consent" type="object" string="Print Consent Form"/>
+                <button name="print_consent" type="object" string="Print Consent Form"
+                attrs="{'invisible': [('payment_type', 'in', ['cash'])]}" />
             </xpath>
         </field>
     </record>

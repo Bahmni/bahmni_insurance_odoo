@@ -11,25 +11,74 @@
                                 t-field="doc.partner_id.name"/> with NHIS ID 
                             <span t-field="doc.nhis_number"/> authorize <span t-field="doc.company_id.name"/> 
                             to submit claims on my behalf. I authorize the release of any medical or other information necessary to process my claims. 
+                            <p>
+                                Following items will be processed for claiming with total amount
+                            </p>
                             </span>
                             <br/>
                             <br/>
-                        <table class="table table-condensed">
-                            <tr>
-                                <td>
-                                    <strong>Signature: </strong>
-                                </td>
-                                <td class="col-xs-4 pull-left" style="width: 30%; border-bottom: 1px solid #111111;white-space:nowrap;">
-                                    
-                                </td>
-                                <td class="col-xs-4 pull-right" style="text-align:right;" >
-                                    <strong>Date: </strong>
-                                </td>
-                                <td class="col-xs-4 pull-right"  style="width: 100%; border-bottom: 1px solid #111111;white-space:nowrap;">
-           
-                                </td>
-                            </tr>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Quantity</th>
+                                    <th>Unit Price</th>
+                                    <th>Tax</th>
+                                    <th>Total Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-as="line" t-foreach="doc['order_line']">
+                                    <t t-if="line.payment_type == 'insurance'">
+                                        <td>
+                                            <t t-esc="line.product_id.name"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="line.product_uom_qty"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="line.price_unit"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="line.tax_id"/>
+                                        </td>
+                                        <td>
+                                            <t t-esc="line.price_total"/>
+                                        </td>
+                                    </t>
+                                </tr>
+                                <tr>
+                                    <td colspan="3">
+                                        <strong>
+                                            Total Amount
+                                        </strong>
+                                    </td>
+                                    <td colspan="2">
+                                        <t t-esc="doc.amount_total"/>
+                                    </td>
+                                </tr>
+                            </tbody>
                         </table>
+                        
+                        <div class="footer text-center">
+                            <table class="table table-condensed">
+                                <tr>
+                                    <td>
+                                        <strong>Signature: </strong>
+                                    </td>
+                                    <td class="col-xs-4 pull-left" style="width: 30%; border-bottom: 1px solid #111111;white-space:nowrap;">
+                                        
+                                    </td>
+                                    <td class="col-xs-4 pull-right" style="text-align:right;" >
+                                        <strong>Date: </strong>
+                                    </td>
+                                    <td class="col-xs-4 pull-right" style="width: 100%; border-bottom: 1px solid #111111;white-space:nowrap;">
+               
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                            
                     </div>
                 </div>
             </t>

@@ -10,8 +10,8 @@
                 <field name="nhis_number"/>
                 <field name="claim_code"/>
                 <field name="state"/>
-                <field name="claimed_amount_total"/>
-                <field name="amount_approved_total"/>
+                <field name="claimed_amount_total" sum="Total Claimed Amount" />
+                <field name="amount_approved_total" sum="Total Approved Amount" />
                 <field name="claimed_date"/>
             </tree>
         </field>

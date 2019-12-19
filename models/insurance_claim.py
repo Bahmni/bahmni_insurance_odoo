@@ -22,15 +22,12 @@ class claims(models.Model):
         _logger.info("Inside _amount_all")
         for claim in self:
             claimed_amount_total = 0.0
-            amount_approved_total = 0.0
             
             for line in claim.insurance_claim_line:
                 claimed_amount_total += line.price_total
-                amount_approved_total += line.amount_approved
                 
             claim.update({
-                'claimed_amount_total': claimed_amount_total,
-                'amount_approved_total': amount_approved_total
+                'claimed_amount_total': claimed_amount_total
             })    
         
     @api.multi
@@ -203,7 +200,7 @@ class claims(models.Model):
     
     def _add_visit_specific_claim_line(self, claim_in_db, sale_order):
         _logger.debug("Inside _add_visit_specific_claim_line")
-        imis_product = ''
+        odoo_product = ''
         hospital_type = sale_order.company_id.hospital_type
         if sale_order.care_setting == 'opd':
             ''' search for opd service product for hospital type.
@@ -215,9 +212,9 @@ class claims(models.Model):
             '''
             
             if hospital_type == 'PHC':
-                imis_product = 'OPD PHC'
+                odoo_product = 'OPD PHC'
             else:
-                imis_product = 'OPD Hospital'
+                odoo_product = 'OPD Hospital'
                         
         elif sale_order.care_setting == 'emergency':
             ''' search for ER service product for hospital type.
@@ -229,14 +226,18 @@ class claims(models.Model):
             '''
 
             if hospital_type == 'PHC':
-                imis_product = 'ER PHC'
+                odoo_product = 'ER PHC'
             else:
-                imis_product = 'ER Hospital' 
+                odoo_product = 'ER Hospital' 
                 
-        _logger.debug("imis_product ->%s", imis_product)
+        _logger.debug("odoo_product ->%s", odoo_product)
           
-        if imis_product:
-            imis_mapped_row = self.env['insurance.odoo.product.map'].search([('insurance_product', '=', imis_product), ('is_active', '=', 'True')])
+        if odoo_product:
+            product = self.env['product.product'].search([('name', '=', odoo_product), ('active', '=', 'True')])
+            if not product:
+                raise UserError("%s is not a product in odoo"%(odoo_product))
+            
+            imis_mapped_row = self.env['insurance.odoo.product.map'].search([('odoo_product_id', '=', product.id), ('is_active', '=', 'True')])
             if imis_mapped_row is None or len(imis_mapped_row) == 0 :
                 _logger.debug("imis_mapped_row mapping not found")
                 raise UserError("%s is not mapped to insurance product"%(imis_product))

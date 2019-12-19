@@ -1,67 +1,74 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <data>
-        <template id="report_insurance_claim_summary">
-            <t t-call="web.html_container">
-                <t t-call="web.internal_layout">
-                    <div class="page">
-            
-                        <div class="text-center">
-                            <h2>Insurance Claim Summary</h2>
-            
-                            <strong><t t-esc="date_start" t-options="{'widget': 'datetime'}"/> - <t t-esc="date_stop" t-options="{'widget': 'datetime'}"/></strong>
-                        </div>
-            
-                        <!-- Claim Data -->
-                        <table class="table table-sm">
-                            <thead>
-                                <tr>
-                                    <th>Total Insuree</th>
-                                    <th>Total Claims</th>
-                                    <th>Total Claimed Amount</th>
-                                    <th>Under Review Claims</th>
-                                    <th>Under Review Claims Amount</th>
-                                    <th>Total Valuated Claims</th>
-                                    <th>Total Valuated Amount</th>
-                                    <th>Rejected Claims</th>
-                                    <th>Total Rejected Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr t-foreach='claims' t-as='line'>
-                                    <td>
-                                        <t t-esc="line['total_insuree']" />
-                                    </td>
-                                    <td>
-                                        <t t-esc="line['total_claims']" />
-                                    </td>
-                                    <td>
-                                        <t t-esc="line['claimed_amount_total']" />
-                                    </td>
-                                    <td>
-                                        <t t-esc="line['total_under_review_claims']" />
-                                    </td>
-                                    <td>
-                                        <t t-esc="line['amount_under_review_claims']" />
-                                    </td>
-                                    <td>
-                                        <t t-esc="line['total_valuated_claims']" />
-                                    </td>
-                                    <td>
-                                        <t t-esc="line['amount_valuated_total']" />
-                                    </td>
-                                    <td>
-                                        <t t-esc="line['total_rejected_claims']" />
-                                    </td>
-                                    <td>
-                                        <t t-esc="line['amount_rejected_total']" />
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+    <template id="insurance_claim_summary">
+        <t t-call="report.html_container">
+            <t t-call="report.internal_layout">
+                <div class="page">
+                    <div class="text-center">
+                        <h2>Insurance Claim Summary</h2>
+                        <strong>
+                            <t t-esc="date_start"
+                                t-options="{'widget': 'date'}"/> - <t
+                                t-esc="date_end" t-options="{'widget': 'date'}"/>
+                        </strong>
                     </div>
-                </t>
+                    <!-- Claim Data -->
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Total Insuree</th>
+                                <th>Total Claims</th>
+                                <th>Total Claimed Amount</th>
+                                <th>Under Review Claims</th>
+                                <th>Under Review Claims Amount</th>
+                                <th>Total Valuated Claims</th>
+                                <th>Total Valuated Amount</th>
+                                <th>Rejected Claims</th>
+                                <th>Total Rejected Amount</th>
+                                <th>Draft Claims</th>
+                                <th>Total Draft Claims Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-as="line" t-foreach="report_lines">
+                                <td>
+                                    <t t-esc="line['total_insuree']"/>
+                                </td>
+                                <td>
+                                    <t t-esc="line['total_claims']"/>
+                                </td>
+                                <td>
+                                    <t t-esc="line['claimed_amount_total']"/>
+                                </td>
+                                <td>
+                                    <t t-esc="line['total_under_review_claims']"/>
+                                </td>
+                                <td>
+                                    <t t-esc="line['amount_under_review_claims']"/>
+                                </td>
+                                <td>
+                                    <t t-esc="line['total_valuated_claims']"/>
+                                </td>
+                                <td>
+                                    <t t-esc="line['amount_valuated_total']"/>
+                                </td>
+                                <td>
+                                    <t t-esc="line['total_rejected_claims']"/>
+                                </td>
+                                <td>
+                                    <t t-esc="line['amount_rejected_total']"/>
+                                </td>
+                                <td>
+                                    <t t-esc="line['total_draft_claims']"/>
+                                </td>
+                                <td>
+                                    <t t-esc="line['amount_draft_total']"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </t>
-        </template>
-    </data>
+        </t>
+    </template>
 </odoo>

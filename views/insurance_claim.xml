@@ -7,7 +7,7 @@
         <field name="priority">1</field>
         <field name="domain">[('state', 'in', ('draft', 'confirmed', 'rejected'))]</field>
         <field name="arch" type="xml">
-            <tree string="Claims">
+            <tree string="Claims" default_order='create_date desc'>
                 <field name="claim_code" string="Claim Number"/>
                 <field name="claimed_date"/>
                 <field name="partner_id"/>
@@ -114,6 +114,7 @@
                                 </form>
                                 <tree editable="bottom" string="Claim Item">
                                     <field name="product_id"/>
+                                    <field name="imis_product_code" string="Imis Product Code"/>
                                     <field name="product_qty"/>
                                     <field name="price_unit"/>
                                     <field name="price_total"/>
@@ -208,4 +209,5 @@
     <menuitem action="action_insurance_submitted_claims_view"
         id="menu_insurance_submitted_claims" name="Submitted Claims" groups="group_insurance_claim_user"
         parent="bahmni_insurance_odoo.menu_insurance_title" sequence="2"/>
+        
 </odoo>
