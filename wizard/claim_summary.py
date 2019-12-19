@@ -15,9 +15,6 @@ class ClaimSummary(models.TransientModel):
     date_start = fields.Date(required=True)
     date_end = fields.Date(required=True, default=fields.Date.today)
     
-    def _default_date(self):
-        return fields.Date.context_today(self)
-    
     @api.onchange('date_start')
     def _onchange_date_start(self):
         if self.date_start and self.date_end and self.date_end < self.date_start:
