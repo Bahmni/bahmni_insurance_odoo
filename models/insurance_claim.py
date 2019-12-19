@@ -233,7 +233,7 @@ class claims(models.Model):
         _logger.debug("odoo_product ->%s", odoo_product)
           
         if odoo_product:
-            product = self.env['product.product'].search([('name', '=', odoo_product), ('is_active', '=', 'True')])
+            product = self.env['product.product'].search([('name', '=', odoo_product), ('active', '=', 'True')])
             if not product:
                 raise UserError("%s is not a product in odoo"%(odoo_product))
             

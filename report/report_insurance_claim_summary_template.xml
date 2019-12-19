@@ -8,8 +8,8 @@
                         <h2>Insurance Claim Summary</h2>
                         <strong>
                             <t t-esc="date_start"
-                                t-options="{'widget': 'datetime'}"/> - <t
-                                t-esc="date_stop" t-options="{'widget': 'datetime'}"/>
+                                t-options="{'widget': 'date'}"/> - <t
+                                t-esc="date_end" t-options="{'widget': 'date'}"/>
                         </strong>
                     </div>
                     <!-- Claim Data -->
