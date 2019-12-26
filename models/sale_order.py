@@ -62,16 +62,22 @@ class sale_order(models.Model):
                         invoices[group_key] = invoice
                         invoices_origin[group_key] = [invoice.origin]
                         invoices_name[group_key] = [invoice.name]
+                        
+                        if line.qty_to_invoice > 0:
+                            self.line_invoice_addition(line, invoice)
+                        elif line.qty_to_invoice < 0 and final:
+                            self.line_invoice_addition(line, invoice)
+                        
                 elif group_key in invoices:
                     if order.name not in invoices_origin[group_key]:
                         invoices_origin[group_key].append(order.name)
                     if order.client_order_ref and order.client_order_ref not in invoices_name[group_key]:
                         invoices_name[group_key].append(order.client_order_ref)
 
-                if line.qty_to_invoice > 0:
-                    line.invoice_line_create(invoices[group_key].id, line.qty_to_invoice)
-                elif line.qty_to_invoice < 0 and final:
-                    line.invoice_line_create(invoices[group_key].id, line.qty_to_invoice)
+                    if line.qty_to_invoice > 0:
+                        self.line_invoice_addition(line, invoices[group_key])
+                    elif line.qty_to_invoice < 0 and final:
+                        self.line_invoice_addition(line, invoices[group_key])
 
             if references.get(invoices.get(group_key)):
                 if order not in references[invoices[group_key]]:
@@ -85,6 +91,7 @@ class sale_order(models.Model):
             raise UserError(_('There is no invoicable line.'))
 
         for invoice in invoices.values():
+            _logger.info("Invoice line items, invoice_data=%s",invoice)
             invoice.compute_taxes()
             if not invoice.invoice_line_ids:
                 raise UserError(_('There is no invoicable line.'))
@@ -104,10 +111,17 @@ class sale_order(models.Model):
                 subtype_id=self.env.ref('mail.mt_note').id)
         [inv.id for inv in invoices.values()]
             
-        self.action_invoice_create_commons()
+        self.action_invoice_create_commons(order)
+    
+    
+    def line_invoice_addition(self, line, invoice):
+        if line.qty_to_invoice > 0:
+            line.invoice_line_create(invoice.id, line.qty_to_invoice)
+        elif line.qty_to_invoice < 0 and final:
+            line.invoice_line_create(invoice.id, line.qty_to_invoice)
     
     @api.multi
-    def action_invoice_create_commons(self):
+    def action_invoice_create_commons(self, order):
         _logger.info("Inside action_invoice_create_commons overwritten")
         for order in self:
             _logger.info("sale_order")
@@ -151,41 +165,13 @@ class sale_order(models.Model):
                     _logger.info("invoice_data=%s",inv_data)
                     created_invoice = self.env['account.invoice'].create(inv_data)
                     _logger.info("created_invoice_state=%s",created_invoice.state)
-                    for line in order.order_line:
-                        '''
-                            If current invoice is for insurance journal, then only add items with insurance payment
-                            If current invoice is for cash(default) journal, then only add items with cash payment
-                        '''
-                        if ((created_invoice.journal_id.id != insurance_journal.id and line.payment_type.lower() == 'cash') or (created_invoice.journal_id.id == insurance_journal.id and line.payment_type.lower() == 'insurance')):
-                            line.invoice_line_create(created_invoice.id, line.product_uom_qty)
-    
-                    # Use additional field helper function (for account extensions)
-                    for line in created_invoice.invoice_line_ids:
-                        line._set_additional_fields(created_invoice)
                     
+                    created_invoices.append(self.create_invoice_line_commons(created_invoice, order, insurance_journal))
                     
-                    _logger.info("before compute taxes, created_invoice_state=%s",created_invoice.state)
-                    
-                    # Necessary to force computation of taxes. In account_invoice, they are triggered
-                    # by onchanges, which are not triggered when doing a create.
-                    created_invoice.compute_taxes()
-                    created_invoice.message_post_with_view('mail.message_origin_link',
-                        values={'self': created_invoice, 'origin': order},
-                        subtype_id=self.env.ref('mail.mt_note').id)
-                    
-                    
-                    _logger.info("after computing taxes, before invoice open, created_invoice_state=%s",created_invoice.state)
-                    created_invoice.action_invoice_open()#Validate Invoice
-                    
-                    _logger.info("before append and after open, created_invoice_state=%s",created_invoice.state)
-                    
-                    created_invoices.append(created_invoice)
-                    
-                    _logger.info("After append created_invoice_state=%s",created_invoice.state)
                     
                 #If eligible for claim then, proceed to create claim
                 if self.check_if_insuree_is_eligible() == True:
-                    self.action_invoice_create_commons()
+                    self.action_invoice_create_commons(order)
                 
                 
                 #Commenting Register payment as its causing issue in case of partial payment where 2 invoices are generated
@@ -211,7 +197,38 @@ class sale_order(models.Model):
                 
         else:
             return res
-        
+    
+    def create_invoice_line_commons(self, created_invoice, order, insurance_journal):
+        for line in order.order_line:
+            '''
+                If current invoice is for insurance journal, then only add items with insurance payment
+                If current invoice is for cash(default) journal, then only add items with cash payment
+            '''
+            if ((created_invoice.journal_id.id != insurance_journal.id and line.payment_type.lower() == 'cash') or (created_invoice.journal_id.id == insurance_journal.id and line.payment_type.lower() == 'insurance')):
+                line.invoice_line_create(created_invoice.id, line.product_uom_qty)
+    
+        # Use additional field helper function (for account extensions)
+        for line in created_invoice.invoice_line_ids:
+            line._set_additional_fields(created_invoice)
+                    
+                    
+        _logger.info("before compute taxes, created_invoice_state=%s",created_invoice.state)
+                   
+        # Necessary to force computation of taxes. In account_invoice, they are triggered
+        # by onchanges, which are not triggered when doing a create.
+        created_invoice.compute_taxes()
+        created_invoice.message_post_with_view('mail.message_origin_link',
+        values={'self': created_invoice, 'origin': order},
+        subtype_id=self.env.ref('mail.mt_note').id)
+                  
+                    
+        _logger.info("after computing taxes, before invoice open, created_invoice_state=%s",created_invoice.state)
+        created_invoice.action_invoice_open()#Validate Invoice
+                    
+        _logger.info("before append and after open, created_invoice_state=%s",created_invoice.state)
+                
+        return created_invoice
+           
         
     def check_if_insuree_is_eligible(self):
         _logger.info("Inside check_if_insuree_is_eligible")
