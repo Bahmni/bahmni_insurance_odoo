@@ -20,7 +20,7 @@ class sale_order(models.Model):
                         'payment_type': sale_order.payment_type
                         })
 
-    @api.one          
+          
     @api.onchange('partner_id')
     def _get_nhis_number(self):
         _logger.info("Inside _get_nhis_number")
@@ -395,7 +395,7 @@ class sale_order(models.Model):
     external_id = fields.Char(string="External Id", help="This field is used to store encounter ID of bahmni api call")
     partner_uuid = fields.Char(string='Customer UUID', store=True, readonly=True)
     external_visit_uuid = fields.Char(string="External Id", help="This field is used to store visit ID of bahmni api call")
-    care_setting = fields.Selection([('opd', 'OPD'), ('ipd', 'IPD'), ('emergency', 'ER')], default='ER',  string="Care Setting", required="True")
+    care_setting = fields.Selection([('opd', 'OPD'), ('ipd', 'IPD'), ('emergency', 'ER')], default='emergency',  string="Care Setting", required="True")
 
 class sale_order_line(models.Model):
     _name = 'sale.order.line'
