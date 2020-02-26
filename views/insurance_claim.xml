@@ -56,7 +56,7 @@
                         string="View Eligibility" type="object"/>
 
                     <button class="btn-primary o_sale_confirm"
-                        attrs="{'invisible': [('state', 'in', ['draft','confirmed', 'submitted','processed','valuated'])]}"
+                        attrs="{'invisible': [('state', 'in', ['draft','confirmed', 'checked','submitted','processed','valuated'])]}"
                         name="action_edit_fhir"
                         string="Edit Fhir" type="object"/>
 
