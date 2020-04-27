@@ -187,10 +187,7 @@ class insurance_connect(models.TransientModel):
         if response.status == 200:
             response = json.loads(response.data.decode('utf-8'))
             _logger.info(json.dumps(response))
-            if response['eligibilityBalance']:
-                return response
-            else:
-                raise UserError("Insurance Eligibility response does not have eligibility balance, please recheck insurance id and retry! ")
+            return response
         elif response.status == 503:
             _logger.error(response.data)
             raise UserError("Insurance connect service not available. Please contact system administrator")
