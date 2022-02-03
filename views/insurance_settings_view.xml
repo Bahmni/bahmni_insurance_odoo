@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_insurance_connect_configuration" model="ir.ui.view">
+        <field name="name">insurance_connect_configuration</field>
+        <field name="model">insurance.config.settings</field>
+        <field name="arch" type="xml">
+            <form string="Insurance Configuration" class="oe_form_configuration">
+                <header>
+                    <button string="Apply" type="object"
+                        name="execute" class="oe_highlight"/>
+                    or
+                    <button string="Cancel" type="object"
+                        name="cancel" class="oe_link"/>
+                    
+                </header>
+                <sheet>
+                <div class="alert alert-success alert-dismissible" invisible="not context.get('show_message', False)">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">x</a>
+            Connection Succesfull!!!
+        </div>
+                <separator string="Insurance Connect Configuration"/>
+                <group string="Credentials">
+                    <div>
+                        <div>
+                            <label for="username" string="Username"/>
+                            <field name="username"/>
+                        </div>
+                        
+                        <div>
+                            <label for="password" string="Password"/>
+                            <field name="password" password="True" />
+                        </div>
+                        
+                        <div>
+                            <label for="base_url" string="Base URL"/>
+                            <div>
+                                <field name="base_url"/>
+                            </div>
+                        </div>
+                        <div>
+                            <button class="btn-primary"
+                                name="action_test_connection"
+                                attrs="{'invisible': [('username', '!=', ''),'&amp;',('password','!=', ''),'&amp;',('base_url','!=', '')]}"
+                                string="Test Connection" type="object" />    
+                            
+                        </div>
+                    </div>
+                </group>
+                <group string="Claim Code Setup">
+                    <div>
+                        <div>
+                            <label for="manually_setup_claim_code" string="Setup Claim Code Manually"/>
+                            <span style="margin-right:15px;"></span>
+                            <field name="manually_setup_claim_code"/>
+                        </div>
+                    </div>
+                    
+                    <div></div>
+                    
+                    <div>
+                        <div attrs="{'invisible': [('manually_setup_claim_code', '=', False)]}">
+                            <label for="claim_id_start_range" string="Start Range"/>
+                            <field name="claim_id_start_range"/>
+                        </div>
+                    </div>
+                    
+                    <div></div>
+                    <div>
+                        <div attrs="{'invisible': [('manually_setup_claim_code', '=', False)]}">
+                            <label for="claim_id_end_range" string="End Range"/>
+                            <field name="claim_id_end_range"/>
+                        </div>
+                        <div attrs="{'invisible': [('manually_setup_claim_code', '=', False)]}">
+                            <label for="claim_number_next_val" string="Next Value"/>
+                            <field name="claim_number_next_val"/>
+                        </div>
+                    </div>
+                </group>
+                
+                <group string="Visit Sepcific Claim Setup">
+                    <div>
+                        <div>
+                            <label for="add_visit_specific_product" string="Add Claim Line specific to Visit Automatically"/>
+                            <span style="margin-right:15px;"></span>
+                            <field name="add_visit_specific_product"/>
+                        </div>
+                    </div>
+                </group>
+                
+                <group string="Journal Setup">
+                    <div>
+                        <div>
+                            <label for="insurance_journal" string="Insurance Journal Name"/>
+                            <field name="insurance_journal"/>
+                        </div>
+                    </div>
+                </group>
+                <div>
+                    <span>(*) This configuration is related to the company you're logged into.</span>
+                </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+     <record id="insurance_connect_config_action" model="ir.actions.act_window">
+        <field name="name">Insurance Connect Configuration</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">insurance.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+    </record>
+    
+    <menuitem id="insurance_connect_config_menu" name="Insurance Settings" 
+        parent="bahmni_insurance_odoo.menu_insurance_config" groups="group_insurance_claim_manager"
+        sequence="10" action="insurance_connect_config_action"/>
+</odoo>

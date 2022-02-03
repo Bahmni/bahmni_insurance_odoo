@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+        <!-- QWeb Reports -->
+        <report 
+            id="report_combined_invoice"
+            model="account.invoice"
+            string="Print Combined Invoice"
+            report_type="qweb-pdf"
+            name="bahmni_insurance_odoo.report_invoice_combined"
+            file="bahmni_insurance_odoo.report_invoice_combined"
+        />
+</odoo>

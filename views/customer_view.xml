@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="nhis_number_customer_view" model="ir.ui.view">
+        <field name="name">res.partner.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <field name="ref" position="after">
+                <field name="nhis_number" string="NHIS Number"/>
+            </field>
+            <field name="function" position="after">
+                <field name="InsuranceActive" string="NHIS Member Active"/>
+            </field>
+        </field>
+    </record>`
+</odoo>
