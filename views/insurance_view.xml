@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    
+        <!-- <menuitem id='menu_insurance' name='Insurance' groups="group_insurance_claim_manager"  sequence="70"/>
+             <menuitem name="Configuration" parent="menu_insurance"  groups="group_insurance_claim_manager"  id="menu_insurance_config" sequence="52"/> -->
+    <!-- Top menu item -->
+        <menuitem id='menu_insurance' name='Insurance' groups="group_insurance_claim_user" sequence="70"/>
+        <menuitem name="Claims" parent="menu_insurance" groups="group_insurance_claim_user" id="menu_insurance_title" sequence="50"/>
+        <menuitem name="Reports" parent="menu_insurance" groups="group_insurance_claim_user" id="menu_insurance_report" sequence="51"/>
+        <menuitem name="Configuration" parent="menu_insurance"  groups="group_insurance_claim_manager" id="menu_insurance_config" sequence="52"/>
+        
+    <!-- Adds Reports menu and action -->
+        
+    
+        
+    
+    
+</odoo>

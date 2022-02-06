@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="insurance_odoo_ipd_code_form_view" model="ir.ui.view">
+        <field name="name">Insurance-Odoo IPD Mapper</field>
+        <field name="type">form</field>
+        <field name="model">insurance.disease.code</field>
+        <field name="arch" type="xml">
+            <form string="Insurance-Odoo Product Map">
+                <sheet>
+                    <group>
+                        <field name="ipdCode"/>
+                        <field name="diagnosis"/>
+                        <field name="is_active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="insurance_odoo_ipd_code_tree_view" model="ir.ui.view">
+        <field name="name">insurance.disease.code.map.tree</field>
+        <field name="model">insurance.disease.code</field>
+        <field name="type">tree</field>
+        <field name="domain">[('is_active','=', 'true')]</field>
+        <field name="arch" type="xml">
+            <tree string="IPD Diagnosis Mapper">
+              
+                        <field name="ipdCode"/>
+                        <field name="diagnosis"/>
+                        <field name="is_active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="insurance_odoo_ipd_code_filter" model="ir.ui.view">
+        <field name="name">insurance.disease.code.filter</field>
+        <field name="model">insurance.disease.code</field>
+        <field name="arch" type="xml">
+            <search string="Search IPD Diagnosis">
+               
+                        <field name="ipdCode"/>
+                        <field name="diagnosis"/>
+                        <field name="is_active"/>
+            </search>
+        </field>
+    </record>
+    <record id="action_insurance_ip_code_mapping" model="ir.actions.act_window">
+        <field name="name">Diagnosis Code Map</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">insurance.disease.code</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+    </record>
+    <menuitem action="action_insurance_ip_code_mapping"
+        id="menu_action_insurance_ipd_code_mapping" 
+        groups="group_insurance_claim_manager" 
+        parent="bahmni_insurance_odoo.menu_insurance_config" sequence="12"/>
+</odoo>

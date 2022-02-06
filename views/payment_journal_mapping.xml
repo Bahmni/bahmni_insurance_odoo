@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="payment_journal_map_form_view" model="ir.ui.view">
+        <field name="name">Payment - JournalMapper</field>
+        <field name="type">form</field>
+        <field name="model">payment.journal.mapping</field>
+        <field name="arch" type="xml">
+            <form string="Payment - Journal Map">
+                <sheet>
+                    <group>
+                        <field name="payment_type"/>
+                        <field name="journal_id"/>
+                    </group>
+                  
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="payment_journal_map_tree_view" model="ir.ui.view">
+        <field name="name">payment.journal.mapping.tree</field>
+        <field name="model">payment.journal.mapping</field>
+        <field name="type">tree</field>
+        <field name="arch" type="xml">
+            <tree string="Payment Journal Mapper">
+                        <field name="payment_type"/>
+                        <field name="journal_id"/>
+            </tree>
+        </field>
+    </record>
+    <record id="payment_journal_map_filter" model="ir.ui.view">
+        <field name="name">payment.journal.mapping.filter</field>
+        <field name="model">payment.journal.mapping</field>
+        <field name="arch" type="xml">
+            <search string="Search Payment Journal">
+                        <field name="payment_type"/>
+                        <field name="journal_id"/>
+            </search>
+        </field>
+    </record>
+    <record id="action_payment_journal_mapping" model="ir.actions.act_window">
+        <field name="name">Payment - Journal mapping</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">payment.journal.mapping</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+    </record>
+    <menuitem action="action_payment_journal_mapping"
+        id="menu_action_payment_journal_mapping" 
+        groups="group_insurance_claim_manager" 
+        parent="bahmni_insurance_odoo.menu_insurance_config" sequence="11"/>
+</odoo>
