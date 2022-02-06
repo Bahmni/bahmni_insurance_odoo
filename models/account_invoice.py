@@ -12,6 +12,23 @@ class account_invoice(models.Model):
     _name = 'account.payment'
     _inherit = 'account.payment'
 
+
+    @api.multi
+    @api.onchange('journal_id')
+    def onchange_journal(self):
+        for payment in self:   
+            for invoice in payment.invoice_id:             
+                invoice.update({
+                    'journal_id': payment.journal_id
+                })  
+                invoice.journal_id = payment.journal_id                
+            for invoice in payment.invoice_ids:             
+                invoice.update({
+                    'journal_id': payment.journal_id
+                })   
+                invoice.journal_id = payment.journal_id  
+
+
     @api.multi
     @api.onchange('amount')
     def onchange_sale_orders_add_claim(self):
@@ -34,13 +51,23 @@ class account_invoice(models.Model):
                 # Set payment method domain (restrict to methods enabled for the journal and to selected payment type)
                 payment_type = payment.payment_type in ('outbound', 'transfer') and 'outbound' or 'inbound'
                 return {'domain': {'payment_method_id': [('payment_type', '=', payment_type), ('id', 'in', payment_methods.ids)]}}    
+        else:
+            for payment in self:   
+                payment.currency_id = payment.journal_id.currency_id or payment.company_id.currency_id
+                # Set default payment method (we consider the first to be the default one)
+                payment_methods = payment.payment_type == 'inbound' and payment.journal_id.inbound_payment_method_ids or payment.journal_id.outbound_payment_method_ids
+                payment.payment_method_id = payment_methods and payment_methods[0] or False
+                # Set payment method domain (restrict to methods enabled for the journal and to selected payment type)
+                payment_type = payment.payment_type in ('outbound', 'transfer') and 'outbound' or 'inbound'
+                return {'domain': {'payment_method_id': [('payment_type', '=', payment_type), ('id', 'in', payment_methods.ids)]}}    
+
 
 
 class account_invoice(models.Model):
     _name = 'account.invoice'
     _inherit = 'account.invoice'
     
-    payment_type = fields.Selection([('insurance', 'INSURANCE'), ('cash', 'CASH')], default='cash', string="Payment Type", required="True", help="Payment type accepted for this invoice", states={'draft': [('readonly', False)]})    
+    payment_type = fields.Selection([('insurance', 'INSURANCE'), ('cash', 'CASH'), ('free', 'FREE')], default='cash', string="Payment Type", required="True", help="Payment type accepted for this invoice", states={'draft': [('readonly', False)]})    
     amount_all_untaxed = fields.Monetary(string='Untaxed Amount', store=True, readonly=True, compute='_compute_all_amount', track_visibility='always')
     amount_all_total = fields.Monetary(string='Total',   store=True, readonly=True, compute='_compute_all_amount')
     claim_code=fields.Char(string='Claim Code', compute='_get_claim_code')

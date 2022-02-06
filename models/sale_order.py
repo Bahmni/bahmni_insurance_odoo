@@ -91,7 +91,7 @@ class sale_order(models.Model):
                 if sale_order.payment_type == 'free' :
                     sale_order_line.update({
                         'payment_type': sale_order.payment_type,
-                        'price_unit':0
+                        'price_unit':sale_order_line.product_id.list_price
                         })
                 if sale_order.payment_type == 'insurance':
                     if self.nhis_number:
@@ -341,7 +341,7 @@ class sale_order(models.Model):
                 If current invoice is for insurance journal, then only add items with insurance payment
                 If current invoice is for cash(default) journal, then only add items with cash payment
             '''
-            if ((created_invoice.journal_id.id != insurance_journal.id and line.payment_type.lower() == 'cash') or (created_invoice.journal_id.id == insurance_journal.id and line.payment_type.lower() == 'insurance')):
+            if ((created_invoice.journal_id.id != insurance_journal.id and line.payment_type.lower() == 'cash') or (created_invoice.journal_id.id != insurance_journal.id and line.payment_type.lower() == 'free') or (created_invoice.journal_id.id == insurance_journal.id and line.payment_type.lower() == 'insurance')):
                 line.invoice_line_create(created_invoice.id, line.product_uom_qty)
     
         # Use additional field helper function (for account extensions)
@@ -447,6 +447,13 @@ class sale_order(models.Model):
         elif self.payment_type == 'cash':
             _logger.info("Inside cash payment processing")
             invoice_vals.append(self._prepare_invoice_for_cash_payment())
+        elif self.payment_type == 'free':
+            wt = self.env['payment.journal.mapping']
+            id_needed = wt.search([('payment_type', '=', 'free')]).journal_id
+            if not id_needed: 
+                id_needed = self.env['account.invoice'].default_get(['journal_id'])['journal_id']
+            _logger.info("Inside free payment processing")
+            invoice_vals.append(self._prepare_invoice_for_free_payment(id_needed))
         elif self.payment_type == 'partial':
             _logger.info("Inside partial payment processing")
             
@@ -474,6 +481,15 @@ class sale_order(models.Model):
             raise UserError(_('Please define an accounting sale journal for this company.'))
         payment_type = 'cash'
         return self._prepare_invoice_commons(journal_id, payment_type)
+    
+    @api.multi
+    def _prepare_invoice_for_free_payment(self,id_needed):   
+        journal_id = id_needed.id#self.env['account.invoice'].default_get(['journal_id'])['journal_id']
+        if not journal_id:
+            raise UserError(_('Please define an accounting sale journal for this company.'))
+        payment_type = 'free'
+        return self._prepare_invoice_commons(journal_id, payment_type)
+        
         
     @api.multi
     def _prepare_invoice_commons(self, journal_id, payment_type):    
@@ -584,7 +600,7 @@ class sale_order_line(models.Model):
             if sale_order_line.payment_type == 'cash':
                 return {'value': {'price_unit': sale_order_line.product_id.list_price}}
             if sale_order_line.payment_type == 'free' :
-                return {'value': {'price_unit':0}}
+                return {'value': {'price_unit': sale_order_line.product_id.list_price}}
             if sale_order_line.payment_type == 'insurance' :
                 if self.order_id.nhis_number:
                     insurance_cost = self.getInsuranceCost(sale_order_line.product_id)
